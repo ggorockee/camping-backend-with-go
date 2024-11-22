@@ -65,6 +65,7 @@ jobs:
       with:
         repository: ${{ env.TARGET_REPOSITORY }}
         token: ${{ env.GIT_TOKEN }}
+        ref: 'main'
 
     - uses: fjogeleit/yaml-update-action@main
       with:
