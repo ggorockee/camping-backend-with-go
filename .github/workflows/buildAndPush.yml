@@ -71,8 +71,8 @@ jobs:
       with:
         valueFile: 'helm-values/dev/ggocamping-backend/values.yaml'
         propertyPath: 'deployment.image.tag'
-        value: "v-${{ needs.build.outputs.SHA }}"
-        message: 'ci: Update airbnb-server image tag to v-${{ needs.build.outputs.SHA }}'
+        value: "v-${{ needs.build-and-push.outputs.SHA }}"
+        message: 'ci: Update airbnb-server image tag to v-${{ needs.build-and-push.outputs.SHA }}'
         commitChange: true
         branch: main
         repository: ${{ env.TARGET_REPOSITORY }}
