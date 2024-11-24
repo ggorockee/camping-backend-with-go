@@ -1,9 +1,11 @@
 package entities
 
-import "time"
+import (
+	"time"
+)
 
 type Spot struct {
-	Id        string    `json:"id"`
+	Id        uint      `json:"id" gorm:"primaryKey"`
 	Title     string    `json:"title"`
 	Author    string    `json:"author"`
 	CreatedAt time.Time `json:"created_at"`

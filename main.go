@@ -1,11 +1,13 @@
 package main
 
 import (
+	"camping-backend-with-go/api/routes"
 	"camping-backend-with-go/pkg/entities"
-	"gorm.io/driver/mysql"
+	"camping-backend-with-go/pkg/spot"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
@@ -14,19 +16,22 @@ import (
 func main() {
 	db := databaseConnection()
 
-	app.Get("/v1/helloworld", func(c *fiber.Ctx) error {
-		return c.Status(http.StatusOK).JSON(fiber.Map{
-			"status": "ok",
-			"error":  false,
-		})
-	})
+	spotRepo := spot.NewRepo(db)
+	spotService := spot.NewService(spotRepo)
 
-	app.Listen(":3000")
+	app := fiber.New()
+	app.Use(cors.New())
+
+	v1 := app.Group("/v1")
+	routes.SpotRouter(v1, spotService)
+	log.Fatal(app.Listen(":3000"))
 }
 
 func databaseConnection() *gorm.DB {
-	dsn := "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	//dsn := "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
+	//db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+
+	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 
 	if err != nil {
 		log.Fatal("Failed to connect to database. \n", err)

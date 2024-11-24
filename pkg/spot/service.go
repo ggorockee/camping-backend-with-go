@@ -8,8 +8,8 @@ import (
 type Service interface {
 	InsertSpot(spot *entities.Spot) (*entities.Spot, error)
 	FetchSpots() (*[]presenter.Spot, error)
-	UpdateSpot(spot *entities.Spot) (*entities.Spot, error)
-	RemoveSpot(ID string) error
+	//UpdateSpot(spot *entities.Spot) (*entities.Spot, error)
+	//RemoveSpot(ID string) error
 }
 
 type service struct {
@@ -32,12 +32,13 @@ func (s *service) FetchSpots() (*[]presenter.Spot, error) {
 	return s.repository.ReadSpot()
 }
 
-// UpdateSpot is a service layer that helps update Spots in SpotShop
-func (s *service) UpdateSpot(spot *entities.Spot) (*entities.Spot, error) {
-	return s.repository.UpdateSpot(spot)
-}
-
-// RemoveSpot is a service layer that helps remove Spots from SpotShop
-func (s *service) RemoveSpot(ID string) error {
-	return s.repository.DeleteSpot(ID)
-}
+//
+//// UpdateSpot is a service layer that helps update Spots in SpotShop
+//func (s *service) UpdateSpot(spot *entities.Spot) (*entities.Spot, error) {
+//	return s.repository.UpdateSpot(spot)
+//}
+//
+//// RemoveSpot is a service layer that helps remove Spots from SpotShop
+//func (s *service) RemoveSpot(ID string) error {
+//	return s.repository.DeleteSpot(ID)
+//}
