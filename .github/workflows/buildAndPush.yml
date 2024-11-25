@@ -74,7 +74,7 @@ jobs:
     - uses: mikefarah/yq@master
       with:
         # cmd: yq eval 'deployment.image.tag = "v-${{ needs.build-and-push.outputs.SHA }}"' helm-values/dev/ggocamping-backend/values.yaml --inplace
-        cmd: yq eval 'deployment.image.tag = v-abcdedfg' helm-values/dev/ggocamping-backend/values.yaml --inplace
+        cmd: current_commit=v-${{ needs.build-and-push.outputs.SHA }} yq 'deployment.image.tag = strenv(current_commit)' helm-values/dev/ggocamping-backend/values.yaml --inplace
 
     - name: Commit changes
       run: |
