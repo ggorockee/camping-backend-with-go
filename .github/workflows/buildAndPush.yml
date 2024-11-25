@@ -73,7 +73,7 @@ jobs:
 
     - uses: mikefarah/yq@master
       with:
-        cmd: yq eval 'deployment.image.tag' = "v-${{ needs.build-and-push.outputs.SHA }}" helm-values/dev/ggocamping-backend/values.yaml --inplace
+        cmd: yq eval 'deployment.image.tag = "v-${{ needs.build-and-push.outputs.SHA }}"' helm-values/dev/ggocamping-backend/values.yaml --inplace
 
     - name: Commit changes
       run: |
