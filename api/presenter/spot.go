@@ -6,16 +6,18 @@ import (
 )
 
 type Spot struct {
-	Id     uint   `json:"id"`
-	Title  string `json:"title"`
-	Author string `json:"author"`
+	Id       uint   `json:"id"`
+	Title    string `json:"title"`
+	Author   string `json:"author"`
+	Location string `json:"location"`
 }
 
 func SpotSuccessResponse(data *entities.Spot) *fiber.Map {
 	spot := Spot{
-		Id:     data.Id,
-		Title:  data.Title,
-		Author: data.Author,
+		Id:       data.Id,
+		Title:    data.Title,
+		Author:   data.Author,
+		Location: data.Location,
 	}
 	return &fiber.Map{
 		"status": true,
