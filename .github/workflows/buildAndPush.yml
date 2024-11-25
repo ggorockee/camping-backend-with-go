@@ -80,6 +80,7 @@ jobs:
       run: |
         git config --local user.email "ggorockee@gmail.com"
         git config --local user.name "ggorockee"
+        git pull origin main
         git add .
         git commit -m "CI: Update airbnb-server image tag to v-${{ needs.build-and-push.outputs.SHA }}"
 
