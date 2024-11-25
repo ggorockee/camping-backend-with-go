@@ -43,7 +43,10 @@ func databaseConnection() *gorm.DB {
 	}
 
 	log.Println("connected")
-	err = db.AutoMigrate(&entities.Spot{})
+	err = db.AutoMigrate(
+		&entities.Spot{},
+		&entities.User{},
+	)
 	if err != nil {
 		log.Println(err.Error())
 	}
