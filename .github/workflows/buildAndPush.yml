@@ -69,7 +69,7 @@ jobs:
 
     - name: check directory
       run: |
-        ls -al
+        ls helm-values/dev/ggocamping-backend
 
     - uses: mikefarah/yq@master
       with:
