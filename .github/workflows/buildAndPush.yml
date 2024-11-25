@@ -67,10 +67,6 @@ jobs:
         token: ${{ env.GIT_TOKEN }}
         ref: 'main'
 
-    - name: check directory
-      run: |
-        ls helm-values/dev/ggocamping-backend
-
     - uses: mikefarah/yq@master
       with:
         # cmd: yq eval 'deployment.image.tag = "v-${{ needs.build-and-push.outputs.SHA }}"' helm-values/dev/ggocamping-backend/values.yaml --inplace
@@ -89,6 +85,7 @@ jobs:
       with:
         github_token: ${{ env.GIT_TOKEN }}
         branch: main
+        repository: ${{ env.TARGET_REPOSITORY }}
 
 #    - uses: fjogeleit/yaml-update-action@main
 #      with:
