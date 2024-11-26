@@ -2,9 +2,11 @@ package main
 
 import (
 	"camping-backend-with-go/api/routes"
+	"camping-backend-with-go/pkg/auth"
 	"camping-backend-with-go/pkg/entities"
 	"camping-backend-with-go/pkg/healthcheck"
 	"camping-backend-with-go/pkg/spot"
+	"camping-backend-with-go/pkg/user"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -19,6 +21,12 @@ func main() {
 
 	healthcheckService := healthcheck.NewService()
 
+	userRepo := user.NewRepo(db)
+	userService := user.NewService(userRepo)
+
+	authRepo := auth.NewRepo(db)
+	authService := auth.NewService(authRepo)
+
 	spotRepo := spot.NewRepo(db)
 	spotService := spot.NewService(spotRepo)
 
@@ -26,6 +34,10 @@ func main() {
 	app.Use(cors.New())
 
 	v1 := app.Group("/v1")
+
+	routes.UserRouter(v1, userService)
+	routes.AuthRouter(v1, authService)
+
 	routes.SpotRouter(v1, spotService)
 	routes.HealthCheckRouter(v1, healthcheckService)
 	log.Fatal(app.Listen(":3000"))

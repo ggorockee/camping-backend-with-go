@@ -25,6 +25,10 @@ func CreateUser(service user.Service) fiber.Handler {
 		}
 
 		result, err := service.CreateUser(&requestBody)
+		if err != nil {
+			return c.Status(http.StatusBadRequest).JSON(presenter.UserErrorResponse(err))
+		}
+
 		return c.JSON(presenter.UserSuccessResponse(result))
 	}
 }
