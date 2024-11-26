@@ -52,7 +52,7 @@ func (r *repository) CheckPasswordHash(password, hash string) bool {
 
 func (r *repository) GetUserByEmail(email string) (*entities.User, error) {
 	var user entities.User
-	
+
 	if err := r.DBConn.Where(entities.User{Email: email}).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, err
