@@ -4,7 +4,7 @@ FROM golang:1.23-alpine as builder
 RUN mkdir /app
 COPY . /app
 WORKDIR /app
-RUN CGO_ENABLED=1 go build -o ggocamping .
+RUN CGO_ENABLED=0 go build -o ggocamping .
 RUN chmod +x /app/ggocamping
 
 ## build a tiny docker image
