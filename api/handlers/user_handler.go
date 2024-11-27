@@ -15,7 +15,7 @@ import (
 // @Tags Users
 // @Accept json
 // @Produce json
-// @Param user body entities.User true "Register user"
+// @Param user body entities.CreateUserSchema true "Register user"
 // @Success 200 {object} presenter.JsonResponse{data=presenter.User}
 // @Failure 503 {object} presenter.JsonResponse
 // @Router /user [post]

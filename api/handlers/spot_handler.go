@@ -9,6 +9,16 @@ import (
 	"net/http"
 )
 
+// AddSpot is a function to create spot data to database
+// @Summary AddSpot
+// @Description AddSpot
+// @Tags Spot
+// @Accept json
+// @Produce json
+// @Param user body entities.CreateSpotSchema true "Create Spot"
+// @Success 200 {object} presenter.JsonResponse{data=presenter.Spot}
+// @Failure 503 {object} presenter.JsonResponse
+// @Router /spot [post]
 func AddSpot(service spot.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var requestBody entities.Spot
@@ -33,6 +43,15 @@ func AddSpot(service spot.Service) fiber.Handler {
 	}
 }
 
+// GetSpots is a function to get all spot data from database
+// @Summary GetSpots
+// @Description GetSpots
+// @Tags Spot
+// @Accept json
+// @Produce json
+// @Success 200 {object} presenter.JsonResponse{data=[]presenter.Spot}
+// @Failure 503 {object} presenter.JsonResponse
+// @Router /spot [get]
 func GetSpots(service spot.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		fetched, err := service.FetchSpots()
@@ -44,7 +63,17 @@ func GetSpots(service spot.Service) fiber.Handler {
 	}
 }
 
-// UpdateSpot is handler/controller which updates data of Spots in the Camping
+// UpdateSpot is a function to update spot data to database
+// @Summary UpdateSpot
+// @Description UpdateSpot
+// @Tags Spot
+// @Accept json
+// @Produce json
+// @Param id path int true "Spot id"
+// @Param user body entities.UpdateSpotSchema true "Update Spot"
+// @Success 200 {object} presenter.JsonResponse{data=presenter.Spot}
+// @Failure 503 {object} presenter.JsonResponse
+// @Router /spot/{id} [put]
 func UpdateSpot(service spot.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var requestBody entities.Spot
@@ -64,7 +93,16 @@ func UpdateSpot(service spot.Service) fiber.Handler {
 	}
 }
 
-// GetSpot is handler/controller which updates data of Spots in the Camping
+// GetSpot is a function to get spot data to database
+// @Summary GetSpot
+// @Description GetSpot
+// @Tags Spot
+// @Accept json
+// @Produce json
+// @Param id path int true "Spot id"
+// @Success 200 {object} presenter.JsonResponse{data=presenter.Spot}
+// @Failure 503 {object} presenter.JsonResponse
+// @Router /spot/{id} [get]
 func GetSpot(service spot.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, _ := c.ParamsInt("id")
@@ -79,7 +117,17 @@ func GetSpot(service spot.Service) fiber.Handler {
 	}
 }
 
-// PartialUpdateSpot is handler/controller which updates data of Spots in the Camping
+// PartialUpdateSpot is a function to update spot data to database
+// @Summary PartialUpdateSpot
+// @Description PartialUpdateSpot
+// @Tags Spot
+// @Accept json
+// @Produce json
+// @Param id path int true "Spot id"
+// @Param user body entities.UpdateSpotSchema true "Update Spot"
+// @Success 200 {object} presenter.JsonResponse{data=presenter.Spot}
+// @Failure 503 {object} presenter.JsonResponse{}
+// @Router /spot/{id} [patch]
 func PartialUpdateSpot(service spot.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var requestBody entities.Spot
@@ -99,7 +147,16 @@ func PartialUpdateSpot(service spot.Service) fiber.Handler {
 	}
 }
 
-// RemoveSpot is handler/controller which removes Books from the BookShop
+// RemoveSpot is a function to delete spot data to database
+// @Summary RemoveSpot
+// @Description RemoveSpot
+// @Tags Spot
+// @Accept json
+// @Produce json
+// @Param id path int true "Spot id"
+// @Success 200 {object} presenter.JsonResponse{}
+// @Failure 503 {object} presenter.JsonResponse{}
+// @Router /spot/{id} [delete]
 func RemoveSpot(service spot.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, _ := c.ParamsInt("id")

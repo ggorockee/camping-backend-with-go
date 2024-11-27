@@ -8,6 +8,16 @@ import (
 	"net/http"
 )
 
+// Login is a function to Login
+// @Summary Login
+// @Description Login
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param user body entities.LoginSchema true "Login Schema"
+// @Success 200 {object} presenter.JsonResponse{data=string}
+// @Failure 503 {object} presenter.JsonResponse
+// @Router /auth/login [post]
 func Login(service auth.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// request parser

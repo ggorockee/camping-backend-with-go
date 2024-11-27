@@ -7,6 +7,15 @@ import (
 	"net/http"
 )
 
+// GetHealthCheck is a function to healthcheck
+// @Summary Health Check
+// @Description Health Check
+// @Tags HealthCheck
+// @Accept json
+// @Produce json
+// @Success 200 {object} presenter.JsonResponse
+// @Failure 503 {object} presenter.JsonResponse
+// @Router /healthcheck [get]
 func GetHealthCheck(service healthcheck.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		err := service.GetHealthCheck()

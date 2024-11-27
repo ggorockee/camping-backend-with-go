@@ -2,7 +2,6 @@ package presenter
 
 import (
 	"camping-backend-with-go/pkg/entities"
-	"github.com/gofiber/fiber/v2"
 )
 
 type Spot struct {
@@ -12,32 +11,33 @@ type Spot struct {
 	Location string `json:"location"`
 }
 
-func SpotSuccessResponse(data *entities.Spot) *fiber.Map {
+func SpotSuccessResponse(data *entities.Spot) *JsonResponse {
 	spot := Spot{
 		Id:       data.Id,
 		Title:    data.Title,
 		Author:   data.Author,
 		Location: data.Location,
 	}
-	return &fiber.Map{
-		"status": true,
-		"data":   spot,
-		"error":  nil,
+
+	return &JsonResponse{
+		Status: true,
+		Data:   spot,
+		Error:  "",
 	}
 }
 
-func SpotsSuccessResponse(data *[]Spot) *fiber.Map {
-	return &fiber.Map{
-		"status": true,
-		"data":   data,
-		"error":  nil,
+func SpotsSuccessResponse(data *[]Spot) *JsonResponse {
+	return &JsonResponse{
+		Status: true,
+		Data:   data,
+		Error:  "",
 	}
 }
 
-func SpotErrorResponse(err error) *fiber.Map {
-	return &fiber.Map{
-		"status": false,
-		"data":   "",
-		"error":  err.Error(),
+func SpotErrorResponse(err error) *JsonResponse {
+	return &JsonResponse{
+		Status: false,
+		Data:   nil,
+		Error:  err.Error(),
 	}
 }

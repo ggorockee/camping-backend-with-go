@@ -1,13 +1,35 @@
+basePath: /v1
 definitions:
-  entities.User:
+  entities.CreateSpotSchema:
+    properties:
+      author:
+        type: string
+      location:
+        type: string
+      title:
+        type: string
+    type: object
+  entities.CreateUserSchema:
     properties:
       email:
         type: string
-      id:
-        type: integer
       password:
         type: string
       username:
+        type: string
+    type: object
+  entities.LoginSchema:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  entities.UpdateSpotSchema:
+    properties:
+      location:
+        type: string
+      title:
         type: string
     type: object
   presenter.JsonResponse:
@@ -17,6 +39,17 @@ definitions:
         type: string
       status:
         type: boolean
+    type: object
+  presenter.Spot:
+    properties:
+      author:
+        type: string
+      id:
+        type: integer
+      location:
+        type: string
+      title:
+        type: string
     type: object
   presenter.User:
     properties:
@@ -28,8 +61,246 @@ definitions:
         type: string
     type: object
 info:
-  contact: {}
+  contact:
+    email: ggorockee@gmail.com
+    name: ggorockee
+  description: This is an API for ggocamping Application
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Dolphindance App
+  version: "1.0"
 paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login
+      parameters:
+      - description: Login Schema
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entities.LoginSchema'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      summary: Login
+      tags:
+      - Auth
+  /healthcheck:
+    get:
+      consumes:
+      - application/json
+      description: Health Check
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      summary: Health Check
+      tags:
+      - HealthCheck
+  /spot:
+    get:
+      consumes:
+      - application/json
+      description: GetSpots
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/presenter.Spot'
+                  type: array
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      summary: GetSpots
+      tags:
+      - Spot
+    post:
+      consumes:
+      - application/json
+      description: AddSpot
+      parameters:
+      - description: Create Spot
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entities.CreateSpotSchema'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/presenter.Spot'
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      summary: AddSpot
+      tags:
+      - Spot
+  /spot/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: RemoveSpot
+      parameters:
+      - description: Spot id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      summary: RemoveSpot
+      tags:
+      - Spot
+    get:
+      consumes:
+      - application/json
+      description: GetSpot
+      parameters:
+      - description: Spot id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/presenter.Spot'
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      summary: GetSpot
+      tags:
+      - Spot
+    patch:
+      consumes:
+      - application/json
+      description: PartialUpdateSpot
+      parameters:
+      - description: Spot id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Spot
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UpdateSpotSchema'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/presenter.Spot'
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      summary: PartialUpdateSpot
+      tags:
+      - Spot
+    put:
+      consumes:
+      - application/json
+      description: UpdateSpot
+      parameters:
+      - description: Spot id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Spot
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UpdateSpotSchema'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/presenter.Spot'
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      summary: UpdateSpot
+      tags:
+      - Spot
   /user:
     post:
       consumes:
@@ -41,7 +312,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/entities.User'
+          $ref: '#/definitions/entities.CreateUserSchema'
       produces:
       - application/json
       responses:

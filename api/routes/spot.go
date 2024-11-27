@@ -7,10 +7,10 @@ import (
 )
 
 func SpotRouter(app fiber.Router, service spot.Service) {
-	app.Get("/spots", handlers.GetSpots(service))
-	app.Get("/spots/:id", handlers.GetSpot(service))
-	app.Put("/spots/:id", handlers.UpdateSpot(service))
-	app.Patch("/spots/:id", handlers.PartialUpdateSpot(service))
-	app.Post("/spots", handlers.AddSpot(service))
-	app.Delete("/spots/:id", handlers.RemoveSpot(service))
+	app.Get("/spot", handlers.GetSpots(service))
+	app.Get("/spot/:id", handlers.GetSpot(service))
+	app.Put("/spot/:id", handlers.UpdateSpot(service))
+	app.Patch("/spot/:id", handlers.PartialUpdateSpot(service))
+	app.Post("/spot", handlers.AddSpot(service))
+	app.Delete("/spot/:id", handlers.RemoveSpot(service))
 }

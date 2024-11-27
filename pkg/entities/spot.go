@@ -16,3 +16,14 @@ type Spot struct {
 type DeleteRequest struct {
 	Id string `json:"id"`
 }
+
+type CreateSpotSchema struct {
+	Title    string `json:"title"`
+	Location string `json:"location"`
+	Author   string `json:"author"`
+}
+
+type UpdateSpotSchema struct {
+	Title    string `json:"title"`
+	Location string `json:"location"`
+}
