@@ -67,9 +67,9 @@ func main() {
 func databaseConnection() *gorm.DB {
 	// Local에서 Teleport 작업할 때만 사용
 	// 배포시에는 comment 활성화
-	if err := os.Setenv("PROXY", "true"); err != nil {
-		log.Println(err.Error())
-	}
+	//if err := os.Setenv("PROXY", "true"); err != nil {
+	//	log.Println(err.Error())
+	//}
 
 	dsn := proxy.GetProxyDatabase()
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
