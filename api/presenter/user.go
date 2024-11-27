@@ -2,7 +2,6 @@ package presenter
 
 import (
 	"camping-backend-with-go/pkg/entities"
-	"github.com/gofiber/fiber/v2"
 )
 
 type User struct {
@@ -11,23 +10,24 @@ type User struct {
 	Username string `json:"username"`
 }
 
-func UserErrorResponse(err error) *fiber.Map {
-	return &fiber.Map{
-		"status": false,
-		"data":   "",
-		"error":  err.Error(),
+func UserErrorResponse(err error) *JsonResponse {
+
+	return &JsonResponse{
+		Status: false,
+		Data:   nil,
+		Error:  err.Error(),
 	}
 }
 
-func UserSuccessResponse(data *entities.User) *fiber.Map {
+func UserSuccessResponse(data *entities.User) *JsonResponse {
 	user := User{
 		Id:       data.Id,
 		Email:    data.Email,
 		Username: data.Username,
 	}
-	return &fiber.Map{
-		"status": true,
-		"data":   user,
-		"error":  nil,
+	return &JsonResponse{
+		Status: true,
+		Data:   user,
+		Error:  "",
 	}
 }

@@ -3,24 +3,32 @@ package main
 import (
 	"camping-backend-with-go/api/routes"
 	"camping-backend-with-go/pkg/auth"
-	"camping-backend-with-go/pkg/config"
 	"camping-backend-with-go/pkg/entities"
 	"camping-backend-with-go/pkg/healthcheck"
+	"camping-backend-with-go/pkg/proxy"
 	"camping-backend-with-go/pkg/spot"
 	"camping-backend-with-go/pkg/user"
-	"crypto/tls"
-	"crypto/x509"
-	"fmt"
-	gitmysql "github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"log"
 	"os"
 
+	"github.com/gofiber/contrib/swagger"
 	"github.com/gofiber/fiber/v2"
 )
 
+// @title Dolphindance App
+// @version 1.0
+// @description This is an API for ggocamping Application
+
+// @contact.name ggorockee
+// @contact.email ggorockee@gmail.com
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @BasePath /v1
 func main() {
 	db := databaseConnection()
 
@@ -38,6 +46,14 @@ func main() {
 	app := fiber.New()
 	app.Use(cors.New())
 
+	// swagger settings
+	swaggerCfg := swagger.Config{
+		BasePath: "/v1",
+		FilePath: "./docs/swagger.yaml",
+		Path:     "docs",
+	}
+	app.Use(swagger.New(swaggerCfg))
+
 	v1 := app.Group("/v1")
 
 	routes.UserRouter(v1, userService)
@@ -49,56 +65,14 @@ func main() {
 }
 
 func databaseConnection() *gorm.DB {
+	// Local에서 Teleport 작업할 때만 사용
+	// 배포시에는 comment 활성화
+	//if err := os.Setenv("PROXY", "true"); err != nil {
+	//	log.Println(err.Error())
+	//}
 
-	PROXY := os.Getenv("PROXY")
-	var dsn string
-	if PROXY == "true" {
-		// CA 인증서 로드
-		caCert, err := os.ReadFile(config.Config("CA_FILE"))
-		if err != nil {
-			log.Fatalf("Could not read CA certificate: %v", err)
-		}
-		caCertPool := x509.NewCertPool()
-		caCertPool.AppendCertsFromPEM(caCert)
-
-		// 클라이언트 인증서 및 키 로드
-		cert, err := tls.LoadX509KeyPair(config.Config("CERT_FILE"), config.Config("KEY_FILE"))
-		if err != nil {
-			log.Fatalf("Could not load client key pair: %v", err)
-		}
-
-		// TLS 설정
-		tlsConfig := &tls.Config{
-			RootCAs:      caCertPool,
-			Certificates: []tls.Certificate{cert},
-		}
-
-		// TLS 설정 등록
-		err = gitmysql.RegisterTLSConfig("custom", tlsConfig)
-		if err != nil {
-			log.Fatalf("cannot rester TLSConfig %v\n", err)
-		}
-
-		//dsn := "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
-		dsn = fmt.Sprintf("%s:@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local&tls=custom",
-			config.Config("DB_USER"),
-			config.Config("DB_HOST"),
-			config.Config("DB_PORT"),
-			config.Config("DB_NAME"),
-		)
-	}
-
-	dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_NAME"),
-	)
-
+	dsn := proxy.GetProxyDatabase()
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-
-	//db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 
 	if err != nil {
 		log.Fatal("Failed to connect to database. \n", err)

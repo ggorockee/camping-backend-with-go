@@ -9,6 +9,16 @@ import (
 	"net/http"
 )
 
+// CreateUser is a function to create user data to database
+// @Summary Create User
+// @Description Create User
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param user body entities.User true "Register user"
+// @Success 200 {object} presenter.JsonResponse{data=presenter.User}
+// @Failure 503 {object} presenter.JsonResponse
+// @Router /user [post]
 func CreateUser(service user.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var requestBody entities.User
