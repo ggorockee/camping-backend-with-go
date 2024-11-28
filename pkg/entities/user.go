@@ -8,8 +8,20 @@ type User struct {
 	Username string `json:"username"`
 }
 
-type CreateUserSchema struct {
+type LoginInputSchema struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
-	Username string `json:"username"`
+}
+
+type SignUpInputSchema struct {
+	Email           string  `json:"email"`
+	Password        string  `json:"password"`
+	PasswordConfirm string  `json:"password_confirm"`
+	Username        *string `json:"username"`
+}
+
+type ChangePasswordInputSchema struct {
+	OldPassword        string `json:"old_password"`
+	NewPassword        string `json:"new_password"`
+	NewPasswordConfirm string `json:"new_password_confirm"`
 }

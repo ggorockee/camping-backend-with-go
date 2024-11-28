@@ -1,14 +1,21 @@
 package user
 
 import (
+	"camping-backend-with-go/pkg/config"
 	"camping-backend-with-go/pkg/entities"
+	"errors"
+	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"strings"
 )
 
 type Repository interface {
-	CreateUser(user *entities.User) (*entities.User, error)
+	CreateUser(signUpInputSchema *entities.SignUpInputSchema) error
 	hashPassword(password string) (string, error)
+	Login(loginInputSchema *entities.LoginInputSchema) (string, error)
+	GetUserByEmail(email string) (*entities.User, error)
+	CheckPasswordHash(password, hash string) bool
 	//validToken(t *jwt.Token, id string) bool
 	//validUser(id string, password string) bool
 	//GetUserById(id int) (*entities.User, error)
@@ -27,18 +34,76 @@ func NewRepo(dbconn *gorm.DB) Repository {
 	}
 }
 
-func (r *repository) CreateUser(user *entities.User) (*entities.User, error) {
-	hashedPassword, err := r.hashPassword(user.Password)
-	if err != nil {
+func (r *repository) CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}
+
+func (r *repository) GetUserByEmail(email string) (*entities.User, error) {
+	var user entities.User
+
+	if err := r.DBConn.Where(entities.User{Email: email}).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, err
+		}
 		return nil, err
 	}
-	user.Password = hashedPassword
-	result := r.DBConn.Create(user)
-	if result.Error != nil {
-		return nil, result.Error
+	return &user, nil
+}
+
+func (r *repository) Login(loginInputSchema *entities.LoginInputSchema) (string, error) {
+	email := loginInputSchema.Email
+	password := loginInputSchema.Password
+
+	user, err := r.GetUserByEmail(email)
+	if err != nil {
+		return "", err
 	}
 
-	return user, nil
+	if !r.CheckPasswordHash(password, user.Password) {
+		return "", errors.New("invalid credentials")
+	}
+
+	token := jwt.New(jwt.SigningMethodHS256)
+
+	claims := token.Claims.(jwt.MapClaims)
+	claims["user_id"] = user.Id
+
+	t, err := token.SignedString([]byte(config.Config("JWT_SECRET")))
+	if err != nil {
+		return "", err
+	}
+
+	return t, nil
+}
+
+func (r *repository) CreateUser(signUpInputSchema *entities.SignUpInputSchema) error {
+	var user entities.User
+	// hashing password
+	password := signUpInputSchema.Password
+	email := signUpInputSchema.Email
+	username := signUpInputSchema.Username
+	hashedPassword, err := r.hashPassword(password)
+	if err != nil {
+		return err
+	}
+
+	user.Password = hashedPassword
+	user.Email = email
+
+	// username
+	if username == nil {
+		username = &strings.Split(email, "@")[0]
+		user.Username = *username
+	} else {
+		user.Username = *signUpInputSchema.Username
+	}
+
+	if err := r.DBConn.Create(user).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *repository) hashPassword(password string) (string, error) {

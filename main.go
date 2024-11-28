@@ -2,7 +2,6 @@ package main
 
 import (
 	"camping-backend-with-go/api/routes"
-	"camping-backend-with-go/pkg/auth"
 	"camping-backend-with-go/pkg/entities"
 	"camping-backend-with-go/pkg/healthcheck"
 	"camping-backend-with-go/pkg/proxy"
@@ -37,9 +36,6 @@ func main() {
 	userRepo := user.NewRepo(db)
 	userService := user.NewService(userRepo)
 
-	authRepo := auth.NewRepo(db)
-	authService := auth.NewService(authRepo)
-
 	spotRepo := spot.NewRepo(db)
 	spotService := spot.NewService(spotRepo)
 
@@ -57,7 +53,6 @@ func main() {
 	v1 := app.Group("/v1")
 
 	routes.UserRouter(v1, userService)
-	routes.AuthRouter(v1, authService)
 
 	routes.SpotRouter(v1, spotService)
 	routes.HealthCheckRouter(v1, healthcheckService)
