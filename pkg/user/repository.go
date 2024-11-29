@@ -22,6 +22,7 @@ type Repository interface {
 	validToken(t *jwt.Token, id string) bool
 	//validUser(id string, password string) bool
 	GetUserById(id int) (*entities.User, error)
+	getValueFromToken(key string, ctx *fiber.Ctx) int
 	//CheckPasswordHash(password, hash string) bool
 	//getUserByEmail(e string) (*model.User, error)
 	//getUserByUsername(u string) (*model.User, error)
@@ -57,6 +58,13 @@ func (r *repository) GetUserById(id int) (*entities.User, error) {
 	return &user, nil
 }
 
+func (r *repository) getValueFromToken(key string, ctx *fiber.Ctx) int {
+	token := ctx.Locals("user").(*jwt.Token)
+	claims := token.Claims.(jwt.MapClaims)
+	value := int(claims[key].(float64))
+	return value
+}
+
 func (r *repository) ChangePassword(changePasswordInput *entities.ChangePasswordInputSchema, ctx *fiber.Ctx) error {
 	newPassword := changePasswordInput.NewPassword
 	oldPassword := changePasswordInput.OldPassword
@@ -64,10 +72,7 @@ func (r *repository) ChangePassword(changePasswordInput *entities.ChangePassword
 	// GetFindByEmail
 	// login한 User의 Id를 알아내는 로직
 	// user_id
-	token := ctx.Locals("user").(*jwt.Token)
-	claims := token.Claims.(jwt.MapClaims)
-	userId := int(claims["user_id"].(float64))
-
+	userId := r.getValueFromToken("user_id", ctx)
 	user, err := r.GetUserById(userId)
 	if err != nil {
 		return err

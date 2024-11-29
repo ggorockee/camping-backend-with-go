@@ -140,6 +140,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "AddSpot",
                 "consumes": [
                     "application/json"
@@ -158,7 +163,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.CreateSpotSchema"
+                            "$ref": "#/definitions/entities.CreateSpotInputSchema"
                         }
                     }
                 ],
@@ -503,12 +508,9 @@
                 }
             }
         },
-        "entities.CreateSpotSchema": {
+        "entities.CreateSpotInputSchema": {
             "type": "object",
             "properties": {
-                "author": {
-                    "type": "string"
-                },
                 "location": {
                     "type": "string"
                 },

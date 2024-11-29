@@ -27,7 +27,7 @@ func jwtError(c *fiber.Ctx, err error) error {
 		}
 		return c.Status(fiber.StatusBadRequest).JSON(jsonResponse)
 	}
-	
+
 	jsonResponse = presenter.JsonResponse{
 		Status: true,
 		Data:   nil,

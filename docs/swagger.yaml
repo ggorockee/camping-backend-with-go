@@ -9,10 +9,8 @@ definitions:
       old_password:
         type: string
     type: object
-  entities.CreateSpotSchema:
+  entities.CreateSpotInputSchema:
     properties:
-      author:
-        type: string
       location:
         type: string
       title:
@@ -168,7 +166,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/entities.CreateSpotSchema'
+          $ref: '#/definitions/entities.CreateSpotInputSchema'
       produces:
       - application/json
       responses:
@@ -185,6 +183,8 @@ paths:
           description: Service Unavailable
           schema:
             $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
       summary: AddSpot
       tags:
       - Spot

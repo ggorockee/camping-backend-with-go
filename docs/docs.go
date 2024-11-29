@@ -147,6 +147,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "AddSpot",
                 "consumes": [
                     "application/json"
@@ -165,7 +170,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.CreateSpotSchema"
+                            "$ref": "#/definitions/entities.CreateSpotInputSchema"
                         }
                     }
                 ],
@@ -510,12 +515,9 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.CreateSpotSchema": {
+        "entities.CreateSpotInputSchema": {
             "type": "object",
             "properties": {
-                "author": {
-                    "type": "string"
-                },
                 "location": {
                     "type": "string"
                 },
