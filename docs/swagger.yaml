@@ -1,5 +1,14 @@
 basePath: /v1
 definitions:
+  entities.ChangePasswordInputSchema:
+    properties:
+      new_password:
+        type: string
+      new_password_confirm:
+        type: string
+      old_password:
+        type: string
+    type: object
   entities.CreateSpotSchema:
     properties:
       author:
@@ -9,20 +18,22 @@ definitions:
       title:
         type: string
     type: object
-  entities.CreateUserSchema:
+  entities.LoginInputSchema:
     properties:
       email:
         type: string
       password:
-        type: string
-      username:
         type: string
     type: object
-  entities.LoginSchema:
+  entities.SignUpInputSchema:
     properties:
       email:
         type: string
       password:
+        type: string
+      password_confirm:
+        type: string
+      username:
         type: string
     type: object
   entities.UpdateSpotSchema:
@@ -68,7 +79,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  title: Dolphindance App
+  title: ggocamping App
   version: "1.0"
 paths:
   /auth/login:
@@ -82,7 +93,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/entities.LoginSchema'
+          $ref: '#/definitions/entities.LoginInputSchema'
       produces:
       - application/json
       responses:
@@ -312,7 +323,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/entities.CreateUserSchema'
+          $ref: '#/definitions/entities.SignUpInputSchema'
       produces:
       - application/json
       responses:
@@ -332,4 +343,38 @@ paths:
       summary: Create User
       tags:
       - Users
+  /user/changepw:
+    put:
+      consumes:
+      - application/json
+      description: ChangePassword
+      parameters:
+      - description: Change Password
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entities.ChangePasswordInputSchema'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
+      summary: ChangePassword
+      tags:
+      - Users
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

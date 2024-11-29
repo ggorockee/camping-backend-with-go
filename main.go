@@ -2,6 +2,7 @@ package main
 
 import (
 	"camping-backend-with-go/api/routes"
+	_ "camping-backend-with-go/docs"
 	"camping-backend-with-go/pkg/entities"
 	"camping-backend-with-go/pkg/healthcheck"
 	"camping-backend-with-go/pkg/proxy"
@@ -13,7 +14,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/gofiber/contrib/swagger"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -28,6 +28,10 @@ import (
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
 // @BasePath /v1
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
 func main() {
 	db := databaseConnection()
 
@@ -43,18 +47,19 @@ func main() {
 	app.Use(cors.New())
 
 	// swagger settings
-	swaggerCfg := swagger.Config{
-		BasePath: "/v1",
-		FilePath: "./docs/swagger.yaml",
-		Path:     "docs",
-	}
-	app.Use(swagger.New(swaggerCfg))
+	//swaggerCfg := swagger.Config{
+	//	BasePath: "/v1",
+	//	FilePath: "./docs/swagger.json",
+	//	Path:     "docs",
+	//}
+	//app.Use(swagger.New(swaggerCfg))
 
 	v1 := app.Group("/v1")
 
 	routes.UserRouter(v1, userService)
 	routes.AuthRouter(v1, userService)
 	routes.SpotRouter(v1, spotService)
+	routes.SwaggerRouter(v1)
 	routes.HealthCheckRouter(v1, healthcheckService)
 	log.Fatal(app.Listen(":3000"))
 }

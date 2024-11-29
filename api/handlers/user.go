@@ -8,6 +8,17 @@ import (
 	"net/http"
 )
 
+// ChangePassword is a function to ChangePassword
+// @Summary ChangePassword
+// @Description ChangePassword
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param user body entities.ChangePasswordInputSchema true "Change Password"
+// @Success 200 {object} presenter.JsonResponse{}
+// @Failure 503 {object} presenter.JsonResponse{}
+// @Router /user/changepw [put]
+// @Security Bearer
 func ChangePassword(service user.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var requestBody entities.ChangePasswordInputSchema

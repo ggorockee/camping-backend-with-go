@@ -8,6 +8,5 @@ import (
 )
 
 func UserRouter(app fiber.Router, service user.Service) {
-	app.Patch("/user/changepw", middleware.Protected(), handlers.ChangePassword(service))
-	app.Post("/user/changepw", middleware.Protected(), handlers.ChangePassword(service))
+	app.Put("/user/changepw", middleware.Protected(), handlers.ChangePassword(service))
 }

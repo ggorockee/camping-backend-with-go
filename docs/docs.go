@@ -42,7 +42,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.LoginSchema"
+                            "$ref": "#/definitions/entities.LoginInputSchema"
                         }
                     }
                 ],
@@ -417,7 +417,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.CreateUserSchema"
+                            "$ref": "#/definitions/entities.SignUpInputSchema"
                         }
                     }
                 ],
@@ -448,9 +448,68 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/user/changepw": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "ChangePassword",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "ChangePassword",
+                "parameters": [
+                    {
+                        "description": "Change Password",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entities.ChangePasswordInputSchema"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.JsonResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.JsonResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "entities.ChangePasswordInputSchema": {
+            "type": "object",
+            "properties": {
+                "new_password": {
+                    "type": "string"
+                },
+                "new_password_confirm": {
+                    "type": "string"
+                },
+                "old_password": {
+                    "type": "string"
+                }
+            }
+        },
         "entities.CreateSpotSchema": {
             "type": "object",
             "properties": {
@@ -465,27 +524,30 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.CreateUserSchema": {
+        "entities.LoginInputSchema": {
             "type": "object",
             "properties": {
                 "email": {
                     "type": "string"
                 },
                 "password": {
-                    "type": "string"
-                },
-                "username": {
                     "type": "string"
                 }
             }
         },
-        "entities.LoginSchema": {
+        "entities.SignUpInputSchema": {
             "type": "object",
             "properties": {
                 "email": {
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                },
+                "password_confirm": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }
@@ -544,6 +606,14 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "description": "Type \"Bearer\" followed by a space and JWT token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
@@ -553,7 +623,7 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "/v1",
 	Schemes:          []string{},
-	Title:            "Dolphindance App",
+	Title:            "ggocamping App",
 	Description:      "This is an API for ggocamping Application",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

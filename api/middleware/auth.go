@@ -12,12 +12,14 @@ func Protected() fiber.Handler {
 	return jwtware.New(jwtware.Config{
 		ErrorHandler: jwtError,
 		SigningKey:   jwtware.SigningKey{Key: []byte(config.Config("JWT_SECRET"))},
+		AuthScheme:   "Bearer",
+		TokenLookup:  "header:Authorization",
 	})
 }
 
 func jwtError(c *fiber.Ctx, err error) error {
 	var jsonResponse presenter.JsonResponse
-	if err.Error() == "Missing or malformed JWT" {
+	if err.Error() == "missing or malformed JWT" {
 		jsonResponse = presenter.JsonResponse{
 			Status: true,
 			Data:   nil,
@@ -25,7 +27,7 @@ func jwtError(c *fiber.Ctx, err error) error {
 		}
 		return c.Status(fiber.StatusBadRequest).JSON(jsonResponse)
 	}
-
+	
 	jsonResponse = presenter.JsonResponse{
 		Status: true,
 		Data:   nil,
