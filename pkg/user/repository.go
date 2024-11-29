@@ -4,9 +4,11 @@ import (
 	"camping-backend-with-go/pkg/config"
 	"camping-backend-with-go/pkg/entities"
 	"errors"
+	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"strconv"
 	"strings"
 )
 
@@ -16,9 +18,10 @@ type Repository interface {
 	Login(loginInputSchema *entities.LoginInputSchema) (string, error)
 	GetUserByEmail(email string) (*entities.User, error)
 	CheckPasswordHash(password, hash string) bool
-	//validToken(t *jwt.Token, id string) bool
+	ChangePassword(changePasswordInput *entities.ChangePasswordInputSchema, ctx *fiber.Ctx) error
+	validToken(t *jwt.Token, id string) bool
 	//validUser(id string, password string) bool
-	//GetUserById(id int) (*entities.User, error)
+	GetUserById(id int) (*entities.User, error)
 	//CheckPasswordHash(password, hash string) bool
 	//getUserByEmail(e string) (*model.User, error)
 	//getUserByUsername(u string) (*model.User, error)
@@ -32,6 +35,60 @@ func NewRepo(dbconn *gorm.DB) Repository {
 	return &repository{
 		DBConn: dbconn,
 	}
+}
+
+func (r *repository) validToken(t *jwt.Token, id string) bool {
+	n, err := strconv.Atoi(id)
+	if err != nil {
+		return false
+	}
+
+	claims := t.Claims.(jwt.MapClaims)
+	uid := int(claims["user_id"].(float64))
+
+	return uid == n
+}
+
+func (r *repository) GetUserById(id int) (*entities.User, error) {
+	var user entities.User
+	if err := r.DBConn.Find(&user, id).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *repository) ChangePassword(changePasswordInput *entities.ChangePasswordInputSchema, ctx *fiber.Ctx) error {
+	newPassword := changePasswordInput.NewPassword
+	oldPassword := changePasswordInput.OldPassword
+
+	// GetFindByEmail
+	// login한 User의 Id를 알아내는 로직
+	// user_id
+	token := ctx.Locals("user").(*jwt.Token)
+	claims := token.Claims.(jwt.MapClaims)
+	userId := int(claims["user_id"].(float64))
+
+	user, err := r.GetUserById(userId)
+	if err != nil {
+		return err
+	}
+
+	// CheckPassword
+	if !r.CheckPasswordHash(oldPassword, user.Password) {
+		return errors.New("invalid Credentials")
+	}
+
+	hashedNewPassword, err := r.hashPassword(newPassword)
+	if err != nil {
+		return err
+	}
+
+	// updatePassword
+	user.Password = hashedNewPassword
+
+	// Database save
+	r.DBConn.Save(&user)
+	return nil
 }
 
 func (r *repository) CheckPasswordHash(password, hash string) bool {
@@ -95,14 +152,14 @@ func (r *repository) CreateUser(signUpInputSchema *entities.SignUpInputSchema) e
 	if username == nil {
 		username = &strings.Split(email, "@")[0]
 		user.Username = *username
+
 	} else {
 		user.Username = *signUpInputSchema.Username
 	}
 
-	if err := r.DBConn.Create(user).Error; err != nil {
+	if err := r.DBConn.Create(&user).Error; err != nil {
 		return err
 	}
-
 	return nil
 }
 
