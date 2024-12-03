@@ -34,6 +34,25 @@ definitions:
       username:
         type: string
     type: object
+  entities.Spot:
+    properties:
+      author:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      location:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/entities.User'
+      user_id:
+        type: integer
+    type: object
   entities.UpdateSpotSchema:
     properties:
       location:
@@ -41,32 +60,23 @@ definitions:
       title:
         type: string
     type: object
-  presenter.JsonResponse:
-    properties:
-      data: {}
-      error:
-        type: string
-      status:
-        type: boolean
-    type: object
-  presenter.Spot:
-    properties:
-      author:
-        type: string
-      id:
-        type: integer
-      location:
-        type: string
-      title:
-        type: string
-    type: object
-  presenter.User:
+  entities.User:
     properties:
       email:
         type: string
       id:
         type: integer
+      password:
+        type: string
       username:
+        type: string
+    type: object
+  presenter.JsonResponse:
+    properties:
+      data: {}
+      error:
+        type: boolean
+      message:
         type: string
     type: object
 info:
@@ -146,7 +156,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/presenter.Spot'
+                    $ref: '#/definitions/entities.Spot'
                   type: array
               type: object
         "503":
@@ -177,7 +187,7 @@ paths:
             - $ref: '#/definitions/presenter.JsonResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/presenter.Spot'
+                  $ref: '#/definitions/entities.Spot'
               type: object
         "503":
           description: Service Unavailable
@@ -233,7 +243,7 @@ paths:
             - $ref: '#/definitions/presenter.JsonResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/presenter.Spot'
+                  $ref: '#/definitions/entities.Spot'
               type: object
         "503":
           description: Service Unavailable
@@ -268,7 +278,7 @@ paths:
             - $ref: '#/definitions/presenter.JsonResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/presenter.Spot'
+                  $ref: '#/definitions/entities.Spot'
               type: object
         "503":
           description: Service Unavailable
@@ -303,7 +313,7 @@ paths:
             - $ref: '#/definitions/presenter.JsonResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/presenter.Spot'
+                  $ref: '#/definitions/entities.Spot'
               type: object
         "503":
           description: Service Unavailable
@@ -312,37 +322,6 @@ paths:
       summary: UpdateSpot
       tags:
       - Spot
-  /user:
-    post:
-      consumes:
-      - application/json
-      description: Create User
-      parameters:
-      - description: Register user
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/entities.SignUpInputSchema'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/presenter.User'
-              type: object
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/presenter.JsonResponse'
-      summary: Create User
-      tags:
-      - Users
   /user/changepw:
     put:
       consumes:
@@ -369,6 +348,37 @@ paths:
       security:
       - Bearer: []
       summary: ChangePassword
+      tags:
+      - Users
+  /user/signup:
+    post:
+      consumes:
+      - application/json
+      description: Create User
+      parameters:
+      - description: Register user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entities.SignUpInputSchema'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.User'
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      summary: Create User
       tags:
       - Users
 securityDefinitions:

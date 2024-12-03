@@ -3,7 +3,8 @@ package routes
 import (
 	"camping-backend-with-go/api/handlers"
 	"camping-backend-with-go/api/middleware"
-	"camping-backend-with-go/pkg/spot"
+	"camping-backend-with-go/pkg/service/spot"
+
 	"github.com/gofiber/fiber/v2"
 )
 

@@ -1,14 +1,14 @@
 package spot
 
 import (
-	"camping-backend-with-go/api/presenter"
 	"camping-backend-with-go/pkg/entities"
+
 	"github.com/gofiber/fiber/v2"
 )
 
 type Service interface {
 	InsertSpot(createSpotInputSchema *entities.CreateSpotInputSchema, ctx *fiber.Ctx) (*entities.Spot, error)
-	FetchSpots() (*[]presenter.Spot, error)
+	FetchSpots() (*[]entities.Spot, error)
 	UpdateSpot(spot *entities.Spot, id int) (*entities.Spot, error)
 	PartialUpdateSpot(spot *entities.Spot, id int) (*entities.Spot, error)
 	GetSpot(id int) (*entities.Spot, error)
@@ -35,7 +35,7 @@ func (s *service) InsertSpot(createSpotInputSchema *entities.CreateSpotInputSche
 }
 
 // FetchSpots is a service layer that helps fetch all Spots in Camping
-func (s *service) FetchSpots() (*[]presenter.Spot, error) {
+func (s *service) FetchSpots() (*[]entities.Spot, error) {
 	return s.repository.ReadSpot()
 }
 

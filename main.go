@@ -3,16 +3,19 @@ package main
 import (
 	"camping-backend-with-go/api/routes"
 	_ "camping-backend-with-go/docs"
+	"camping-backend-with-go/pkg/config"
 	"camping-backend-with-go/pkg/entities"
-	"camping-backend-with-go/pkg/healthcheck"
-	"camping-backend-with-go/pkg/proxy"
-	"camping-backend-with-go/pkg/spot"
-	"camping-backend-with-go/pkg/user"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
+	"camping-backend-with-go/pkg/service/healthcheck"
+	"camping-backend-with-go/pkg/service/spot"
+	"camping-backend-with-go/pkg/service/user"
+	"fmt"
 	"log"
 	"os"
+
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"gorm.io/driver/mysql"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -67,12 +70,28 @@ func main() {
 func databaseConnection() *gorm.DB {
 	// Local에서 Teleport 작업할 때만 사용
 	// 배포시에는 comment 활성화
-	if err := os.Setenv("PROXY", "false"); err != nil {
-		log.Println(err.Error())
-	}
+	MYSQL := os.Getenv("GO_MYSQL")
+	var dsn string
+	var dbSetting string
+	var db *gorm.DB
+	var err error
 
-	dsn := proxy.GetProxyDatabase()
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if MYSQL == "" {
+		dbSetting = "local"
+		dsn = "test.db"
+		log.Printf("[INFO] %s DB setting enabled...\n", dbSetting)
+		db, err = gorm.Open(sqlite.Open(dsn), &gorm.Config{})
+	} else {
+		dbSetting = "mysql"
+		dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+			config.Config("DB_USER"),
+			config.Config("DB_PASSWORD"),
+			config.Config("DB_HOST"),
+			config.Config("DB_PORT"),
+			config.Config("DB_NAME"),
+		)
+		db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	}
 
 	if err != nil {
 		log.Fatal("Failed to connect to database. \n", err)

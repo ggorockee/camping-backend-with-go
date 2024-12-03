@@ -2,7 +2,8 @@ package routes
 
 import (
 	"camping-backend-with-go/api/handlers"
-	"camping-backend-with-go/pkg/healthcheck"
+	"camping-backend-with-go/pkg/service/healthcheck"
+
 	"github.com/gofiber/fiber/v2"
 )
 

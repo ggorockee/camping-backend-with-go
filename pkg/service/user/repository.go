@@ -4,12 +4,13 @@ import (
 	"camping-backend-with-go/pkg/config"
 	"camping-backend-with-go/pkg/entities"
 	"errors"
+	"strconv"
+	"strings"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"strconv"
-	"strings"
 )
 
 type Repository interface {
@@ -19,10 +20,10 @@ type Repository interface {
 	GetUserByEmail(email string) (*entities.User, error)
 	CheckPasswordHash(password, hash string) bool
 	ChangePassword(changePasswordInput *entities.ChangePasswordInputSchema, ctx *fiber.Ctx) error
-	validToken(t *jwt.Token, id string) bool
-	//validUser(id string, password string) bool
+	ValidToken(t *jwt.Token, id string) bool
 	GetUserById(id int) (*entities.User, error)
-	getValueFromToken(key string, ctx *fiber.Ctx) int
+	GetValueFromToken(key string, ctx *fiber.Ctx) int
+	//validUser(id string, password string) bool
 	//CheckPasswordHash(password, hash string) bool
 	//getUserByEmail(e string) (*model.User, error)
 	//getUserByUsername(u string) (*model.User, error)
@@ -32,13 +33,13 @@ type repository struct {
 	DBConn *gorm.DB
 }
 
-func NewRepo(dbconn *gorm.DB) Repository {
+func NewRepo(dbConn *gorm.DB) Repository {
 	return &repository{
-		DBConn: dbconn,
+		DBConn: dbConn,
 	}
 }
 
-func (r *repository) validToken(t *jwt.Token, id string) bool {
+func (r *repository) ValidToken(t *jwt.Token, id string) bool {
 	n, err := strconv.Atoi(id)
 	if err != nil {
 		return false
@@ -58,7 +59,7 @@ func (r *repository) GetUserById(id int) (*entities.User, error) {
 	return &user, nil
 }
 
-func (r *repository) getValueFromToken(key string, ctx *fiber.Ctx) int {
+func (r *repository) GetValueFromToken(key string, ctx *fiber.Ctx) int {
 	token := ctx.Locals("user").(*jwt.Token)
 	claims := token.Claims.(jwt.MapClaims)
 	value := int(claims[key].(float64))
@@ -72,8 +73,11 @@ func (r *repository) ChangePassword(changePasswordInput *entities.ChangePassword
 	// GetFindByEmail
 	// login한 User의 Id를 알아내는 로직
 	// user_id
-	userId := r.getValueFromToken("user_id", ctx)
+
+	userId := r.GetValueFromToken("user_id", ctx)
+
 	user, err := r.GetUserById(userId)
+
 	if err != nil {
 		return err
 	}

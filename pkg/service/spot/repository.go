@@ -1,18 +1,18 @@
 package spot
 
 import (
-	"camping-backend-with-go/api/presenter"
 	"camping-backend-with-go/pkg/entities"
+	"strconv"
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"gorm.io/gorm"
-	"strconv"
-	"time"
 )
 
 type Repository interface {
 	CreateSpot(spot *entities.CreateSpotInputSchema, ctx *fiber.Ctx) (*entities.Spot, error)
-	ReadSpot() (*[]presenter.Spot, error)
+	ReadSpot() (*[]entities.Spot, error)
 	GetSpot(id int) (*entities.Spot, error)
 	UpdateSpot(spot *entities.Spot, id int) (*entities.Spot, error)
 	GetFindById(id int) (*entities.Spot, error)
@@ -105,7 +105,7 @@ func (r *repository) CreateSpot(createSpotInputSchema *entities.CreateSpotInputS
 	spot.CreatedAt = time.Now()
 	spot.Author = user.Username
 	spot.UserId = uint(userId)
-	//spot.User = *user
+	spot.User = *user
 
 	result := r.DBConn.Create(&spot)
 	if result.Error != nil {
@@ -114,8 +114,8 @@ func (r *repository) CreateSpot(createSpotInputSchema *entities.CreateSpotInputS
 	return &spot, nil
 }
 
-func (r *repository) ReadSpot() (*[]presenter.Spot, error) {
-	var spots []presenter.Spot
+func (r *repository) ReadSpot() (*[]entities.Spot, error) {
+	var spots []entities.Spot
 	result := r.DBConn.Find(&spots)
 	if result.Error != nil {
 		return nil, result.Error

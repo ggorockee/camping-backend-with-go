@@ -1,7 +1,7 @@
 package presenter
 
 type JsonResponse struct {
-	Status bool   `json:"status"`
-	Data   any    `json:"data"`
-	Error  string `json:"error"`
+	Error   bool   `json:"error"`
+	Message string `json:"message"`
+	Data    any    `json:"data"`
 }

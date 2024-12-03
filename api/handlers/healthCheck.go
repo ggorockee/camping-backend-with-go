@@ -2,9 +2,10 @@ package handlers
 
 import (
 	"camping-backend-with-go/api/presenter"
-	"camping-backend-with-go/pkg/healthcheck"
-	"github.com/gofiber/fiber/v2"
+	"camping-backend-with-go/pkg/service/healthcheck"
 	"net/http"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 // GetHealthCheck is a function to healthcheck
@@ -18,12 +19,22 @@ import (
 // @Router /healthcheck [get]
 func GetHealthCheck(service healthcheck.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		var jsonResponse presenter.JsonResponse
 		err := service.GetHealthCheck()
 		if err != nil {
-			c.Status(http.StatusInternalServerError)
-			return c.JSON(presenter.HealthCheckErrorResponse(err))
+			jsonResponse = presenter.JsonResponse{
+				Error:   true,
+				Message: err.Error(),
+				Data:    nil,
+			}
+			return c.Status(http.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		return c.Status(http.StatusOK).JSON(presenter.HealthCheckSuccessResponse())
+		jsonResponse = presenter.JsonResponse{
+			Error:   false,
+			Message: "Welcome!",
+			Data:    nil,
+		}
+		return c.Status(http.StatusOK).JSON(jsonResponse)
 	}
 }

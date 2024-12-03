@@ -3,9 +3,10 @@ package handlers
 import (
 	"camping-backend-with-go/api/presenter"
 	"camping-backend-with-go/pkg/entities"
-	"camping-backend-with-go/pkg/user"
-	"github.com/gofiber/fiber/v2"
+	"camping-backend-with-go/pkg/service/user"
 	"net/http"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 // ChangePassword is a function to ChangePassword
@@ -27,9 +28,9 @@ func ChangePassword(service user.Service) fiber.Handler {
 		// parsing error
 		if err := c.BodyParser(&requestBody); err != nil {
 			jsonResponse = presenter.JsonResponse{
-				Status: false,
-				Data:   nil,
-				Error:  err.Error(),
+				Error:   false,
+				Data:    nil,
+				Message: err.Error(),
 			}
 			return c.Status(http.StatusBadRequest).JSON(jsonResponse)
 		}
@@ -43,9 +44,9 @@ func ChangePassword(service user.Service) fiber.Handler {
 		err := service.ChangePassword(&requestBody, c)
 		if err != nil {
 			jsonResponse = presenter.JsonResponse{
-				Status: false,
-				Data:   nil,
-				Error:  err.Error(),
+				Error:   false,
+				Data:    nil,
+				Message: err.Error(),
 			}
 			return c.Status(http.StatusBadRequest).JSON(jsonResponse)
 		}
@@ -54,17 +55,71 @@ func ChangePassword(service user.Service) fiber.Handler {
 		// => 400 error
 		if newPassword != newPasswordConfirm {
 			jsonResponse = presenter.JsonResponse{
-				Status: false,
-				Data:   nil,
-				Error:  "password didn't not match",
+				Error:   false,
+				Data:    nil,
+				Message: "password didn't not match",
 			}
 			return c.Status(http.StatusBadRequest).JSON(jsonResponse)
 		}
 
 		jsonResponse = presenter.JsonResponse{
-			Status: true,
-			Data:   "success change password",
-			Error:  "",
+			Error:   true,
+			Data:    "success change password",
+			Message: "",
+		}
+		return c.Status(http.StatusOK).JSON(jsonResponse)
+	}
+}
+
+// CreateUser is a function to create user data to database
+// @Summary Create User
+// @Description Create User
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param user body entities.SignUpInputSchema true "Register user"
+// @Success 200 {object} presenter.JsonResponse{data=entities.User}
+// @Failure 503 {object} presenter.JsonResponse
+// @Router /user/signup [post]
+func CreateUser(service user.Service) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		var requestBody entities.SignUpInputSchema
+		err := c.BodyParser(&requestBody)
+
+		// json parsing
+		if err != nil {
+			jsonResponse := presenter.JsonResponse{
+				Error:   false,
+				Data:    nil,
+				Message: err.Error(),
+			}
+			return c.Status(http.StatusBadRequest).JSON(jsonResponse)
+		}
+
+		err = service.CreateUser(&requestBody)
+		if err != nil {
+			jsonResponse := presenter.JsonResponse{
+				Error:   false,
+				Data:    nil,
+				Message: err.Error(),
+			}
+			return c.Status(http.StatusBadRequest).JSON(jsonResponse)
+		}
+
+		// password와 confirm_password가 다르면 error
+		if requestBody.Password != requestBody.PasswordConfirm {
+			jsonResponse := presenter.JsonResponse{
+				Error:   false,
+				Data:    nil,
+				Message: "password didn't match",
+			}
+			return c.Status(http.StatusBadRequest).JSON(jsonResponse)
+		}
+
+		jsonResponse := presenter.JsonResponse{
+			Error:   false,
+			Data:    nil,
+			Message: "Welcome",
 		}
 		return c.Status(http.StatusOK).JSON(jsonResponse)
 	}
