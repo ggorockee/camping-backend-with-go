@@ -11,6 +11,7 @@ type Spot struct {
 	Title     string    `json:"title"`
 	Location  string    `json:"location"`
 	Author    string    `json:"author"`
+	Review    string    `json:"review"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -24,6 +25,7 @@ func (s *Spot) ListSerialize() SpotListOutputSchema {
 		Author:    s.Author,
 		CreatedAt: s.CreatedAt,
 		UpdatedAt: s.UpdatedAt,
+		Review:    s.Review,
 	}
 }
 
@@ -36,6 +38,7 @@ func (s *Spot) DetailSerialize() SpotDetailOutputSchema {
 		Author:    s.Author,
 		CreatedAt: s.CreatedAt,
 		UpdatedAt: s.UpdatedAt,
+		Review:    s.Review,
 	}
 }
 
@@ -46,11 +49,13 @@ type DeleteRequest struct {
 type CreateSpotInputSchema struct {
 	Title    string `json:"title"`
 	Location string `json:"location"`
+	Review   string `json:"review"`
 }
 
 type UpdateSpotSchema struct {
 	Title    string `json:"title"`
 	Location string `json:"location"`
+	Review   string `json:"review"`
 }
 
 type SpotListOutputSchema struct {
@@ -61,6 +66,7 @@ type SpotListOutputSchema struct {
 	Author    string               `json:"author"`
 	CreatedAt time.Time            `json:"created_at"`
 	UpdatedAt time.Time            `json:"updated_at"`
+	Review    string               `json:"review"`
 }
 
 type SpotDetailOutputSchema struct {
@@ -71,4 +77,5 @@ type SpotDetailOutputSchema struct {
 	Author    string               `json:"author"`
 	CreatedAt time.Time            `json:"created_at"`
 	UpdatedAt time.Time            `json:"updated_at"`
+	Review    string               `json:"review"`
 }

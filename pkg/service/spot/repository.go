@@ -119,6 +119,8 @@ func (r *repository) CreateSpot(createSpotInputSchema *entities.CreateSpotInputS
 	spot.Author = user.Username
 	spot.UserId = uint(userId)
 	spot.User = *user
+	// 추가되는 것들
+	spot.Review = createSpotInputSchema.Review
 
 	result := r.DBConn.Create(&spot)
 	if result.Error != nil {
@@ -162,14 +164,16 @@ func (r *repository) UpdateSpot(updateSpotSchema *entities.UpdateSpotSchema, id 
 
 	updated_title := updateSpotSchema.Title
 	if updated_title != "" {
-		log.Println("updateTitle: ", updated_title)
 		fetchedSpot.Title = updated_title
 	}
 
 	updated_location := updateSpotSchema.Location
 	if updated_location != "" {
-		log.Println("updated_location: ", updated_location)
 		fetchedSpot.Location = updated_location
+	}
+
+	if updateSpotSchema.Review != "" {
+		fetchedSpot.Review = updateSpotSchema.Review
 	}
 
 	fetchedSpot.UpdatedAt = time.Now()
