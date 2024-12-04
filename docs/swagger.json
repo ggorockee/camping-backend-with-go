@@ -98,6 +98,11 @@
         },
         "/spot": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "GetSpots",
                 "consumes": [
                     "application/json"
@@ -245,6 +250,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "UpdateSpot",
                 "consumes": [
                     "application/json"

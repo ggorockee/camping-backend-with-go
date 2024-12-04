@@ -2,6 +2,7 @@ package user
 
 import (
 	"camping-backend-with-go/pkg/entities"
+
 	"github.com/gofiber/fiber/v2"
 )
 

@@ -163,6 +163,8 @@ paths:
           description: Service Unavailable
           schema:
             $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
       summary: GetSpots
       tags:
       - Spot
@@ -319,6 +321,8 @@ paths:
           description: Service Unavailable
           schema:
             $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
       summary: UpdateSpot
       tags:
       - Spot

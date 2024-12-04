@@ -43,7 +43,7 @@ func main() {
 	userRepo := user.NewRepo(db)
 	userService := user.NewService(userRepo)
 
-	spotRepo := spot.NewRepo(db)
+	spotRepo := spot.NewRepo(db, userRepo)
 	spotService := spot.NewService(spotRepo)
 
 	app := fiber.New()

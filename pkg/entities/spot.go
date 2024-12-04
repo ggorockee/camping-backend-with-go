@@ -17,7 +17,7 @@ type Spot struct {
 
 func (s *Spot) ListSerialize() SpotListOutputSchema {
 	return SpotListOutputSchema{
-		Id:        s.UserId,
+		Id:        s.Id,
 		User:      s.User.TinyUserSerialize(),
 		Title:     s.Title,
 		Location:  s.Location,

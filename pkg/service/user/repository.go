@@ -23,6 +23,7 @@ type Repository interface {
 	ValidToken(t *jwt.Token, id string) bool
 	GetUserById(id int) (*entities.User, error)
 	GetValueFromToken(key string, ctx *fiber.Ctx) int
+	ValidUser(id int, user *entities.User) error
 	//validUser(id string, password string) bool
 	//CheckPasswordHash(password, hash string) bool
 	//getUserByEmail(e string) (*model.User, error)
@@ -49,6 +50,13 @@ func (r *repository) ValidToken(t *jwt.Token, id string) bool {
 	uid := int(claims["user_id"].(float64))
 
 	return uid == n
+}
+
+func (r *repository) ValidUser(id int, user *entities.User) error {
+	if id != int(user.Id) {
+		return errors.New("ValidUser:: => invalid user")
+	}
+	return nil
 }
 
 func (r *repository) GetUserById(id int) (*entities.User, error) {

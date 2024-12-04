@@ -105,6 +105,11 @@ const docTemplate = `{
         },
         "/spot": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "GetSpots",
                 "consumes": [
                     "application/json"
@@ -252,6 +257,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "UpdateSpot",
                 "consumes": [
                     "application/json"

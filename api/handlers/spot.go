@@ -62,6 +62,7 @@ func AddSpot(service spot.Service) fiber.Handler {
 // @Success 200 {object} presenter.JsonResponse{data=[]entities.Spot}
 // @Failure 503 {object} presenter.JsonResponse
 // @Router /spot [get]
+// @Security Bearer
 func GetSpots(service spot.Service) fiber.Handler {
 	var jsonResponse presenter.JsonResponse
 	return func(c *fiber.Ctx) error {
@@ -95,6 +96,7 @@ func GetSpots(service spot.Service) fiber.Handler {
 // @Success 200 {object} presenter.JsonResponse{data=entities.Spot}
 // @Failure 503 {object} presenter.JsonResponse
 // @Router /spot/{id} [put]
+// @Security Bearer
 func UpdateSpot(service spot.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var requestBody entities.Spot
@@ -144,7 +146,7 @@ func GetSpot(service spot.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var jsonResponse presenter.JsonResponse
 		id, _ := c.ParamsInt("id")
-		fetched, err := service.GetSpot(id)
+		fetched, err := service.GetSpot(id, c)
 
 		if err != nil {
 			jsonResponse = presenter.JsonResponse{

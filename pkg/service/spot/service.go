@@ -11,7 +11,7 @@ type Service interface {
 	FetchSpots() (*[]entities.Spot, error)
 	UpdateSpot(spot *entities.Spot, id int) (*entities.Spot, error)
 	PartialUpdateSpot(spot *entities.Spot, id int) (*entities.Spot, error)
-	GetSpot(id int) (*entities.Spot, error)
+	GetSpot(id int, ctx *fiber.Ctx) (*entities.Spot, error)
 	RemoveSpot(id int) error
 }
 
@@ -45,8 +45,8 @@ func (s *service) UpdateSpot(spot *entities.Spot, id int) (*entities.Spot, error
 }
 
 // GetSpot is a service layer that helps update Spots in Camping
-func (s *service) GetSpot(id int) (*entities.Spot, error) {
-	return s.repository.GetSpot(id)
+func (s *service) GetSpot(id int, ctx *fiber.Ctx) (*entities.Spot, error) {
+	return s.repository.GetSpot(id, ctx)
 }
 
 func (s *service) RemoveSpot(id int) error {
