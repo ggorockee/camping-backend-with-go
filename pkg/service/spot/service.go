@@ -10,9 +10,9 @@ type Service interface {
 	InsertSpot(createSpotInputSchema *entities.CreateSpotInputSchema, ctx *fiber.Ctx) (*entities.Spot, error)
 	FetchMySpots(ctx *fiber.Ctx) (*[]entities.Spot, error)
 	UpdateSpot(spot *entities.UpdateSpotSchema, id int, ctx *fiber.Ctx) (*entities.Spot, error)
-	PartialUpdateSpot(spot *entities.Spot, id int) (*entities.Spot, error)
 	GetSpot(id int, ctx *fiber.Ctx) (*entities.Spot, error)
-	RemoveSpot(id int) error
+	RemoveSpot(id int, ctx *fiber.Ctx) error
+	GetAllSpots() (*[]entities.Spot, error)
 }
 
 type service struct {
@@ -25,8 +25,9 @@ func NewService(r Repository) Service {
 	}
 }
 
-func (s *service) PartialUpdateSpot(spot *entities.Spot, id int) (*entities.Spot, error) {
-	return s.repository.PartialUpdateSpot(spot, id)
+// GetAllSpots implements Service.
+func (s *service) GetAllSpots() (*[]entities.Spot, error) {
+	return s.repository.GetAllSpots()
 }
 
 // InsertSpot is a service layer that helps insert Spot in Camping
@@ -49,6 +50,6 @@ func (s *service) GetSpot(id int, ctx *fiber.Ctx) (*entities.Spot, error) {
 	return s.repository.GetSpot(id, ctx)
 }
 
-func (s *service) RemoveSpot(id int) error {
-	return s.repository.DeleteSpot(id)
+func (s *service) RemoveSpot(id int, ctx *fiber.Ctx) error {
+	return s.repository.DeleteSpot(id, ctx)
 }

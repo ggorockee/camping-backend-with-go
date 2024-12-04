@@ -4,6 +4,7 @@ import (
 	"camping-backend-with-go/pkg/entities"
 	"camping-backend-with-go/pkg/service/user"
 	"errors"
+	"log"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -16,9 +17,9 @@ type Repository interface {
 	GetSpot(id int, ctx *fiber.Ctx) (*entities.Spot, error)
 	UpdateSpot(updateSpotSchema *entities.UpdateSpotSchema, id int, ctx *fiber.Ctx) (*entities.Spot, error)
 	GetFindById(id int) (*entities.Spot, error)
-	PartialUpdateSpot(spot *entities.Spot, id int) (*entities.Spot, error)
-	DeleteSpot(id int) error
+	DeleteSpot(id int, ctx *fiber.Ctx) error
 	GetSpotById(id int) (*entities.Spot, error)
+	GetAllSpots() (*[]entities.Spot, error)
 }
 
 type repository struct {
@@ -33,11 +34,21 @@ func NewRepo(dbconn *gorm.DB, userRepo user.Repository) Repository {
 	}
 }
 
+// GetAllSpots implements Repository.
+func (r *repository) GetAllSpots() (*[]entities.Spot, error) {
+	var spots []entities.Spot
+	if err := r.DBConn.Preload("User").Find(&spots).Error; err != nil {
+		return nil, err
+	}
+
+	return &spots, nil
+}
+
 // GetSpotById implements Repository.
 func (r *repository) GetSpotById(id int) (*entities.Spot, error) {
 	var spot entities.Spot
 
-	if err := r.DBConn.Preload("User").Where("id = ?", id).Find(&spot).Error; err != nil {
+	if err := r.DBConn.Preload("User").Where("id = ?", id).First(&spot).Error; err != nil {
 		return nil, err
 	}
 
@@ -59,6 +70,9 @@ func (r *repository) GetSpot(id int, ctx *fiber.Ctx) (*entities.Spot, error) {
 
 	// 3. :id를 이용해 spot인스턴스를 가져옴
 	fetchedSpot, err := r.GetSpotById(id)
+	if err != nil {
+		return nil, err
+	}
 	spotUserId := int(fetchedSpot.UserId)
 
 	// validation
@@ -147,52 +161,47 @@ func (r *repository) UpdateSpot(updateSpotSchema *entities.UpdateSpotSchema, id 
 	}
 
 	updated_title := updateSpotSchema.Title
+	if updated_title != "" {
+		log.Println("updateTitle: ", updated_title)
+		fetchedSpot.Title = updated_title
+	}
+
 	updated_location := updateSpotSchema.Location
+	if updated_location != "" {
+		log.Println("updated_location: ", updated_location)
+		fetchedSpot.Location = updated_location
+	}
 
 	fetchedSpot.UpdatedAt = time.Now()
 
-	fetched, err := r.GetFindById(id)
-
-	if err != nil {
+	if err := r.DBConn.Model(fetchedSpot).Updates(fetchedSpot).Error; err != nil {
 		return nil, err
 	}
 
-	spot.UpdatedAt = time.Now()
+	return fetchedSpot, nil
 
-	result := r.DBConn.Model(fetched).Updates(&spot)
-
-	if result.Error != nil {
-		return nil, result.Error
-	}
-
-	return spot, nil
 }
 
-func (r *repository) PartialUpdateSpot(spot *entities.Spot, id int) (*entities.Spot, error) {
-	fetched, err := r.GetFindById(id)
-	if err != nil {
-		return nil, err
-	}
+func (r *repository) DeleteSpot(id int, ctx *fiber.Ctx) error {
+	// Login이 되어있어야함
+	// 0. middleware 처리 (v)
+	userId := r.UserRepo.GetValueFromToken("user_id", ctx)
+	// 1. jwtToken을 가지고와서 userId를 얻음(from localstorage)
 
-	spot.UpdatedAt = time.Now()
-
-	result := r.DBConn.Model(fetched).Updates(&spot)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-
-	return fetched, nil
-}
-
-func (r *repository) DeleteSpot(id int) error {
-	spot, err := r.GetFindById(id)
+	// 2. :id로 불러온 spot.user_id와 jwtToken값이 같아야함
+	fetchedSpot, err := r.GetSpotById(id)
+	log.Println("fetchedSpot: ", fetchedSpot)
 	if err != nil {
 		return err
 	}
 
-	result := r.DBConn.Delete(spot)
-	if result.Error != nil {
-		return result.Error
+	if int(fetchedSpot.UserId) != userId {
+		return errors.New("permission denied")
 	}
+
+	if err := r.DBConn.Delete(fetchedSpot).Error; err != nil {
+		return err
+	}
+
 	return nil
 }

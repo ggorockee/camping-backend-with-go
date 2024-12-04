@@ -141,6 +141,24 @@ paths:
       tags:
       - HealthCheck
   /spot:
+    get:
+      consumes:
+      - application/json
+      description: GetAllSpots
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      summary: GetAllSpots
+      tags:
+      - Spot
     post:
       consumes:
       - application/json
@@ -195,6 +213,8 @@ paths:
           description: Service Unavailable
           schema:
             $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
       summary: RemoveSpot
       tags:
       - Spot
@@ -224,42 +244,9 @@ paths:
           description: Service Unavailable
           schema:
             $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
       summary: GetSpot
-      tags:
-      - Spot
-    patch:
-      consumes:
-      - application/json
-      description: PartialUpdateSpot
-      parameters:
-      - description: Spot id
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Update Spot
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/entities.UpdateSpotSchema'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/entities.Spot'
-              type: object
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/presenter.JsonResponse'
-      summary: PartialUpdateSpot
       tags:
       - Spot
     put:

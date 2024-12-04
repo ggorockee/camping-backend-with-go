@@ -118,7 +118,7 @@ func UpdateSpot(service spot.Service) fiber.Handler {
 			}
 			return c.Status(http.StatusBadRequest).JSON(jsonResponse)
 		}
-		result, err := service.UpdateSpot(&requestBody, id, c)
+		fetchedSpot, err := service.UpdateSpot(&requestBody, id, c)
 		if err != nil {
 			jsonResponse = presenter.JsonResponse{
 				Error:   true,
@@ -132,7 +132,7 @@ func UpdateSpot(service spot.Service) fiber.Handler {
 		jsonResponse = presenter.JsonResponse{
 			Error:   false,
 			Message: "",
-			Data:    result,
+			Data:    fetchedSpot.DetailSerialize(),
 		}
 		return c.Status(http.StatusOK).JSON(jsonResponse)
 	}
@@ -148,6 +148,7 @@ func UpdateSpot(service spot.Service) fiber.Handler {
 // @Success 200 {object} presenter.JsonResponse{data=entities.Spot}
 // @Failure 503 {object} presenter.JsonResponse
 // @Router /spot/{id} [get]
+// @Security Bearer
 func GetSpot(service spot.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var jsonResponse presenter.JsonResponse
@@ -173,51 +174,6 @@ func GetSpot(service spot.Service) fiber.Handler {
 	}
 }
 
-// PartialUpdateSpot is a function to update spot data to database
-// @Summary PartialUpdateSpot
-// @Description PartialUpdateSpot
-// @Tags Spot
-// @Accept json
-// @Produce json
-// @Param id path int true "Spot id"
-// @Param user body entities.UpdateSpotSchema true "Update Spot"
-// @Success 200 {object} presenter.JsonResponse{data=entities.Spot}
-// @Failure 503 {object} presenter.JsonResponse{}
-// @Router /spot/{id} [patch]
-func PartialUpdateSpot(service spot.Service) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		var requestBody entities.Spot
-		var jsonResponse presenter.JsonResponse
-
-		err := c.BodyParser(&requestBody)
-		id, _ := c.ParamsInt("id")
-		if err != nil {
-			jsonResponse = presenter.JsonResponse{
-				Error:   true,
-				Message: err.Error(),
-				Data:    nil,
-			}
-			return c.Status(http.StatusBadRequest).JSON(jsonResponse)
-		}
-		result, err := service.PartialUpdateSpot(&requestBody, id)
-		if err != nil {
-			jsonResponse = presenter.JsonResponse{
-				Error:   true,
-				Message: err.Error(),
-				Data:    nil,
-			}
-			return c.Status(http.StatusInternalServerError).JSON(jsonResponse)
-		}
-
-		jsonResponse = presenter.JsonResponse{
-			Error:   false,
-			Message: "",
-			Data:    result,
-		}
-		return c.Status(http.StatusOK).JSON(jsonResponse)
-	}
-}
-
 // RemoveSpot is a function to delete spot data to database
 // @Summary RemoveSpot
 // @Description RemoveSpot
@@ -228,11 +184,12 @@ func PartialUpdateSpot(service spot.Service) fiber.Handler {
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /spot/{id} [delete]
+// @Security Bearer
 func RemoveSpot(service spot.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var jsonResponse presenter.JsonResponse
 		id, _ := c.ParamsInt("id")
-		err := service.RemoveSpot(id)
+		err := service.RemoveSpot(id, c)
 		if err != nil {
 			jsonResponse = presenter.JsonResponse{
 				Error:   true,
@@ -246,6 +203,42 @@ func RemoveSpot(service spot.Service) fiber.Handler {
 			Error:   false,
 			Message: "delete successfully",
 			Data:    nil,
+		}
+		return c.Status(http.StatusOK).JSON(jsonResponse)
+	}
+}
+
+// GetAllSpots is a function to get all spot
+// @Summary GetAllSpots
+// @Description GetAllSpots
+// @Tags Spot
+// @Accept json
+// @Produce json
+// @Success 200 {object} presenter.JsonResponse{}
+// @Failure 503 {object} presenter.JsonResponse{}
+// @Router /spot [get]
+func GetAllSpots(service spot.Service) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		spots, err := service.GetAllSpots() //*[]entities.Spot
+		var jsonResponse presenter.JsonResponse
+		if err != nil {
+			jsonResponse = presenter.JsonResponse{
+				Error:   true,
+				Message: err.Error(),
+				Data:    nil,
+			}
+			return c.Status(http.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		var responseSpots []entities.SpotListOutputSchema
+		for _, spot := range *spots {
+			responseSpots = append(responseSpots, spot.ListSerialize())
+		}
+
+		jsonResponse = presenter.JsonResponse{
+			Error:   false,
+			Message: "",
+			Data:    responseSpots,
 		}
 		return c.Status(http.StatusOK).JSON(jsonResponse)
 	}
