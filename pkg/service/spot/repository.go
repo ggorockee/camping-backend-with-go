@@ -11,7 +11,7 @@ import (
 
 type Repository interface {
 	CreateSpot(spot *entities.CreateSpotInputSchema, ctx *fiber.Ctx) (*entities.Spot, error)
-	ReadSpot() (*[]entities.Spot, error)
+	FetchMySpots(ctx *fiber.Ctx) (*[]entities.Spot, error)
 	GetSpot(id int, ctx *fiber.Ctx) (*entities.Spot, error)
 	UpdateSpot(spot *entities.Spot, id int) (*entities.Spot, error)
 	GetFindById(id int) (*entities.Spot, error)
@@ -112,11 +112,16 @@ func (r *repository) CreateSpot(createSpotInputSchema *entities.CreateSpotInputS
 	return &spot, nil
 }
 
-func (r *repository) ReadSpot() (*[]entities.Spot, error) {
+func (r *repository) FetchMySpots(ctx *fiber.Ctx) (*[]entities.Spot, error) {
+	// Login이 되어있어야함
+	// 0. middleware 처리 (v)
+	// 1. jwtToken을 가지고와서 userId를 얻음(from localstorage)
+	userId := r.UserRepo.GetValueFromToken("user_id", ctx)
+
+	// 2. userId를 이용한 query
 	var spots []entities.Spot
-	result := r.DBConn.Find(&spots)
-	if result.Error != nil {
-		return nil, result.Error
+	if err := r.DBConn.Preload("User").Where("user_id = ?", userId).Find(&spots).Error; err != nil {
+		return nil, err
 	}
 
 	return &spots, nil

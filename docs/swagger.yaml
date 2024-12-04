@@ -141,33 +141,6 @@ paths:
       tags:
       - HealthCheck
   /spot:
-    get:
-      consumes:
-      - application/json
-      description: GetSpots
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/entities.Spot'
-                  type: array
-              type: object
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/presenter.JsonResponse'
-      security:
-      - Bearer: []
-      summary: GetSpots
-      tags:
-      - Spot
     post:
       consumes:
       - application/json
@@ -324,6 +297,34 @@ paths:
       security:
       - Bearer: []
       summary: UpdateSpot
+      tags:
+      - Spot
+  /spot/me:
+    get:
+      consumes:
+      - application/json
+      description: GetMySpots
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entities.Spot'
+                  type: array
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
+      summary: GetMySpots
       tags:
       - Spot
   /user/changepw:

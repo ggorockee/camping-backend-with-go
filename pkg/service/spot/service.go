@@ -8,7 +8,7 @@ import (
 
 type Service interface {
 	InsertSpot(createSpotInputSchema *entities.CreateSpotInputSchema, ctx *fiber.Ctx) (*entities.Spot, error)
-	FetchSpots() (*[]entities.Spot, error)
+	FetchMySpots(ctx *fiber.Ctx) (*[]entities.Spot, error)
 	UpdateSpot(spot *entities.Spot, id int) (*entities.Spot, error)
 	PartialUpdateSpot(spot *entities.Spot, id int) (*entities.Spot, error)
 	GetSpot(id int, ctx *fiber.Ctx) (*entities.Spot, error)
@@ -35,8 +35,8 @@ func (s *service) InsertSpot(createSpotInputSchema *entities.CreateSpotInputSche
 }
 
 // FetchSpots is a service layer that helps fetch all Spots in Camping
-func (s *service) FetchSpots() (*[]entities.Spot, error) {
-	return s.repository.ReadSpot()
+func (s *service) FetchMySpots(ctx *fiber.Ctx) (*[]entities.Spot, error) {
+	return s.repository.FetchMySpots(ctx)
 }
 
 // UpdateSpot is a service layer that helps update Spots in Camping

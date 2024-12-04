@@ -53,20 +53,20 @@ func AddSpot(service spot.Service) fiber.Handler {
 	}
 }
 
-// GetSpots is a function to get all spot data from database
-// @Summary GetSpots
-// @Description GetSpots
+// GetMySpots is a function to get all spot data from database
+// @Summary GetMySpots
+// @Description GetMySpots
 // @Tags Spot
 // @Accept json
 // @Produce json
 // @Success 200 {object} presenter.JsonResponse{data=[]entities.Spot}
 // @Failure 503 {object} presenter.JsonResponse
-// @Router /spot [get]
+// @Router /spot/me [get]
 // @Security Bearer
-func GetSpots(service spot.Service) fiber.Handler {
+func GetMySpots(service spot.Service) fiber.Handler {
 	var jsonResponse presenter.JsonResponse
 	return func(c *fiber.Ctx) error {
-		fetched, err := service.FetchSpots()
+		fetched, err := service.FetchMySpots(c)
 		if err != nil {
 			jsonResponse = presenter.JsonResponse{
 				Error:   true,
@@ -76,10 +76,16 @@ func GetSpots(service spot.Service) fiber.Handler {
 			return c.Status(http.StatusInternalServerError).JSON(jsonResponse)
 		}
 
+		var spotsSerialized []entities.SpotListOutputSchema
+
+		for _, fetchedItem := range *fetched {
+			spotsSerialized = append(spotsSerialized, fetchedItem.ListSerialize())
+		}
+
 		jsonResponse = presenter.JsonResponse{
 			Error:   false,
 			Message: "",
-			Data:    fetched,
+			Data:    spotsSerialized,
 		}
 		return c.JSON(jsonResponse)
 	}
