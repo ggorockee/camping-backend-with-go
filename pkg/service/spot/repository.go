@@ -3,6 +3,7 @@ package spot
 import (
 	"camping-backend-with-go/pkg/entities"
 	"camping-backend-with-go/pkg/service/user"
+	"errors"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -13,7 +14,7 @@ type Repository interface {
 	CreateSpot(spot *entities.CreateSpotInputSchema, ctx *fiber.Ctx) (*entities.Spot, error)
 	FetchMySpots(ctx *fiber.Ctx) (*[]entities.Spot, error)
 	GetSpot(id int, ctx *fiber.Ctx) (*entities.Spot, error)
-	UpdateSpot(spot *entities.Spot, id int) (*entities.Spot, error)
+	UpdateSpot(updateSpotSchema *entities.UpdateSpotSchema, id int, ctx *fiber.Ctx) (*entities.Spot, error)
 	GetFindById(id int) (*entities.Spot, error)
 	PartialUpdateSpot(spot *entities.Spot, id int) (*entities.Spot, error)
 	DeleteSpot(id int) error
@@ -127,7 +128,29 @@ func (r *repository) FetchMySpots(ctx *fiber.Ctx) (*[]entities.Spot, error) {
 	return &spots, nil
 }
 
-func (r *repository) UpdateSpot(spot *entities.Spot, id int) (*entities.Spot, error) {
+func (r *repository) UpdateSpot(updateSpotSchema *entities.UpdateSpotSchema, id int, ctx *fiber.Ctx) (*entities.Spot, error) {
+	// Login이 되어있어야함
+	// 0. middleware 처리 (v)
+	// 1. jwtToken을 가지고와서 userId를 얻음(from localstorage)
+	// 2. :id로 불러온 spot.user_id와 jwtToken값이 같아야함
+	// 3. update
+
+	userId := r.UserRepo.GetValueFromToken("user_id", ctx)
+	fetchedSpot, err := r.GetSpotById(id)
+	fetchedSpotUserId := int(fetchedSpot.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	if userId != fetchedSpotUserId {
+		return nil, errors.New("permission denied")
+	}
+
+	updated_title := updateSpotSchema.Title
+	updated_location := updateSpotSchema.Location
+
+	fetchedSpot.UpdatedAt = time.Now()
+
 	fetched, err := r.GetFindById(id)
 
 	if err != nil {

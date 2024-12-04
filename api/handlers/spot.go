@@ -105,7 +105,7 @@ func GetMySpots(service spot.Service) fiber.Handler {
 // @Security Bearer
 func UpdateSpot(service spot.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var requestBody entities.Spot
+		var requestBody entities.UpdateSpotSchema
 		var jsonResponse presenter.JsonResponse
 
 		err := c.BodyParser(&requestBody)
@@ -118,7 +118,7 @@ func UpdateSpot(service spot.Service) fiber.Handler {
 			}
 			return c.Status(http.StatusBadRequest).JSON(jsonResponse)
 		}
-		result, err := service.UpdateSpot(&requestBody, id)
+		result, err := service.UpdateSpot(&requestBody, id, c)
 		if err != nil {
 			jsonResponse = presenter.JsonResponse{
 				Error:   true,
