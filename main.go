@@ -48,7 +48,7 @@ func main() {
 	spotService := spot.NewService(spotRepo)
 
 	// Category
-	categoryRepo := category.NewRepo(db)
+	categoryRepo := category.NewRepo(db, userRepo)
 	categoryServie := category.NewService(categoryRepo)
 
 	app := fiber.New()

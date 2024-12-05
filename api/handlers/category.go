@@ -1,33 +1,234 @@
 package handlers
 
 import (
+	"camping-backend-with-go/api/presenter"
+	"camping-backend-with-go/pkg/entities"
 	"camping-backend-with-go/pkg/service/category"
 
 	"github.com/gofiber/fiber/v2"
 )
 
+// GetCategoryList is a function to get category data from database
+// @Summary GetCategoryList
+// @Description GetCategoryList
+// @Tags Category
+// @Accept json
+// @Produce json
+// @Success 200 {object} presenter.JsonResponse{data=[]entities.CategoryListOut}
+// @Failure 503 {object} presenter.JsonResponse
+// @Router /category [get]
+// @Security Bearer
 func GetCategoryList(service category.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return nil
+		var jsonResponse presenter.JsonResponse
+		fetchedCategories, err := service.GetCategoryList(c)
+		if err != nil {
+			jsonResponse = presenter.JsonResponse{
+				Error:   true,
+				Message: err.Error(),
+				Data:    nil,
+			}
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		var serializedCategories []entities.CategoryListOut
+		for _, fetchedCategory := range *fetchedCategories {
+			serializedCategories = append(serializedCategories, fetchedCategory.ListSerialize())
+		}
+
+		jsonResponse = presenter.JsonResponse{
+			Error:   false,
+			Message: "",
+			Data:    serializedCategories,
+		}
+
+		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
 }
+
+// CreateCategory is a function to create category data to database
+// @Summary CreateCategory
+// @Description CreateCategory
+// @Tags Category
+// @Accept json
+// @Produce json
+// @Param user body entities.CreateCategoryInput true "Create Category Schema"
+// @Success 200 {object} presenter.JsonResponse{data=entities.CategoryListOut}
+// @Failure 503 {object} presenter.JsonResponse
+// @Router /category [post]
+// @Security Bearer
 func CreateCategory(service category.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return nil
+		var jsonResponse presenter.JsonResponse
+		var requestBody entities.CreateCategoryInput
+
+		if err := c.BodyParser(&requestBody); err != nil {
+			jsonResponse = presenter.JsonResponse{
+				Error:   true,
+				Message: err.Error(),
+				Data:    nil,
+			}
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		createdCategory, err := service.CreateCategory(&requestBody, c)
+		if err != nil {
+			jsonResponse = presenter.JsonResponse{
+				Error:   true,
+				Message: err.Error(),
+				Data:    nil,
+			}
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		jsonResponse = presenter.JsonResponse{
+			Error:   false,
+			Message: "",
+			Data:    createdCategory.ListSerialize(),
+		}
+		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
 }
+
+// GetCategory
+// @Summary GetCategory
+// @Description GetCategory
+// @Tags Category
+// @Accept json
+// @Produce json
+// @Param id path int true "Category Id"
+// @Success 200 {object} presenter.JsonResponse{data=entities.CategoryDetailOut}
+// @Failure 503 {object} presenter.JsonResponse
+// @Router /category/{id} [get]
+// @Security Bearer
 func GetCategory(service category.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return nil
+		var jsonResponse presenter.JsonResponse
+
+		id, err := c.ParamsInt("id")
+		if err != nil {
+			jsonResponse = presenter.JsonResponse{
+				Error:   true,
+				Message: err.Error(),
+				Data:    nil,
+			}
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		fetchedCategory, err := service.GetCategory(id, c)
+		if err != nil {
+			jsonResponse = presenter.JsonResponse{
+				Error:   true,
+				Message: err.Error(),
+				Data:    nil,
+			}
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		jsonResponse = presenter.JsonResponse{
+			Error:   false,
+			Message: "",
+			Data:    fetchedCategory.DetailSerialize(),
+		}
+		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
 }
+
+// UpdateCategory
+// @Summary UpdateCategory
+// @Description UpdateCategory
+// @Tags Category
+// @Accept json
+// @Produce json
+// @Param id path int true "Category Id"
+// @Param user body entities.UpdateCategoryInput true "Update Category"
+// @Success 200 {object} presenter.JsonResponse{data=entities.CategoryDetailOut}
+// @Failure 503 {object} presenter.JsonResponse
+// @Router /category/{id} [put]
+// @Security Bearer
 func UpdateCategory(service category.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return nil
+		var jsonResponse presenter.JsonResponse
+		var requestBody entities.UpdateCategoryInput
+
+		if err := c.BodyParser(&requestBody); err != nil {
+			jsonResponse = presenter.JsonResponse{
+				Error:   true,
+				Message: err.Error(),
+				Data:    nil,
+			}
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		id, err := c.ParamsInt("id")
+		if err != nil {
+			jsonResponse = presenter.JsonResponse{
+				Error:   true,
+				Message: err.Error(),
+				Data:    nil,
+			}
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		fetchedCategory, err := service.UpdateCategory(&requestBody, id, c)
+		if err != nil {
+			jsonResponse = presenter.JsonResponse{
+				Error:   true,
+				Message: err.Error(),
+				Data:    nil,
+			}
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		jsonResponse = presenter.JsonResponse{
+			Error:   false,
+			Message: "",
+			Data:    fetchedCategory.DetailSerialize(),
+		}
+		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
 }
+
+// DeleteCategory
+// @Summary DeleteCategory
+// @Description DeleteCategory
+// @Tags Category
+// @Accept json
+// @Produce json
+// @Param id path int true "Category Id"
+// @Success 200 {object} presenter.JsonResponse{}
+// @Failure 503 {object} presenter.JsonResponse{}
+// @Router /category/{id} [delete]
+// @Security Bearer
 func DeleteCategory(service category.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return nil
+		var jsonResponse presenter.JsonResponse
+
+		id, err := c.ParamsInt("id")
+		if err != nil {
+			jsonResponse = presenter.JsonResponse{
+				Error:   true,
+				Message: err.Error(),
+				Data:    nil,
+			}
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		err = service.DeleteCategory(id, c)
+		if err != nil {
+			jsonResponse = presenter.JsonResponse{
+				Error:   true,
+				Message: err.Error(),
+				Data:    nil,
+			}
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		jsonResponse = presenter.JsonResponse{
+			Error:   false,
+			Message: "Successful delete",
+			Data:    nil,
+		}
+		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
 }

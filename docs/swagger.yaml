@@ -1,5 +1,35 @@
 basePath: /v1
 definitions:
+  entities.Category:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        description: Time Logging
+        type: string
+    type: object
+  entities.CategoryDetailOut:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  entities.CategoryListOut:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   entities.ChangePasswordInputSchema:
     properties:
       new_password:
@@ -9,9 +39,16 @@ definitions:
       old_password:
         type: string
     type: object
+  entities.CreateCategoryInput:
+    properties:
+      name:
+        type: string
+    type: object
   entities.CreateSpotInputSchema:
     properties:
       location:
+        type: string
+      review:
         type: string
       title:
         type: string
@@ -38,13 +75,23 @@ definitions:
     properties:
       author:
         type: string
+      category:
+        allOf:
+        - $ref: '#/definitions/entities.Category'
+        description: sqlite에서 SET NULL, mysql, postgresql에서는 SetNull
+      category_id:
+        description: CategoryId가 null일 수가 있음
+        type: integer
       created_at:
         type: string
       id:
         type: integer
       location:
         type: string
+      review:
+        type: string
       title:
+        description: Category  Category  `gorm:"foreignKey:CategoryId;constraint:OnDelete:SetNull;"`
         type: string
       updated_at:
         type: string
@@ -53,9 +100,16 @@ definitions:
       user_id:
         type: integer
     type: object
+  entities.UpdateCategoryInput:
+    properties:
+      name:
+        type: string
+    type: object
   entities.UpdateSpotSchema:
     properties:
       location:
+        type: string
+      review:
         type: string
       title:
         type: string
@@ -121,6 +175,161 @@ paths:
       summary: Login
       tags:
       - Auth
+  /category:
+    get:
+      consumes:
+      - application/json
+      description: GetCategoryList
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entities.CategoryListOut'
+                  type: array
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
+      summary: GetCategoryList
+      tags:
+      - Category
+    post:
+      consumes:
+      - application/json
+      description: CreateCategory
+      parameters:
+      - description: Create Category Schema
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entities.CreateCategoryInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.CategoryListOut'
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
+      summary: CreateCategory
+      tags:
+      - Category
+  /category/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: DeleteCategory
+      parameters:
+      - description: Category Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
+      summary: DeleteCategory
+      tags:
+      - Category
+    get:
+      consumes:
+      - application/json
+      description: GetCategory
+      parameters:
+      - description: Category Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.CategoryDetailOut'
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
+      summary: GetCategory
+      tags:
+      - Category
+    put:
+      consumes:
+      - application/json
+      description: UpdateCategory
+      parameters:
+      - description: Category Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Category
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UpdateCategoryInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.CategoryDetailOut'
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
+      summary: UpdateCategory
+      tags:
+      - Category
   /healthcheck:
     get:
       consumes:

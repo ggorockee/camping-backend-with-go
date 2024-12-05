@@ -10,7 +10,10 @@ type Spot struct {
 	User       User `gorm:"foreignKey:UserId;constraint:OnDelete:CASCADE;"`
 	CategoryId *int `gorm:"default:null" json:"category_id"` // CategoryId가 null일 수가 있음
 	// sqlite에서 SET NULL, mysql, postgresql에서는 SetNull
-	// Category  Category  `gorm:"foreignKey:CategoryId;constraint:OnDelete:SET NULL;"`
+	// 배포시 아래 주석
+	// Category Category `gorm:"foreignKey:CategoryId;constraint:OnDelete:SET NULL;"`
+
+	// 배포시 아래 주석해제
 	Category  Category  `gorm:"foreignKey:CategoryId;constraint:OnDelete:SetNull;"`
 	Title     string    `json:"title"`
 	Location  string    `json:"location"`
