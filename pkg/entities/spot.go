@@ -11,7 +11,7 @@ type Spot struct {
 	CategoryId *int `gorm:"default:null" json:"category_id"` // CategoryId가 null일 수가 있음
 	// sqlite에서 SET NULL, mysql, postgresql에서는 SetNull
 	// 배포시 아래 주석
-	// Category Category `gorm:"foreignKey:CategoryId;constraint:OnDelete:SET NULL;"`
+	//Category Category `gorm:"foreignKey:CategoryId;constraint:OnDelete:SET NULL;"`
 
 	// 배포시 아래 주석해제
 	Category  Category  `gorm:"foreignKey:CategoryId;constraint:OnDelete:SetNull;"`
@@ -21,6 +21,8 @@ type Spot struct {
 	Review    string    `json:"review"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+
+	CoverImg string `json:"cover_img"`
 }
 
 func (s *Spot) ListSerialize() SpotListOutputSchema {

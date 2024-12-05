@@ -5,6 +5,7 @@ import (
 	_ "camping-backend-with-go/docs"
 	"camping-backend-with-go/pkg/config"
 	"camping-backend-with-go/pkg/entities"
+	"camping-backend-with-go/pkg/service/amenity"
 	"camping-backend-with-go/pkg/service/category"
 	"camping-backend-with-go/pkg/service/healthcheck"
 	"camping-backend-with-go/pkg/service/spot"
@@ -49,10 +50,20 @@ func main() {
 
 	// Category
 	categoryRepo := category.NewRepo(db, userRepo)
-	categoryServie := category.NewService(categoryRepo)
+	categoryService := category.NewService(categoryRepo)
+
+	//Amenity
+	amenityRepo := amenity.NewRepo(db, userRepo)
+	amenityService := amenity.NewService(amenityRepo)
 
 	app := fiber.New()
 	app.Use(cors.New())
+
+	// db instance를 middleware로 보내기
+	app.Use(func(c *fiber.Ctx) error {
+		c.Locals("db", db)
+		return c.Next()
+	})
 
 	// swagger settings
 	//swaggerCfg := swagger.Config{
@@ -67,7 +78,8 @@ func main() {
 	routes.UserRouter(v1, userService)
 	routes.AuthRouter(v1, userService)
 	routes.SpotRouter(v1, spotService)
-	routes.CategoryRouter(v1, categoryServie)
+	routes.CategoryRouter(v1, categoryService)
+	routes.AmenityRouter(v1, amenityService)
 	routes.SwaggerRouter(v1)
 	routes.HealthCheckRouter(v1, healthcheckService)
 	log.Fatal(app.Listen(":3000"))
@@ -109,6 +121,7 @@ func databaseConnection() *gorm.DB {
 		&entities.Spot{},
 		&entities.User{},
 		&entities.Category{},
+		&entities.Amenity{},
 	)
 	if err != nil {
 		log.Println(err.Error())
