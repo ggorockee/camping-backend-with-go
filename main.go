@@ -5,6 +5,7 @@ import (
 	_ "camping-backend-with-go/docs"
 	"camping-backend-with-go/pkg/config"
 	"camping-backend-with-go/pkg/entities"
+	"camping-backend-with-go/pkg/service/category"
 	"camping-backend-with-go/pkg/service/healthcheck"
 	"camping-backend-with-go/pkg/service/spot"
 	"camping-backend-with-go/pkg/service/user"
@@ -46,6 +47,10 @@ func main() {
 	spotRepo := spot.NewRepo(db, userRepo)
 	spotService := spot.NewService(spotRepo)
 
+	// Category
+	categoryRepo := category.NewRepo(db)
+	categoryServie := category.NewService(categoryRepo)
+
 	app := fiber.New()
 	app.Use(cors.New())
 
@@ -62,6 +67,7 @@ func main() {
 	routes.UserRouter(v1, userService)
 	routes.AuthRouter(v1, userService)
 	routes.SpotRouter(v1, spotService)
+	routes.CategoryRouter(v1, categoryServie)
 	routes.SwaggerRouter(v1)
 	routes.HealthCheckRouter(v1, healthcheckService)
 	log.Fatal(app.Listen(":3000"))
@@ -102,6 +108,7 @@ func databaseConnection() *gorm.DB {
 	err = db.AutoMigrate(
 		&entities.Spot{},
 		&entities.User{},
+		&entities.Category{},
 	)
 	if err != nil {
 		log.Println(err.Error())
