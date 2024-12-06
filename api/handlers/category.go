@@ -32,8 +32,10 @@ func GetCategoryList(service category.Service) fiber.Handler {
 		}
 
 		var serializedCategories []entities.CategoryListOut
+
 		for _, fetchedCategory := range *fetchedCategories {
-			serializedCategories = append(serializedCategories, fetchedCategory.ListSerialize())
+			serializer := entities.NewCategorySerializer(&fetchedCategory)
+			serializedCategories = append(serializedCategories, serializer.ListSerialize())
 		}
 
 		jsonResponse = presenter.JsonResponse{
@@ -81,10 +83,11 @@ func CreateCategory(service category.Service) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
+		serializer := entities.NewCategorySerializer(createdCategory)
 		jsonResponse = presenter.JsonResponse{
 			Error:   false,
 			Message: "",
-			Data:    createdCategory.ListSerialize(),
+			Data:    serializer.ListSerialize(),
 		}
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
@@ -125,10 +128,11 @@ func GetCategory(service category.Service) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
+		serializer := entities.NewCategorySerializer(fetchedCategory)
 		jsonResponse = presenter.JsonResponse{
 			Error:   false,
 			Message: "",
-			Data:    fetchedCategory.DetailSerialize(),
+			Data:    serializer.DetailSerialize(),
 		}
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
@@ -180,10 +184,11 @@ func UpdateCategory(service category.Service) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
+		serializer := entities.NewCategorySerializer(fetchedCategory)
 		jsonResponse = presenter.JsonResponse{
 			Error:   false,
 			Message: "",
-			Data:    fetchedCategory.DetailSerialize(),
+			Data:    serializer.DetailSerialize(),
 		}
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
