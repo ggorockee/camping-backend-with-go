@@ -11,7 +11,6 @@ func CreateAmenity(service amenity.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var jsonResponse presenter.JsonResponse
 		var requestBody entities.CreateAmenityInput
-		var serializer entities.AmenitySerializer
 
 		if err := c.BodyParser(&requestBody); err != nil {
 			jsonResponse = presenter.JsonResponse{
@@ -32,7 +31,8 @@ func CreateAmenity(service amenity.Service) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		serializer = createdAmenity
+		//serializer = createdAmenity
+		serializer := entities.NewAmenitySerializer(createdAmenity)
 		jsonResponse = presenter.JsonResponse{
 			Error:   false,
 			Message: "",
