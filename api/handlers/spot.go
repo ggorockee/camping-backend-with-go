@@ -44,10 +44,11 @@ func AddSpot(service spot.Service) fiber.Handler {
 			return c.Status(http.StatusInternalServerError).JSON(jsonResponse)
 		}
 
+		serializer := entities.NewSpotSerializer(result)
 		jsonResponse = presenter.JsonResponse{
 			Error:   false,
 			Message: "successfully create spot!",
-			Data:    result.ListSerialize(),
+			Data:    serializer.ListSerialize(),
 		}
 		return c.JSON(jsonResponse)
 	}
@@ -79,7 +80,8 @@ func GetMySpots(service spot.Service) fiber.Handler {
 		var spotsSerialized []entities.SpotListOutputSchema
 
 		for _, fetchedItem := range *fetched {
-			spotsSerialized = append(spotsSerialized, fetchedItem.ListSerialize())
+			serializer := entities.NewSpotSerializer(&fetchedItem)
+			spotsSerialized = append(spotsSerialized, serializer.ListSerialize())
 		}
 
 		jsonResponse = presenter.JsonResponse{
@@ -129,10 +131,11 @@ func UpdateSpot(service spot.Service) fiber.Handler {
 			return c.Status(http.StatusInternalServerError).JSON(jsonResponse)
 		}
 
+		serializer := entities.NewSpotSerializer(fetchedSpot)
 		jsonResponse = presenter.JsonResponse{
 			Error:   false,
 			Message: "",
-			Data:    fetchedSpot.DetailSerialize(),
+			Data:    serializer.DetailSerialize(),
 		}
 		return c.Status(http.StatusOK).JSON(jsonResponse)
 	}
@@ -165,10 +168,12 @@ func GetSpot(service spot.Service) fiber.Handler {
 			return c.Status(http.StatusInternalServerError).JSON(jsonResponse)
 		}
 
+		serializer := entities.NewSpotSerializer(fetched)
+
 		jsonResponse = presenter.JsonResponse{
 			Error:   false,
 			Message: "",
-			Data:    fetched,
+			Data:    serializer.DetailSerialize(),
 		}
 		return c.Status(http.StatusOK).JSON(jsonResponse)
 	}
@@ -231,8 +236,9 @@ func GetAllSpots(service spot.Service) fiber.Handler {
 		}
 
 		var responseSpots []entities.SpotListOutputSchema
-		for _, spot := range *spots {
-			responseSpots = append(responseSpots, spot.ListSerialize())
+		for _, s := range *spots {
+			serializer := entities.NewSpotSerializer(&s)
+			responseSpots = append(responseSpots, serializer.ListSerialize())
 		}
 
 		jsonResponse = presenter.JsonResponse{
