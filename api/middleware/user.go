@@ -16,11 +16,7 @@ func RoleMiddleware(allowedRoles ...entities.UserRole) fiber.Handler {
 		db := c.Locals("db").(*gorm.DB)
 		var user entities.User
 		if err := db.First(&user, userId).Error; err != nil {
-			jsonResponse := presenter.JsonResponse{
-				Error:   true,
-				Message: "Access denied",
-				Data:    nil,
-			}
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusForbidden).JSON(jsonResponse)
 		}
 
@@ -31,11 +27,7 @@ func RoleMiddleware(allowedRoles ...entities.UserRole) fiber.Handler {
 			}
 		}
 
-		jsonResponse := presenter.JsonResponse{
-			Error:   true,
-			Message: "Access denied",
-			Data:    nil,
-		}
+		jsonResponse := presenter.NewJsonResponse(true, "Access denied", nil)
 		return c.Status(fiber.StatusForbidden).JSON(jsonResponse)
 	}
 }

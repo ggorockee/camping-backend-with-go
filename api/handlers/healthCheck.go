@@ -19,22 +19,13 @@ import (
 // @Router /healthcheck [get]
 func GetHealthCheck(service healthcheck.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var jsonResponse presenter.JsonResponse
 		err := service.GetHealthCheck()
 		if err != nil {
-			jsonResponse = presenter.JsonResponse{
-				Error:   true,
-				Message: err.Error(),
-				Data:    nil,
-			}
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(http.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		jsonResponse = presenter.JsonResponse{
-			Error:   false,
-			Message: "Welcome!",
-			Data:    nil,
-		}
+		jsonResponse := presenter.NewJsonResponse(false, "welcome", nil)
 		return c.Status(http.StatusOK).JSON(jsonResponse)
 	}
 }

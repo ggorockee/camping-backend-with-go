@@ -10,11 +10,31 @@ import (
 
 type Repository interface {
 	Create(input *entities.CreateAmenityInput, ctx *fiber.Ctx) (*entities.Amenity, error)
+	GetAmenityById(id int, ctx *fiber.Ctx) (*entities.Amenity, error)
+	GetAmenityList(ctx *fiber.Ctx) (*[]entities.Amenity, error)
 }
 
 type repository struct {
 	DBConn   *gorm.DB
 	UserRepo user.Repository
+}
+
+func (r *repository) GetAmenityById(id int, ctx *fiber.Ctx) (*entities.Amenity, error) {
+	var amenity entities.Amenity
+	if err := r.DBConn.First(&amenity, id).Error; err != nil {
+		return nil, err
+	}
+
+	return &amenity, nil
+}
+
+func (r *repository) GetAmenityList(ctx *fiber.Ctx) (*[]entities.Amenity, error) {
+	var amenities []entities.Amenity
+	if err := r.DBConn.Find(&amenities).Error; err != nil {
+		return nil, err
+	}
+
+	return &amenities, nil
 }
 
 func (r *repository) Create(input *entities.CreateAmenityInput, ctx *fiber.Ctx) (*entities.Amenity, error) {

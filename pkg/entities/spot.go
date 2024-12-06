@@ -12,11 +12,11 @@ type Spot struct {
 	// sqlite에서 SET NULL, mysql, postgresql에서는 SetNull
 	// 배포시 아래 주석
 	// sqlite 설정
-	Category Category `gorm:"foreignKey:CategoryId;constraint:OnDelete:SET NULL;"`
+	//Category Category `gorm:"foreignKey:CategoryId;constraint:OnDelete:SET NULL;"`
 
 	// 배포시 아래 주석해제
 	// rds 설정
-	//Category  Category  `gorm:"foreignKey:CategoryId;constraint:OnDelete:SetNull;"`
+	Category  Category  `gorm:"foreignKey:CategoryId;constraint:OnDelete:SetNull;"`
 	Title     string    `json:"title"`
 	Location  string    `json:"location"`
 	Author    string    `json:"author"`

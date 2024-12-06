@@ -1,5 +1,27 @@
 basePath: /v1
 definitions:
+  entities.AmenityDetailOut:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  entities.AmenityListOut:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   entities.Category:
     properties:
       created_at:
@@ -37,6 +59,13 @@ definitions:
       new_password_confirm:
         type: string
       old_password:
+        type: string
+    type: object
+  entities.CreateAmenityInput:
+    properties:
+      description:
+        type: string
+      name:
         type: string
     type: object
   entities.CreateCategoryInput:
@@ -78,10 +107,15 @@ definitions:
       category:
         allOf:
         - $ref: '#/definitions/entities.Category'
-        description: sqlite에서 SET NULL, mysql, postgresql에서는 SetNull
+        description: |-
+          sqlite에서 SET NULL, mysql, postgresql에서는 SetNull
+          배포시 아래 주석
+          sqlite 설정
       category_id:
         description: CategoryId가 null일 수가 있음
         type: integer
+      cover_img:
+        type: string
       created_at:
         type: string
       id:
@@ -91,7 +125,10 @@ definitions:
       review:
         type: string
       title:
-        description: Category  Category  `gorm:"foreignKey:CategoryId;constraint:OnDelete:SetNull;"`
+        description: |-
+          배포시 아래 주석해제
+          rds 설정
+          Category  Category  `gorm:"foreignKey:CategoryId;constraint:OnDelete:SetNull;"`
         type: string
       updated_at:
         type: string
@@ -122,6 +159,8 @@ definitions:
         type: integer
       password:
         type: string
+      role:
+        type: string
       username:
         type: string
     type: object
@@ -144,6 +183,105 @@ info:
   title: ggocamping App
   version: "1.0"
 paths:
+  /amenity:
+    get:
+      consumes:
+      - application/json
+      description: GetAmenities
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entities.AmenityListOut'
+                  type: array
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entities.AmenityListOut'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: GetAmenities
+      tags:
+      - Amenity
+    post:
+      consumes:
+      - application/json
+      description: CreateAmenity
+      parameters:
+      - description: Create Amenity
+        in: body
+        name: amenity
+        required: true
+        schema:
+          $ref: '#/definitions/entities.CreateAmenityInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.AmenityDetailOut'
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
+      summary: CreateAmenity
+      tags:
+      - Amenity
+  /amenity/{id}:
+    get:
+      consumes:
+      - application/json
+      description: GetAmenity
+      parameters:
+      - description: Amenity ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.AmenityDetailOut'
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
+      summary: GetAmenity
+      tags:
+      - Amenity
   /auth/login:
     post:
       consumes:

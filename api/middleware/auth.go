@@ -19,20 +19,11 @@ func Protected() fiber.Handler {
 }
 
 func jwtError(c *fiber.Ctx, err error) error {
-	var jsonResponse presenter.JsonResponse
 	if err.Error() == "missing or malformed JWT" {
-		jsonResponse = presenter.JsonResponse{
-			Error:   true,
-			Data:    nil,
-			Message: err.Error(),
-		}
+		jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 		return c.Status(fiber.StatusBadRequest).JSON(jsonResponse)
 	}
 
-	jsonResponse = presenter.JsonResponse{
-		Error:   true,
-		Data:    nil,
-		Message: "Invalid or expired JWT",
-	}
+	jsonResponse := presenter.NewJsonResponse(false, "Invalid or expired JWT", nil)
 	return c.Status(http.StatusUnauthorized).JSON(jsonResponse)
 }

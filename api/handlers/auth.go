@@ -23,32 +23,19 @@ func Login(service user.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// request parser
 		var requestBody entities.LoginInputSchema
-		var jsonResponse presenter.JsonResponse
+
 		if err := c.BodyParser(&requestBody); err != nil {
-			jsonResponse = presenter.JsonResponse{
-				Error:   true,
-				Message: err.Error(),
-				Data:    nil,
-			}
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(http.StatusBadRequest).JSON(jsonResponse)
 		}
 
 		token, err := service.Login(&requestBody)
 		if err != nil {
-			jsonResponse = presenter.JsonResponse{
-				Error:   true,
-				Message: err.Error(),
-				Data:    nil,
-			}
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(http.StatusBadRequest).JSON(jsonResponse)
 		}
 
-		jsonResponse = presenter.JsonResponse{
-			Error:   false,
-			Message: "",
-			Data:    token,
-		}
-
+		jsonResponse := presenter.NewJsonResponse(false, "", token)
 		return c.Status(http.StatusOK).JSON(jsonResponse)
 	}
 }

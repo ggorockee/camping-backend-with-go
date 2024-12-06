@@ -20,30 +20,20 @@ import (
 // @Security Bearer
 func GetCategoryList(service category.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var jsonResponse presenter.JsonResponse
 		fetchedCategories, err := service.GetCategoryList(c)
 		if err != nil {
-			jsonResponse = presenter.JsonResponse{
-				Error:   true,
-				Message: err.Error(),
-				Data:    nil,
-			}
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		var serializedCategories []entities.CategoryListOut
+		serializedCategories := make([]entities.CategoryListOut, 0)
 
 		for _, fetchedCategory := range *fetchedCategories {
 			serializer := entities.NewCategorySerializer(&fetchedCategory)
 			serializedCategories = append(serializedCategories, serializer.ListSerialize())
 		}
 
-		jsonResponse = presenter.JsonResponse{
-			Error:   false,
-			Message: "",
-			Data:    serializedCategories,
-		}
-
+		jsonResponse := presenter.NewJsonResponse(false, "", serializedCategories)
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
 }
@@ -61,34 +51,22 @@ func GetCategoryList(service category.Service) fiber.Handler {
 // @Security Bearer
 func CreateCategory(service category.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var jsonResponse presenter.JsonResponse
 		var requestBody entities.CreateCategoryInput
 
 		if err := c.BodyParser(&requestBody); err != nil {
-			jsonResponse = presenter.JsonResponse{
-				Error:   true,
-				Message: err.Error(),
-				Data:    nil,
-			}
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
 		createdCategory, err := service.CreateCategory(&requestBody, c)
 		if err != nil {
-			jsonResponse = presenter.JsonResponse{
-				Error:   true,
-				Message: err.Error(),
-				Data:    nil,
-			}
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
 		serializer := entities.NewCategorySerializer(createdCategory)
-		jsonResponse = presenter.JsonResponse{
-			Error:   false,
-			Message: "",
-			Data:    serializer.ListSerialize(),
-		}
+		jsonResponse := presenter.NewJsonResponse(false, "", serializer.ListSerialize())
+
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
 }
@@ -106,34 +84,21 @@ func CreateCategory(service category.Service) fiber.Handler {
 // @Security Bearer
 func GetCategory(service category.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var jsonResponse presenter.JsonResponse
-
 		id, err := c.ParamsInt("id")
 		if err != nil {
-			jsonResponse = presenter.JsonResponse{
-				Error:   true,
-				Message: err.Error(),
-				Data:    nil,
-			}
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
 		fetchedCategory, err := service.GetCategory(id, c)
 		if err != nil {
-			jsonResponse = presenter.JsonResponse{
-				Error:   true,
-				Message: err.Error(),
-				Data:    nil,
-			}
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
 		serializer := entities.NewCategorySerializer(fetchedCategory)
-		jsonResponse = presenter.JsonResponse{
-			Error:   false,
-			Message: "",
-			Data:    serializer.DetailSerialize(),
-		}
+		jsonResponse := presenter.NewJsonResponse(false, "", serializer.DetailSerialize())
+
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
 }
@@ -152,44 +117,28 @@ func GetCategory(service category.Service) fiber.Handler {
 // @Security Bearer
 func UpdateCategory(service category.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var jsonResponse presenter.JsonResponse
 		var requestBody entities.UpdateCategoryInput
 
 		if err := c.BodyParser(&requestBody); err != nil {
-			jsonResponse = presenter.JsonResponse{
-				Error:   true,
-				Message: err.Error(),
-				Data:    nil,
-			}
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
 		id, err := c.ParamsInt("id")
 		if err != nil {
-			jsonResponse = presenter.JsonResponse{
-				Error:   true,
-				Message: err.Error(),
-				Data:    nil,
-			}
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
 		fetchedCategory, err := service.UpdateCategory(&requestBody, id, c)
 		if err != nil {
-			jsonResponse = presenter.JsonResponse{
-				Error:   true,
-				Message: err.Error(),
-				Data:    nil,
-			}
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
 		serializer := entities.NewCategorySerializer(fetchedCategory)
-		jsonResponse = presenter.JsonResponse{
-			Error:   false,
-			Message: "",
-			Data:    serializer.DetailSerialize(),
-		}
+		jsonResponse := presenter.NewJsonResponse(false, "", serializer.DetailSerialize())
+
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
 }
@@ -207,33 +156,21 @@ func UpdateCategory(service category.Service) fiber.Handler {
 // @Security Bearer
 func DeleteCategory(service category.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var jsonResponse presenter.JsonResponse
 
 		id, err := c.ParamsInt("id")
 		if err != nil {
-			jsonResponse = presenter.JsonResponse{
-				Error:   true,
-				Message: err.Error(),
-				Data:    nil,
-			}
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
 		err = service.DeleteCategory(id, c)
 		if err != nil {
-			jsonResponse = presenter.JsonResponse{
-				Error:   true,
-				Message: err.Error(),
-				Data:    nil,
-			}
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		jsonResponse = presenter.JsonResponse{
-			Error:   false,
-			Message: "Successful delete",
-			Data:    nil,
-		}
+		jsonResponse := presenter.NewJsonResponse(false, "Successful delete", nil)
+
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
 }
