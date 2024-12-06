@@ -11,10 +11,12 @@ type Spot struct {
 	CategoryId *int `gorm:"default:null" json:"category_id"` // CategoryId가 null일 수가 있음
 	// sqlite에서 SET NULL, mysql, postgresql에서는 SetNull
 	// 배포시 아래 주석
-	//Category Category `gorm:"foreignKey:CategoryId;constraint:OnDelete:SET NULL;"`
+	// sqlite 설정
+	Category Category `gorm:"foreignKey:CategoryId;constraint:OnDelete:SET NULL;"`
 
 	// 배포시 아래 주석해제
-	Category  Category  `gorm:"foreignKey:CategoryId;constraint:OnDelete:SetNull;"`
+	// rds 설정
+	//Category  Category  `gorm:"foreignKey:CategoryId;constraint:OnDelete:SetNull;"`
 	Title     string    `json:"title"`
 	Location  string    `json:"location"`
 	Author    string    `json:"author"`
@@ -25,35 +27,48 @@ type Spot struct {
 	CoverImg string `json:"cover_img"`
 }
 
-func (s *Spot) ListSerialize() SpotListOutputSchema {
+type SpotSerializer interface {
+	ListSerialize() SpotListOutputSchema
+	DetailSerialize() SpotDetailOutputSchema
+}
+
+type spotSerializer struct {
+	spot *Spot
+	user UserSerializer
+}
+
+func (s *spotSerializer) ListSerialize() SpotListOutputSchema {
+
 	return SpotListOutputSchema{
-		Id:        s.Id,
-		User:      s.User.TinyUserSerialize(),
-		Title:     s.Title,
-		Location:  s.Location,
-		Author:    s.Author,
-		CreatedAt: s.CreatedAt,
-		UpdatedAt: s.UpdatedAt,
-		Review:    s.Review,
+		Id:        int(s.spot.Id),
+		User:      s.user.TinyUserSerialize(),
+		Title:     s.spot.Title,
+		Location:  s.spot.Location,
+		Author:    s.spot.Author,
+		CreatedAt: s.spot.CreatedAt,
+		UpdatedAt: s.spot.UpdatedAt,
+		Review:    s.spot.Review,
 	}
 }
 
-func (s *Spot) DetailSerialize() SpotDetailOutputSchema {
+func (s *spotSerializer) DetailSerialize() SpotDetailOutputSchema {
 	return SpotDetailOutputSchema{
-		Id:        s.Id,
-		User:      s.User.TinyUserSerialize(),
-		Title:     s.Title,
-		Location:  s.Location,
-		Author:    s.Author,
-		CreatedAt: s.CreatedAt,
-		UpdatedAt: s.UpdatedAt,
-		Review:    s.Review,
+		Id:        int(s.spot.Id),
+		User:      s.user.TinyUserSerialize(),
+		Title:     s.spot.Title,
+		Location:  s.spot.Location,
+		Author:    s.spot.Author,
+		CreatedAt: s.spot.CreatedAt,
+		UpdatedAt: s.spot.UpdatedAt,
+		Review:    s.spot.Review,
 	}
 }
 
-type DeleteRequest struct {
-	Id string `json:"id"`
+func NewSpotSerializer(s *Spot, u UserSerializer) SpotSerializer {
+	return &spotSerializer{spot: s, user: u}
 }
+
+// ============= input schema =============
 
 type CreateSpotInputSchema struct {
 	Title    string `json:"title"`
@@ -67,8 +82,10 @@ type UpdateSpotSchema struct {
 	Review   string `json:"review"`
 }
 
+// ============= output schema =============
+
 type SpotListOutputSchema struct {
-	Id        uint                 `json:"id"`
+	Id        int                  `json:"id"`
 	User      TinyUserOutputSchema `json:"user"`
 	Title     string               `json:"title"`
 	Location  string               `json:"location"`
@@ -79,7 +96,7 @@ type SpotListOutputSchema struct {
 }
 
 type SpotDetailOutputSchema struct {
-	Id        uint                 `json:"id"`
+	Id        int                  `json:"id"`
 	User      TinyUserOutputSchema `json:"user"`
 	Title     string               `json:"title"`
 	Location  string               `json:"location"`

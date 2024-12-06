@@ -19,23 +19,38 @@ const (
 	Admin  UserRole = "admin"
 )
 
-func (u *User) TinyUserSerialize() TinyUserOutputSchema {
+type UserSerializer interface {
+	TinyUserSerialize() TinyUserOutputSchema
+	UserDetailSerialize() UserDetailOutputSchema
+}
+
+type userSerializer struct {
+	User *User
+}
+
+func (u *userSerializer) TinyUserSerialize() TinyUserOutputSchema {
 	return TinyUserOutputSchema{
-		Id:       u.Id,
-		Email:    u.Email,
-		Username: u.Username,
-		Role:     u.Role,
+		Id:       int(u.User.Id),
+		Email:    u.User.Email,
+		Username: u.User.Username,
+		Role:     u.User.Role,
 	}
 }
 
-func (u *User) UserDetailSerialize() UserDetailOutputSchema {
+func (u *userSerializer) UserDetailSerialize() UserDetailOutputSchema {
 	return UserDetailOutputSchema{
-		Id:       u.Id,
-		Email:    u.Email,
-		Username: u.Username,
-		Role:     u.Role,
+		Id:       int(u.User.Id),
+		Email:    u.User.Email,
+		Username: u.User.Username,
+		Role:     u.User.Role,
 	}
 }
+
+func NewUserSerializer(u *User) UserSerializer {
+	return &userSerializer{User: u}
+}
+
+// ============= input schema =============
 
 type LoginInputSchema struct {
 	Email    string `json:"email"`
@@ -55,15 +70,17 @@ type ChangePasswordInputSchema struct {
 	NewPasswordConfirm string `json:"new_password_confirm"`
 }
 
+// ============= output schema =============
+
 type TinyUserOutputSchema struct {
-	Id       uint   `json:"id" gorm:"primaryKey"`
+	Id       int    `json:"id" gorm:"primaryKey"`
 	Email    string `json:"email"`
 	Username string `json:"username"`
 	Role     string `json:"role"`
 }
 
 type UserDetailOutputSchema struct {
-	Id       uint   `json:"id" gorm:"primaryKey"`
+	Id       int    `json:"id" gorm:"primaryKey"`
 	Email    string `json:"email"`
 	Username string `json:"username"`
 	Role     string `json:"role"`

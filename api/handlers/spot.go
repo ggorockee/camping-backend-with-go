@@ -44,7 +44,8 @@ func AddSpot(service spot.Service) fiber.Handler {
 			return c.Status(http.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		serializer := entities.NewSpotSerializer(result)
+		userSerializer := entities.NewUserSerializer(&result.User)
+		serializer := entities.NewSpotSerializer(result, userSerializer)
 		jsonResponse = presenter.JsonResponse{
 			Error:   false,
 			Message: "successfully create spot!",
@@ -80,7 +81,8 @@ func GetMySpots(service spot.Service) fiber.Handler {
 		var spotsSerialized []entities.SpotListOutputSchema
 
 		for _, fetchedItem := range *fetched {
-			serializer := entities.NewSpotSerializer(&fetchedItem)
+			userSerializer := entities.NewUserSerializer(&fetchedItem.User)
+			serializer := entities.NewSpotSerializer(&fetchedItem, userSerializer)
 			spotsSerialized = append(spotsSerialized, serializer.ListSerialize())
 		}
 
@@ -131,7 +133,8 @@ func UpdateSpot(service spot.Service) fiber.Handler {
 			return c.Status(http.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		serializer := entities.NewSpotSerializer(fetchedSpot)
+		userSerializer := entities.NewUserSerializer(&fetchedSpot.User)
+		serializer := entities.NewSpotSerializer(fetchedSpot, userSerializer)
 		jsonResponse = presenter.JsonResponse{
 			Error:   false,
 			Message: "",
@@ -168,7 +171,8 @@ func GetSpot(service spot.Service) fiber.Handler {
 			return c.Status(http.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		serializer := entities.NewSpotSerializer(fetched)
+		userSerializer := entities.NewUserSerializer(&fetched.User)
+		serializer := entities.NewSpotSerializer(fetched, userSerializer)
 
 		jsonResponse = presenter.JsonResponse{
 			Error:   false,
@@ -237,7 +241,8 @@ func GetAllSpots(service spot.Service) fiber.Handler {
 
 		var responseSpots []entities.SpotListOutputSchema
 		for _, s := range *spots {
-			serializer := entities.NewSpotSerializer(&s)
+			userSerializer := entities.NewUserSerializer(&s.User)
+			serializer := entities.NewSpotSerializer(&s, userSerializer)
 			responseSpots = append(responseSpots, serializer.ListSerialize())
 		}
 
