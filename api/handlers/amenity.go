@@ -16,7 +16,7 @@ import (
 // @Param amenity body entities.CreateAmenityInput true "Create Amenity"
 // @Success 200 {object} presenter.JsonResponse{data=entities.AmenityDetailOut}
 // @Failure 503 {object} presenter.JsonResponse{}
-// @Router /amenity [post]
+// @Router /spot/amenity [post]
 // @Security Bearer
 func CreateAmenity(service amenity.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -50,7 +50,7 @@ func CreateAmenity(service amenity.Service) fiber.Handler {
 // @Produce json
 // @Success 200 {object} presenter.JsonResponse{data=[]entities.AmenityListOut}
 // @Failure 503 {object} presenter.JsonResponse{data=[]entities.AmenityListOut}
-// @Router /amenity [get]
+// @Router /spot/amenity [get]
 // @Security Bearer
 func GetAmenities(service amenity.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -81,7 +81,7 @@ func GetAmenities(service amenity.Service) fiber.Handler {
 // @Param id path int true "Amenity ID"
 // @Success 200 {object} presenter.JsonResponse{data=entities.AmenityDetailOut}
 // @Failure 503 {object} presenter.JsonResponse{}
-// @Router /amenity/{id} [get]
+// @Router /spot/amenity/{id} [get]
 // @Security Bearer
 func GetAmenity(service amenity.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -102,6 +102,75 @@ func GetAmenity(service amenity.Service) fiber.Handler {
 			Message: "",
 			Data:    serializer.DetailSerialize(),
 		}
+		return c.Status(fiber.StatusOK).JSON(jsonResponse)
+	}
+}
+
+// UpdateAmenity
+// @Summary UpdateAmenity
+// @Description UpdateAmenity
+// @Tags Amenity
+// @Accept json
+// @Produce json
+// @Param id path int true "Amenity ID"
+// @Param amenity body entities.UpdateAmenityInput true "Update Amenity"
+// @Success 200 {object} presenter.JsonResponse{data=entities.AmenityDetailOut}
+// @Failure 503 {object} presenter.JsonResponse{}
+// @Router /spot/amenity/{id} [put]
+// @Security Bearer
+func UpdateAmenity(service amenity.Service) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+
+		var requestBody entities.UpdateAmenityInput
+		if err := c.BodyParser(&requestBody); err != nil {
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), "")
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		id, err := c.ParamsInt("id")
+		if err != nil {
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		updatedAmenity, err := service.UpdateAmenity(&requestBody, id, c)
+		if err != nil {
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		serializer := entities.NewAmenitySerializer(updatedAmenity)
+		jsonResponse := presenter.NewJsonResponse(false, "", serializer.DetailSerialize())
+		return c.Status(fiber.StatusOK).JSON(jsonResponse)
+	}
+}
+
+// DeleteAmenity
+// @Summary DeleteAmenity
+// @Description DeleteAmenity
+// @Tags Amenity
+// @Accept json
+// @Produce json
+// @Param id path int true "Amenity ID"
+// @Success 200 {object} presenter.JsonResponse{data=entities.AmenityDetailOut}
+// @Failure 503 {object} presenter.JsonResponse{}
+// @Router /spot/amenity/{id} [delete]
+// @Security Bearer
+func DeleteAmenity(service amenity.Service) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		id, err := c.ParamsInt("id")
+		if err != nil {
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		err = service.DeleteAmenity(id, c)
+		if err != nil {
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		jsonResponse := presenter.NewJsonResponse(true, "Deleted successfully", nil)
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
 }

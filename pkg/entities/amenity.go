@@ -61,3 +61,8 @@ type CreateAmenityInput struct {
 	Name        string  `json:"name"`
 	Description *string `json:"description"`
 }
+
+type UpdateAmenityInput struct {
+	Name        string  `json:"name"`
+	Description *string `json:"description"`
+}

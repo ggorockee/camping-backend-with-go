@@ -11,7 +11,7 @@ import (
 
 func SpotRouter(app fiber.Router, service spot.Service) {
 	//public router
-	publicSpotRouter := app.Group("/spot")
+	publicSpotRouter := app.Group("/spot/amenity")
 	publicSpotRouter.Get("/spot", handlers.GetAllSpots(service))
 
 	//private router

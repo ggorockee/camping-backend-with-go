@@ -20,17 +20,29 @@ func AmenityRouter(app fiber.Router, service amenity.Service) {
 		entities.Admin,
 		entities.Owner,
 	), handlers.GetAmenities(service))
-	privateAmenityRoute.Get("/:id", middleware.RoleMiddleware(
-		entities.Staff,
-		entities.Client,
-		entities.Admin,
-		entities.Owner,
-	), handlers.GetAmenity(service))
 	privateAmenityRoute.Post("/", middleware.RoleMiddleware(
 		entities.Staff,
 		entities.Client,
 		entities.Admin,
 		entities.Owner,
 	), handlers.CreateAmenity(service))
+	privateAmenityRoute.Get("/:id", middleware.RoleMiddleware(
+		entities.Staff,
+		entities.Client,
+		entities.Admin,
+		entities.Owner,
+	), handlers.GetAmenity(service))
+	privateAmenityRoute.Put("/:id", middleware.RoleMiddleware(
+		entities.Staff,
+		entities.Client,
+		entities.Admin,
+		entities.Owner,
+	), handlers.UpdateAmenity(service))
+	privateAmenityRoute.Delete("/:id", middleware.RoleMiddleware(
+		entities.Staff,
+		entities.Client,
+		entities.Admin,
+		entities.Owner,
+	), handlers.DeleteAmenity(service))
 
 }

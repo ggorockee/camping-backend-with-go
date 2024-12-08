@@ -137,6 +137,13 @@ definitions:
       user_id:
         type: integer
     type: object
+  entities.UpdateAmenityInput:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
   entities.UpdateCategoryInput:
     properties:
       name:
@@ -183,105 +190,6 @@ info:
   title: ggocamping App
   version: "1.0"
 paths:
-  /amenity:
-    get:
-      consumes:
-      - application/json
-      description: GetAmenities
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/entities.AmenityListOut'
-                  type: array
-              type: object
-        "503":
-          description: Service Unavailable
-          schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/entities.AmenityListOut'
-                  type: array
-              type: object
-      security:
-      - Bearer: []
-      summary: GetAmenities
-      tags:
-      - Amenity
-    post:
-      consumes:
-      - application/json
-      description: CreateAmenity
-      parameters:
-      - description: Create Amenity
-        in: body
-        name: amenity
-        required: true
-        schema:
-          $ref: '#/definitions/entities.CreateAmenityInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/entities.AmenityDetailOut'
-              type: object
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/presenter.JsonResponse'
-      security:
-      - Bearer: []
-      summary: CreateAmenity
-      tags:
-      - Amenity
-  /amenity/{id}:
-    get:
-      consumes:
-      - application/json
-      description: GetAmenity
-      parameters:
-      - description: Amenity ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/entities.AmenityDetailOut'
-              type: object
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/presenter.JsonResponse'
-      security:
-      - Bearer: []
-      summary: GetAmenity
-      tags:
-      - Amenity
   /auth/login:
     post:
       consumes:
@@ -633,6 +541,173 @@ paths:
       summary: UpdateSpot
       tags:
       - Spot
+  /spot/amenity:
+    get:
+      consumes:
+      - application/json
+      description: GetAmenities
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entities.AmenityListOut'
+                  type: array
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entities.AmenityListOut'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: GetAmenities
+      tags:
+      - Amenity
+    post:
+      consumes:
+      - application/json
+      description: CreateAmenity
+      parameters:
+      - description: Create Amenity
+        in: body
+        name: amenity
+        required: true
+        schema:
+          $ref: '#/definitions/entities.CreateAmenityInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.AmenityDetailOut'
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
+      summary: CreateAmenity
+      tags:
+      - Amenity
+  /spot/amenity/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: DeleteAmenity
+      parameters:
+      - description: Amenity ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.AmenityDetailOut'
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
+      summary: DeleteAmenity
+      tags:
+      - Amenity
+    get:
+      consumes:
+      - application/json
+      description: GetAmenity
+      parameters:
+      - description: Amenity ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.AmenityDetailOut'
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
+      summary: GetAmenity
+      tags:
+      - Amenity
+    put:
+      consumes:
+      - application/json
+      description: UpdateAmenity
+      parameters:
+      - description: Amenity ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Amenity
+        in: body
+        name: amenity
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UpdateAmenityInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.AmenityDetailOut'
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
+      summary: UpdateAmenity
+      tags:
+      - Amenity
   /spot/me:
     get:
       consumes:

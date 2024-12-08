@@ -12,11 +12,49 @@ type Repository interface {
 	Create(input *entities.CreateAmenityInput, ctx *fiber.Ctx) (*entities.Amenity, error)
 	GetAmenityById(id int, ctx *fiber.Ctx) (*entities.Amenity, error)
 	GetAmenityList(ctx *fiber.Ctx) (*[]entities.Amenity, error)
+	UpdateAmenity(input *entities.UpdateAmenityInput, id int, ctx *fiber.Ctx) (*entities.Amenity, error)
+	DeleteAmenity(id int, ctx *fiber.Ctx) error
 }
 
 type repository struct {
 	DBConn   *gorm.DB
 	UserRepo user.Repository
+}
+
+func (r *repository) DeleteAmenity(id int, ctx *fiber.Ctx) error {
+	amenity, err := r.GetAmenityById(id, ctx)
+	if err != nil {
+		return err
+	}
+
+	if err := r.DBConn.Delete(&amenity).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *repository) UpdateAmenity(input *entities.UpdateAmenityInput, id int, ctx *fiber.Ctx) (*entities.Amenity, error) {
+	amenity, err := r.GetAmenityById(id, ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	amenity.UpdatedAt = time.Now()
+	switch {
+	case input.Name != "":
+		amenity.Name = input.Name
+	case input.Description != nil:
+		amenity.Description = input.Description
+	}
+
+	var model entities.Amenity
+	model.Id = amenity.Id
+	if err := r.DBConn.Model(model).Updates(&amenity).Error; err != nil {
+		return nil, err
+	}
+
+	return amenity, nil
 }
 
 func (r *repository) GetAmenityById(id int, ctx *fiber.Ctx) (*entities.Amenity, error) {
