@@ -16,7 +16,6 @@ import (
 
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"gorm.io/driver/mysql"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
 	"github.com/gofiber/fiber/v2"
@@ -95,12 +94,10 @@ func databaseConnection() *gorm.DB {
 	var err error
 
 	if MYSQL == "" {
-		dbSetting = "local"
-		dsn = "test.db"
-		log.Printf("[INFO] %s DB setting enabled...\n", dbSetting)
-		db, err = gorm.Open(sqlite.Open(dsn), &gorm.Config{})
+		log.Fatalf("database setting failed...")
 	} else {
 		dbSetting = "mysql"
+		log.Printf("[INFO] %s DB setting enabled...\n", dbSetting)
 		dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 			config.Config("DB_USER"),
 			config.Config("DB_PASSWORD"),
