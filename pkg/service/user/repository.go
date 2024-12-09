@@ -2,6 +2,7 @@ package user
 
 import (
 	"camping-backend-with-go/pkg/config"
+	"camping-backend-with-go/pkg/dto"
 	"camping-backend-with-go/pkg/entities"
 	"errors"
 	"strconv"
@@ -14,12 +15,12 @@ import (
 )
 
 type Repository interface {
-	CreateUser(signUpInputSchema *entities.SignUpInputSchema) error
+	CreateUser(input *dto.SignUpIn) error
 	hashPassword(password string) (string, error)
-	Login(loginInputSchema *entities.LoginInputSchema) (string, error)
+	Login(input *dto.LoginIn) (string, error)
 	GetUserByEmail(email string) (*entities.User, error)
 	CheckPasswordHash(password, hash string) bool
-	ChangePassword(changePasswordInput *entities.ChangePasswordInputSchema, ctx *fiber.Ctx) error
+	ChangePassword(input *dto.ChangePasswordIn, ctx *fiber.Ctx) error
 	ValidToken(t *jwt.Token, id string) bool
 	GetUserById(id int) (*entities.User, error)
 	GetValueFromToken(key string, ctx *fiber.Ctx) int
@@ -74,9 +75,9 @@ func (r *repository) GetValueFromToken(key string, ctx *fiber.Ctx) int {
 	return value
 }
 
-func (r *repository) ChangePassword(changePasswordInput *entities.ChangePasswordInputSchema, ctx *fiber.Ctx) error {
-	newPassword := changePasswordInput.NewPassword
-	oldPassword := changePasswordInput.OldPassword
+func (r *repository) ChangePassword(input *dto.ChangePasswordIn, ctx *fiber.Ctx) error {
+	newPassword := input.NewPassword
+	oldPassword := input.OldPassword
 
 	// GetFindByEmail
 	// login한 User의 Id를 알아내는 로직
@@ -125,9 +126,9 @@ func (r *repository) GetUserByEmail(email string) (*entities.User, error) {
 	return &user, nil
 }
 
-func (r *repository) Login(loginInputSchema *entities.LoginInputSchema) (string, error) {
-	email := loginInputSchema.Email
-	password := loginInputSchema.Password
+func (r *repository) Login(input *dto.LoginIn) (string, error) {
+	email := input.Email
+	password := input.Password
 
 	user, err := r.GetUserByEmail(email)
 	if err != nil {
@@ -151,12 +152,12 @@ func (r *repository) Login(loginInputSchema *entities.LoginInputSchema) (string,
 	return t, nil
 }
 
-func (r *repository) CreateUser(signUpInputSchema *entities.SignUpInputSchema) error {
+func (r *repository) CreateUser(input *dto.SignUpIn) error {
 	var user entities.User
 	// hashing password
-	password := signUpInputSchema.Password
-	email := signUpInputSchema.Email
-	username := signUpInputSchema.Username
+	password := input.Password
+	email := input.Email
+	username := input.Username
 	hashedPassword, err := r.hashPassword(password)
 	if err != nil {
 		return err
@@ -171,7 +172,7 @@ func (r *repository) CreateUser(signUpInputSchema *entities.SignUpInputSchema) e
 		user.Username = *username
 
 	} else {
-		user.Username = *signUpInputSchema.Username
+		user.Username = *input.Username
 	}
 
 	if err := r.DBConn.Create(&user).Error; err != nil {

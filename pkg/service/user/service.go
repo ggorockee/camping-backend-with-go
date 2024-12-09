@@ -1,15 +1,14 @@
 package user
 
 import (
-	"camping-backend-with-go/pkg/entities"
-
+	"camping-backend-with-go/pkg/dto"
 	"github.com/gofiber/fiber/v2"
 )
 
 type Service interface {
-	CreateUser(signUpInputSchema *entities.SignUpInputSchema) error
-	Login(loginInputSchema *entities.LoginInputSchema) (string, error)
-	ChangePassword(changePasswordInput *entities.ChangePasswordInputSchema, ctx *fiber.Ctx) error
+	CreateUser(input *dto.SignUpIn) error
+	Login(input *dto.LoginIn) (string, error)
+	ChangePassword(input *dto.ChangePasswordIn, ctx *fiber.Ctx) error
 }
 
 type service struct {
@@ -22,14 +21,14 @@ func NewService(r Repository) Service {
 	}
 }
 
-func (s *service) Login(loginInputSchema *entities.LoginInputSchema) (string, error) {
-	return s.repository.Login(loginInputSchema)
+func (s *service) Login(input *dto.LoginIn) (string, error) {
+	return s.repository.Login(input)
 }
 
-func (s *service) CreateUser(signUpInputSchema *entities.SignUpInputSchema) error {
-	return s.repository.CreateUser(signUpInputSchema)
+func (s *service) CreateUser(input *dto.SignUpIn) error {
+	return s.repository.CreateUser(input)
 }
 
-func (s *service) ChangePassword(changePasswordInput *entities.ChangePasswordInputSchema, ctx *fiber.Ctx) error {
-	return s.repository.ChangePassword(changePasswordInput, ctx)
+func (s *service) ChangePassword(input *dto.ChangePasswordIn, ctx *fiber.Ctx) error {
+	return s.repository.ChangePassword(input, ctx)
 }

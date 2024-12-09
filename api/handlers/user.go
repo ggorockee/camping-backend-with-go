@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"camping-backend-with-go/api/presenter"
-	"camping-backend-with-go/pkg/entities"
+	"camping-backend-with-go/pkg/dto"
 	"camping-backend-with-go/pkg/service/user"
 	"net/http"
 
@@ -15,14 +15,14 @@ import (
 // @Tags Users
 // @Accept json
 // @Produce json
-// @Param user body entities.ChangePasswordInputSchema true "Change Password"
+// @Param user body dto.ChangePasswordIn true "Change Password"
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /user/changepw [put]
 // @Security Bearer
 func ChangePassword(service user.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var requestBody entities.ChangePasswordInputSchema
+		var requestBody dto.ChangePasswordIn
 
 		// parsing error
 		if err := c.BodyParser(&requestBody); err != nil {
@@ -60,13 +60,13 @@ func ChangePassword(service user.Service) fiber.Handler {
 // @Tags Users
 // @Accept json
 // @Produce json
-// @Param user body entities.SignUpInputSchema true "Register user"
+// @Param user body dto.SignUpIn true "Register user"
 // @Success 200 {object} presenter.JsonResponse{data=entities.User}
 // @Failure 503 {object} presenter.JsonResponse
 // @Router /user/signup [post]
 func CreateUser(service user.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var requestBody entities.SignUpInputSchema
+		var requestBody dto.SignUpIn
 		err := c.BodyParser(&requestBody)
 
 		// json parsing

@@ -1,6 +1,7 @@
 package spot
 
 import (
+	"camping-backend-with-go/pkg/dto"
 	"camping-backend-with-go/pkg/entities"
 	"camping-backend-with-go/pkg/service/user"
 	"errors"
@@ -12,10 +13,10 @@ import (
 )
 
 type Repository interface {
-	CreateSpot(spot *entities.CreateSpotInputSchema, ctx *fiber.Ctx) (*entities.Spot, error)
+	CreateSpot(input *dto.CreateSpotIn, ctx *fiber.Ctx) (*entities.Spot, error)
 	FetchMySpots(ctx *fiber.Ctx) (*[]entities.Spot, error)
 	GetSpot(id int, ctx *fiber.Ctx) (*entities.Spot, error)
-	UpdateSpot(updateSpotSchema *entities.UpdateSpotSchema, id int, ctx *fiber.Ctx) (*entities.Spot, error)
+	UpdateSpot(input *dto.UpdateSpotIn, id int, ctx *fiber.Ctx) (*entities.Spot, error)
 	GetFindById(id int) (*entities.Spot, error)
 	DeleteSpot(id int, ctx *fiber.Ctx) error
 	GetSpotById(id int) (*entities.Spot, error)
@@ -27,9 +28,9 @@ type repository struct {
 	UserRepo user.Repository
 }
 
-func NewRepo(dbconn *gorm.DB, userRepo user.Repository) Repository {
+func NewRepo(dbConn *gorm.DB, userRepo user.Repository) Repository {
 	return &repository{
-		DBConn:   dbconn,
+		DBConn:   dbConn,
 		UserRepo: userRepo,
 	}
 }
@@ -97,9 +98,9 @@ func (r *repository) GetFindById(id int) (*entities.Spot, error) {
 	return &spot, nil
 }
 
-func (r *repository) CreateSpot(createSpotInputSchema *entities.CreateSpotInputSchema, ctx *fiber.Ctx) (*entities.Spot, error) {
-	title := createSpotInputSchema.Title
-	location := createSpotInputSchema.Location
+func (r *repository) CreateSpot(input *dto.CreateSpotIn, ctx *fiber.Ctx) (*entities.Spot, error) {
+	title := input.Title
+	location := input.Location
 
 	// jwt에서 user 불러오기
 	userId := r.UserRepo.GetValueFromToken("user_id", ctx)
@@ -120,7 +121,7 @@ func (r *repository) CreateSpot(createSpotInputSchema *entities.CreateSpotInputS
 	spot.UserId = uint(userId)
 	spot.User = *user
 	// 추가되는 것들
-	spot.Review = createSpotInputSchema.Review
+	spot.Review = input.Review
 
 	result := r.DBConn.Create(&spot)
 	if result.Error != nil {
@@ -144,7 +145,7 @@ func (r *repository) FetchMySpots(ctx *fiber.Ctx) (*[]entities.Spot, error) {
 	return &spots, nil
 }
 
-func (r *repository) UpdateSpot(updateSpotSchema *entities.UpdateSpotSchema, id int, ctx *fiber.Ctx) (*entities.Spot, error) {
+func (r *repository) UpdateSpot(input *dto.UpdateSpotIn, id int, ctx *fiber.Ctx) (*entities.Spot, error) {
 	// Login이 되어있어야함
 	// 0. middleware 처리 (v)
 	// 1. jwtToken을 가지고와서 userId를 얻음(from localstorage)
@@ -162,18 +163,18 @@ func (r *repository) UpdateSpot(updateSpotSchema *entities.UpdateSpotSchema, id 
 		return nil, errors.New("permission denied")
 	}
 
-	updated_title := updateSpotSchema.Title
+	updated_title := input.Title
 	if updated_title != "" {
 		fetchedSpot.Title = updated_title
 	}
 
-	updated_location := updateSpotSchema.Location
+	updated_location := input.Location
 	if updated_location != "" {
 		fetchedSpot.Location = updated_location
 	}
 
-	if updateSpotSchema.Review != "" {
-		fetchedSpot.Review = updateSpotSchema.Review
+	if input.Review != "" {
+		fetchedSpot.Review = input.Review
 	}
 
 	fetchedSpot.UpdatedAt = time.Now()

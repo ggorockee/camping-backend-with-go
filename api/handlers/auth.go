@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"camping-backend-with-go/api/presenter"
-	"camping-backend-with-go/pkg/entities"
+	"camping-backend-with-go/pkg/dto"
 	"camping-backend-with-go/pkg/service/user"
 	"net/http"
 
@@ -15,14 +15,14 @@ import (
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param user body entities.LoginInputSchema true "Login Schema"
+// @Param user body dto.LoginIn true "Login Schema"
 // @Success 200 {object} presenter.JsonResponse{data=string}
 // @Failure 503 {object} presenter.JsonResponse
 // @Router /auth/login [post]
 func Login(service user.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// request parser
-		var requestBody entities.LoginInputSchema
+		var requestBody dto.LoginIn
 
 		if err := c.BodyParser(&requestBody); err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)

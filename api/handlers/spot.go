@@ -2,7 +2,8 @@ package handlers
 
 import (
 	"camping-backend-with-go/api/presenter"
-	"camping-backend-with-go/pkg/entities"
+	"camping-backend-with-go/pkg/dto"
+	"camping-backend-with-go/pkg/serializer"
 	"camping-backend-with-go/pkg/service/spot"
 	"net/http"
 
@@ -15,14 +16,14 @@ import (
 // @Tags Spot
 // @Accept json
 // @Produce json
-// @Param user body entities.CreateSpotInputSchema true "Create Spot"
+// @Param user body dto.CreateSpotIn true "Create Spot"
 // @Success 200 {object} presenter.JsonResponse{data=entities.Spot}
 // @Failure 503 {object} presenter.JsonResponse
 // @Router /spot [post]
 // @Security Bearer
 func AddSpot(service spot.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var requestBody entities.CreateSpotInputSchema
+		var requestBody dto.CreateSpotIn
 
 		err := c.BodyParser(&requestBody)
 		if err != nil {
@@ -36,9 +37,9 @@ func AddSpot(service spot.Service) fiber.Handler {
 			return c.Status(http.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		userSerializer := entities.NewUserSerializer(&result.User)
-		serializer := entities.NewSpotSerializer(result, userSerializer)
-		jsonResponse := presenter.NewJsonResponse(true, err.Error(), serializer.DetailSerialize())
+		userSerializer := serializer.NewUserSerializer(&result.User)
+		spotSerializer := serializer.NewSpotSerializer(result, userSerializer)
+		jsonResponse := presenter.NewJsonResponse(true, err.Error(), spotSerializer.DetailSerialize())
 
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
@@ -63,12 +64,12 @@ func GetMySpots(service spot.Service) fiber.Handler {
 			return c.Status(http.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		spotsSerialized := make([]entities.SpotListOutputSchema, 0)
+		spotsSerialized := make([]dto.SpotListOut, 0)
 
 		for _, fetchedItem := range *fetched {
-			userSerializer := entities.NewUserSerializer(&fetchedItem.User)
-			serializer := entities.NewSpotSerializer(&fetchedItem, userSerializer)
-			spotsSerialized = append(spotsSerialized, serializer.ListSerialize())
+			userSerializer := serializer.NewUserSerializer(&fetchedItem.User)
+			spotSerializer := serializer.NewSpotSerializer(&fetchedItem, userSerializer)
+			spotsSerialized = append(spotsSerialized, spotSerializer.ListSerialize())
 		}
 
 		jsonResponse := presenter.NewJsonResponse(false, "", spotsSerialized)
@@ -83,14 +84,14 @@ func GetMySpots(service spot.Service) fiber.Handler {
 // @Accept json
 // @Produce json
 // @Param id path int true "Spot id"
-// @Param user body entities.UpdateSpotSchema true "Update Spot"
+// @Param user body dto.UpdateSpotIn true "Update Spot"
 // @Success 200 {object} presenter.JsonResponse{data=entities.Spot}
 // @Failure 503 {object} presenter.JsonResponse
 // @Router /spot/{id} [put]
 // @Security Bearer
 func UpdateSpot(service spot.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var requestBody entities.UpdateSpotSchema
+		var requestBody dto.UpdateSpotIn
 
 		err := c.BodyParser(&requestBody)
 		id, _ := c.ParamsInt("id")
@@ -105,9 +106,9 @@ func UpdateSpot(service spot.Service) fiber.Handler {
 			return c.Status(http.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		userSerializer := entities.NewUserSerializer(&fetchedSpot.User)
-		serializer := entities.NewSpotSerializer(fetchedSpot, userSerializer)
-		jsonResponse := presenter.NewJsonResponse(false, "", serializer.DetailSerialize())
+		userSerializer := serializer.NewUserSerializer(&fetchedSpot.User)
+		spotSerializer := serializer.NewSpotSerializer(fetchedSpot, userSerializer)
+		jsonResponse := presenter.NewJsonResponse(false, "", spotSerializer.DetailSerialize())
 
 		return c.Status(http.StatusOK).JSON(jsonResponse)
 	}
@@ -135,10 +136,10 @@ func GetSpot(service spot.Service) fiber.Handler {
 			return c.Status(http.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		userSerializer := entities.NewUserSerializer(&fetched.User)
-		serializer := entities.NewSpotSerializer(fetched, userSerializer)
+		userSerializer := serializer.NewUserSerializer(&fetched.User)
+		spotSerializer := serializer.NewSpotSerializer(fetched, userSerializer)
 
-		jsonResponse := presenter.NewJsonResponse(false, "", serializer.DetailSerialize())
+		jsonResponse := presenter.NewJsonResponse(false, "", spotSerializer.DetailSerialize())
 		return c.Status(http.StatusOK).JSON(jsonResponse)
 	}
 }
@@ -187,11 +188,11 @@ func GetAllSpots(service spot.Service) fiber.Handler {
 			return c.Status(http.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		responseSpots := make([]entities.SpotListOutputSchema, 0)
+		responseSpots := make([]dto.SpotListOut, 0)
 		for _, s := range *spots {
-			userSerializer := entities.NewUserSerializer(&s.User)
-			serializer := entities.NewSpotSerializer(&s, userSerializer)
-			responseSpots = append(responseSpots, serializer.ListSerialize())
+			userSerializer := serializer.NewUserSerializer(&s.User)
+			spotSerializer := serializer.NewSpotSerializer(&s, userSerializer)
+			responseSpots = append(responseSpots, spotSerializer.ListSerialize())
 		}
 
 		jsonResponse := presenter.NewJsonResponse(false, "", responseSpots)
