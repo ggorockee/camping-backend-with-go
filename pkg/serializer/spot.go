@@ -3,6 +3,7 @@ package serializer
 import (
 	"camping-backend-with-go/pkg/dto"
 	"camping-backend-with-go/pkg/entities"
+	"time"
 )
 
 type SpotSerializer interface {
@@ -11,21 +12,30 @@ type SpotSerializer interface {
 }
 
 type spotSerializer struct {
-	spot *entities.Spot
-	user UserSerializer
+	spot    *entities.Spot
+	user    UserSerializer
+	amenity AmenitySerializer
 }
 
 func (s *spotSerializer) ListSerialize() dto.SpotListOut {
-
+	amenityIds := make([]int, 0)
+	for _, amenity := range s.spot.Amenities {
+		amenityIds = append(amenityIds, int(amenity.Id))
+	}
 	return dto.SpotListOut{
-		Id:        int(s.spot.Id),
-		User:      s.user.TinyUserSerialize(),
-		Title:     s.spot.Title,
-		Location:  s.spot.Location,
-		Author:    s.spot.Author,
-		CreatedAt: s.spot.CreatedAt,
-		UpdatedAt: s.spot.UpdatedAt,
-		Review:    s.spot.Review,
+		Id:          int(s.spot.Id),
+		User:        s.user.TinyUserSerialize(),
+		Name:        s.spot.Name,
+		Country:     s.spot.Country,
+		City:        s.spot.City,
+		Price:       s.spot.Price,
+		Description: &s.spot.Description,
+		Address:     s.spot.Address,
+		PetFriendly: s.spot.PetFriendly,
+		Category:    *s.spot.CategoryId,
+		Amenities:   amenityIds,
+		CreatedAt:   time.Time{},
+		UpdatedAt:   time.Time{},
 	}
 }
 
@@ -42,6 +52,6 @@ func (s *spotSerializer) DetailSerialize() dto.SpotDetailOut {
 	}
 }
 
-func NewSpotSerializer(s *entities.Spot, u UserSerializer) SpotSerializer {
-	return &spotSerializer{spot: s, user: u}
+func NewSpotSerializer(s *entities.Spot, u UserSerializer, a AmenitySerializer) SpotSerializer {
+	return &spotSerializer{spot: s, user: u, amenity: a}
 }

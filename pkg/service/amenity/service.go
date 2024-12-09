@@ -1,15 +1,16 @@
 package amenity
 
 import (
+	"camping-backend-with-go/pkg/dto"
 	"camping-backend-with-go/pkg/entities"
 	"github.com/gofiber/fiber/v2"
 )
 
 type Service interface {
-	AddAmenity(input *entities.CreateAmenityInput, ctx *fiber.Ctx) (*entities.Amenity, error)
+	AddAmenity(input *dto.CreateAmenityIn, ctx *fiber.Ctx) (*entities.Amenity, error)
 	GetAmenities(ctx *fiber.Ctx) (*[]entities.Amenity, error)
 	GetAmenity(id int, ctx *fiber.Ctx) (*entities.Amenity, error)
-	UpdateAmenity(input *entities.UpdateAmenityInput, id int, ctx *fiber.Ctx) (*entities.Amenity, error)
+	UpdateAmenity(input *dto.UpdateAmenityIn, id int, ctx *fiber.Ctx) (*entities.Amenity, error)
 	DeleteAmenity(id int, ctx *fiber.Ctx) error
 }
 
@@ -17,7 +18,7 @@ type service struct {
 	Repo Repository
 }
 
-func (s *service) UpdateAmenity(input *entities.UpdateAmenityInput, id int, ctx *fiber.Ctx) (*entities.Amenity, error) {
+func (s *service) UpdateAmenity(input *dto.UpdateAmenityIn, id int, ctx *fiber.Ctx) (*entities.Amenity, error) {
 	return s.Repo.UpdateAmenity(input, id, ctx)
 }
 
@@ -34,7 +35,7 @@ func (s *service) GetAmenity(id int, ctx *fiber.Ctx) (*entities.Amenity, error) 
 	return s.Repo.GetAmenityById(id, ctx)
 }
 
-func (s *service) AddAmenity(input *entities.CreateAmenityInput, ctx *fiber.Ctx) (*entities.Amenity, error) {
+func (s *service) AddAmenity(input *dto.CreateAmenityIn, ctx *fiber.Ctx) (*entities.Amenity, error) {
 	return s.Repo.Create(input, ctx)
 }
 

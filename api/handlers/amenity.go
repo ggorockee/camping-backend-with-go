@@ -2,7 +2,8 @@ package handlers
 
 import (
 	"camping-backend-with-go/api/presenter"
-	"camping-backend-with-go/pkg/entities"
+	"camping-backend-with-go/pkg/dto"
+	"camping-backend-with-go/pkg/serializer"
 	"camping-backend-with-go/pkg/service/amenity"
 	"github.com/gofiber/fiber/v2"
 )
@@ -13,14 +14,14 @@ import (
 // @Tags Amenity
 // @Accept json
 // @Produce json
-// @Param amenity body entities.CreateAmenityInput true "Create Amenity"
+// @Param amenity body dto.CreateAmenityIn true "Create Amenity"
 // @Success 200 {object} presenter.JsonResponse{data=entities.AmenityDetailOut}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /spot/amenity [post]
 // @Security Bearer
 func CreateAmenity(service amenity.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var requestBody entities.CreateAmenityInput
+		var requestBody dto.CreateAmenityIn
 
 		if err := c.BodyParser(&requestBody); err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
@@ -34,8 +35,8 @@ func CreateAmenity(service amenity.Service) fiber.Handler {
 		}
 
 		//serializer = createdAmenity
-		serializer := entities.NewAmenitySerializer(createdAmenity)
-		jsonResponse := presenter.NewJsonResponse(false, "", serializer.ListSerialize())
+		AmenitySerializer := serializer.NewAmenitySerializer(createdAmenity)
+		jsonResponse := presenter.NewJsonResponse(false, "", AmenitySerializer.ListSerialize())
 
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 
@@ -60,11 +61,11 @@ func GetAmenities(service amenity.Service) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		serializedAmenities := make([]entities.AmenityListOut, 0)
+		serializedAmenities := make([]dto.AmenityListOut, 0)
 
 		for _, fetchedAmenity := range *fetchedAmenities {
-			serializer := entities.NewAmenitySerializer(&fetchedAmenity)
-			serializedAmenities = append(serializedAmenities, serializer.ListSerialize())
+			AmenitySerializer := serializer.NewAmenitySerializer(&fetchedAmenity)
+			serializedAmenities = append(serializedAmenities, AmenitySerializer.ListSerialize())
 		}
 
 		jsonResponse := presenter.NewJsonResponse(false, "", serializedAmenities)
@@ -96,11 +97,11 @@ func GetAmenity(service amenity.Service) fiber.Handler {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
-		serializer := entities.NewAmenitySerializer(fetchedAmenity)
+		AmenitySerializer := serializer.NewAmenitySerializer(fetchedAmenity)
 		jsonResponse := presenter.JsonResponse{
 			Error:   false,
 			Message: "",
-			Data:    serializer.DetailSerialize(),
+			Data:    AmenitySerializer.DetailSerialize(),
 		}
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
@@ -113,7 +114,7 @@ func GetAmenity(service amenity.Service) fiber.Handler {
 // @Accept json
 // @Produce json
 // @Param id path int true "Amenity ID"
-// @Param amenity body entities.UpdateAmenityInput true "Update Amenity"
+// @Param amenity body dto.UpdateAmenityIn true "Update Amenity"
 // @Success 200 {object} presenter.JsonResponse{data=entities.AmenityDetailOut}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /spot/amenity/{id} [put]
@@ -121,7 +122,7 @@ func GetAmenity(service amenity.Service) fiber.Handler {
 func UpdateAmenity(service amenity.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 
-		var requestBody entities.UpdateAmenityInput
+		var requestBody dto.UpdateAmenityIn
 		if err := c.BodyParser(&requestBody); err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), "")
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
@@ -139,8 +140,8 @@ func UpdateAmenity(service amenity.Service) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		serializer := entities.NewAmenitySerializer(updatedAmenity)
-		jsonResponse := presenter.NewJsonResponse(false, "", serializer.DetailSerialize())
+		AmenitySerializer := serializer.NewAmenitySerializer(updatedAmenity)
+		jsonResponse := presenter.NewJsonResponse(false, "", AmenitySerializer.DetailSerialize())
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
 }

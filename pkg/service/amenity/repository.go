@@ -1,6 +1,7 @@
 package amenity
 
 import (
+	"camping-backend-with-go/pkg/dto"
 	"camping-backend-with-go/pkg/entities"
 	"camping-backend-with-go/pkg/service/user"
 	"github.com/gofiber/fiber/v2"
@@ -9,10 +10,10 @@ import (
 )
 
 type Repository interface {
-	Create(input *entities.CreateAmenityInput, ctx *fiber.Ctx) (*entities.Amenity, error)
+	Create(input *dto.CreateAmenityIn, ctx *fiber.Ctx) (*entities.Amenity, error)
 	GetAmenityById(id int, ctx *fiber.Ctx) (*entities.Amenity, error)
 	GetAmenityList(ctx *fiber.Ctx) (*[]entities.Amenity, error)
-	UpdateAmenity(input *entities.UpdateAmenityInput, id int, ctx *fiber.Ctx) (*entities.Amenity, error)
+	UpdateAmenity(input *dto.UpdateAmenityIn, id int, ctx *fiber.Ctx) (*entities.Amenity, error)
 	DeleteAmenity(id int, ctx *fiber.Ctx) error
 }
 
@@ -34,7 +35,7 @@ func (r *repository) DeleteAmenity(id int, ctx *fiber.Ctx) error {
 	return nil
 }
 
-func (r *repository) UpdateAmenity(input *entities.UpdateAmenityInput, id int, ctx *fiber.Ctx) (*entities.Amenity, error) {
+func (r *repository) UpdateAmenity(input *dto.UpdateAmenityIn, id int, ctx *fiber.Ctx) (*entities.Amenity, error) {
 	amenity, err := r.GetAmenityById(id, ctx)
 	if err != nil {
 		return nil, err
@@ -75,7 +76,7 @@ func (r *repository) GetAmenityList(ctx *fiber.Ctx) (*[]entities.Amenity, error)
 	return &amenities, nil
 }
 
-func (r *repository) Create(input *entities.CreateAmenityInput, ctx *fiber.Ctx) (*entities.Amenity, error) {
+func (r *repository) Create(input *dto.CreateAmenityIn, ctx *fiber.Ctx) (*entities.Amenity, error) {
 	_ = r.UserRepo.GetValueFromToken("user_id", ctx)
 
 	var amenity entities.Amenity
