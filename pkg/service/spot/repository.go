@@ -3,6 +3,8 @@ package spot
 import (
 	"camping-backend-with-go/pkg/dto"
 	"camping-backend-with-go/pkg/entities"
+	"camping-backend-with-go/pkg/service/amenity"
+	"camping-backend-with-go/pkg/service/category"
 	"camping-backend-with-go/pkg/service/user"
 	"errors"
 	"log"
@@ -24,14 +26,23 @@ type Repository interface {
 }
 
 type repository struct {
-	DBConn   *gorm.DB
-	UserRepo user.Repository
+	DBConn      *gorm.DB
+	UserRepo    user.Repository
+	AmenityRepo amenity.Repository
+	CatRepo     category.Repository
 }
 
-func NewRepo(dbConn *gorm.DB, userRepo user.Repository) Repository {
+func NewRepo(
+	dbConn *gorm.DB,
+	userRepo user.Repository,
+	amenRepo amenity.Repository,
+	catRepo category.Repository,
+) Repository {
 	return &repository{
-		DBConn:   dbConn,
-		UserRepo: userRepo,
+		DBConn:      dbConn,
+		UserRepo:    userRepo,
+		AmenityRepo: amenRepo,
+		CatRepo:     catRepo,
 	}
 }
 
@@ -99,34 +110,61 @@ func (r *repository) GetFindById(id int) (*entities.Spot, error) {
 }
 
 func (r *repository) CreateSpot(input *dto.CreateSpotIn, ctx *fiber.Ctx) (*entities.Spot, error) {
-	title := input.Title
-	location := input.Location
-
 	// jwt에서 user 불러오기
 	userId := r.UserRepo.GetValueFromToken("user_id", ctx)
-	user, err := r.UserRepo.GetUserById(userId)
+	owner, err := r.UserRepo.GetUserById(userId)
 	if err != nil {
 		return nil, err
 	}
 
 	// spot
-	var spot entities.Spot
-	spot.Location = location
-
-	// fill spot value
-	spot.Title = title
-	spot.UpdatedAt = time.Now()
-	spot.CreatedAt = time.Now()
-	spot.Author = user.Username
-	spot.UserId = uint(userId)
-	spot.User = *user
-	// 추가되는 것들
-	spot.Review = input.Review
-
-	result := r.DBConn.Create(&spot)
-	if result.Error != nil {
-		return nil, result.Error
+	spot := entities.Spot{
+		UserId:      userId, // foreginKey
+		User:        *owner, // foreginKey
+		Name:        input.Name,
+		Country:     input.Country,
+		City:        input.City,
+		Price:       input.Price,
+		Description: *input.Description,
+		Address:     input.Address,
+		PetFriendly: input.PetFriendly,
+		CategoryId:  &input.Category,      // foreginKey
+		Category:    entities.Category{},  // foreginKey
+		Amenities:   []entities.Amenity{}, // many2many
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
 	}
+
+	// foreignKey
+	spot.User = *owner
+	spot.UserId = userId
+
+	// category
+	categoryObj, err := r.CatRepo.GetCategoryById(input.Category)
+	if err != nil {
+		return nil, err
+	}
+
+	spot.Category = *categoryObj
+
+	// spot.CategoryId = &input.Category
+
+	// many2many
+	amenities := make([]entities.Amenity, 0)
+	if input.Amenities != nil {
+		for _, amenityId := range *input.Amenities {
+			amentyObj, _ := r.AmenityRepo.GetAmenityById(amenityId)
+			amenities = append(amenities, *amentyObj)
+		}
+	}
+
+	spot.Amenities = amenities
+
+	// value
+	if err := r.DBConn.Create(&spot).Error; err != nil {
+		return nil, err
+	}
+
 	return &spot, nil
 }
 
@@ -154,32 +192,18 @@ func (r *repository) UpdateSpot(input *dto.UpdateSpotIn, id int, ctx *fiber.Ctx)
 
 	userId := r.UserRepo.GetValueFromToken("user_id", ctx)
 	fetchedSpot, err := r.GetSpotById(id)
-	fetchedSpotUserId := int(fetchedSpot.UserId)
 	if err != nil {
 		return nil, err
 	}
+
+	fetchedSpotUserId := int(fetchedSpot.UserId)
 
 	if userId != fetchedSpotUserId {
 		return nil, errors.New("permission denied")
 	}
 
-	updated_title := input.Title
-	if updated_title != "" {
-		fetchedSpot.Title = updated_title
-	}
-
-	updated_location := input.Location
-	if updated_location != "" {
-		fetchedSpot.Location = updated_location
-	}
-
-	if input.Review != "" {
-		fetchedSpot.Review = input.Review
-	}
-
 	fetchedSpot.UpdatedAt = time.Now()
-
-	if err := r.DBConn.Model(fetchedSpot).Updates(fetchedSpot).Error; err != nil {
+	if err := r.DBConn.Model(fetchedSpot).Updates(input).Error; err != nil {
 		return nil, err
 	}
 

@@ -13,7 +13,7 @@ import (
 // /spot/amenities/1
 
 func AmenityRouter(app fiber.Router, service amenity.Service) {
-	privateAmenityRoute := app.Group("/amenity", middleware.Protected())
+	privateAmenityRoute := app.Group("/spot/amenity", middleware.Protected())
 	privateAmenityRoute.Get("/", middleware.RoleMiddleware(
 		dto.Staff,
 		dto.Client,

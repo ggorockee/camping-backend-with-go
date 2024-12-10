@@ -2,7 +2,8 @@ package handlers
 
 import (
 	"camping-backend-with-go/api/presenter"
-	"camping-backend-with-go/pkg/entities"
+	"camping-backend-with-go/pkg/dto"
+	"camping-backend-with-go/pkg/serializer"
 	"camping-backend-with-go/pkg/service/category"
 
 	"github.com/gofiber/fiber/v2"
@@ -14,7 +15,7 @@ import (
 // @Tags Category
 // @Accept json
 // @Produce json
-// @Success 200 {object} presenter.JsonResponse{data=[]entities.CategoryListOut}
+// @Success 200 {object} presenter.JsonResponse{data=[]dto.CategoryListOut}
 // @Failure 503 {object} presenter.JsonResponse
 // @Router /category [get]
 // @Security Bearer
@@ -26,11 +27,11 @@ func GetCategoryList(service category.Service) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		serializedCategories := make([]entities.CategoryListOut, 0)
+		serializedCategories := make([]dto.CategoryListOut, 0)
 
 		for _, fetchedCategory := range *fetchedCategories {
-			serializer := entities.NewCategorySerializer(&fetchedCategory)
-			serializedCategories = append(serializedCategories, serializer.ListSerialize())
+			categorySerializer := serializer.NewCategorySerializer(&fetchedCategory)
+			serializedCategories = append(serializedCategories, categorySerializer.ListSerialize())
 		}
 
 		jsonResponse := presenter.NewJsonResponse(false, "", serializedCategories)
@@ -44,14 +45,14 @@ func GetCategoryList(service category.Service) fiber.Handler {
 // @Tags Category
 // @Accept json
 // @Produce json
-// @Param user body entities.CreateCategoryInput true "Create Category Schema"
-// @Success 200 {object} presenter.JsonResponse{data=entities.CategoryListOut}
+// @Param user body dto.CreateCategoryIn true "Create Category Schema"
+// @Success 200 {object} presenter.JsonResponse{data=dto.CategoryListOut}
 // @Failure 503 {object} presenter.JsonResponse
 // @Router /category [post]
 // @Security Bearer
 func CreateCategory(service category.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var requestBody entities.CreateCategoryInput
+		var requestBody dto.CreateCategoryIn
 
 		if err := c.BodyParser(&requestBody); err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
@@ -64,8 +65,8 @@ func CreateCategory(service category.Service) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		serializer := entities.NewCategorySerializer(createdCategory)
-		jsonResponse := presenter.NewJsonResponse(false, "", serializer.ListSerialize())
+		categorySerializer := serializer.NewCategorySerializer(createdCategory)
+		jsonResponse := presenter.NewJsonResponse(false, "", categorySerializer.ListSerialize())
 
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
@@ -78,7 +79,7 @@ func CreateCategory(service category.Service) fiber.Handler {
 // @Accept json
 // @Produce json
 // @Param id path int true "Category Id"
-// @Success 200 {object} presenter.JsonResponse{data=entities.CategoryDetailOut}
+// @Success 200 {object} presenter.JsonResponse{data=dto.CategoryDetailOut}
 // @Failure 503 {object} presenter.JsonResponse
 // @Router /category/{id} [get]
 // @Security Bearer
@@ -96,8 +97,8 @@ func GetCategory(service category.Service) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		serializer := entities.NewCategorySerializer(fetchedCategory)
-		jsonResponse := presenter.NewJsonResponse(false, "", serializer.DetailSerialize())
+		categorySerializer := serializer.NewCategorySerializer(fetchedCategory)
+		jsonResponse := presenter.NewJsonResponse(false, "", categorySerializer.DetailSerialize())
 
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
@@ -110,14 +111,14 @@ func GetCategory(service category.Service) fiber.Handler {
 // @Accept json
 // @Produce json
 // @Param id path int true "Category Id"
-// @Param user body entities.UpdateCategoryInput true "Update Category"
-// @Success 200 {object} presenter.JsonResponse{data=entities.CategoryDetailOut}
+// @Param user body dto.UpdateCategoryIn true "Update Category"
+// @Success 200 {object} presenter.JsonResponse{data=dto.CategoryDetailOut}
 // @Failure 503 {object} presenter.JsonResponse
 // @Router /category/{id} [put]
 // @Security Bearer
 func UpdateCategory(service category.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var requestBody entities.UpdateCategoryInput
+		var requestBody dto.UpdateCategoryIn
 
 		if err := c.BodyParser(&requestBody); err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
@@ -136,8 +137,8 @@ func UpdateCategory(service category.Service) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		serializer := entities.NewCategorySerializer(fetchedCategory)
-		jsonResponse := presenter.NewJsonResponse(false, "", serializer.DetailSerialize())
+		categorySerializer := serializer.NewCategorySerializer(fetchedCategory)
+		jsonResponse := presenter.NewJsonResponse(false, "", categorySerializer.DetailSerialize())
 
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}

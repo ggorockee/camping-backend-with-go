@@ -6,7 +6,7 @@ import (
 
 type Spot struct {
 	Id     uint `json:"id" gorm:"primaryKey"`
-	UserId uint `json:"user_id"`
+	UserId int  `json:"user_id"`
 	User   User `gorm:"foreignKey:UserId;constraint:OnDelete:CASCADE;"`
 
 	Name        string `json:"name"`

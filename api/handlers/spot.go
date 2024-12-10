@@ -38,8 +38,9 @@ func AddSpot(service spot.Service) fiber.Handler {
 		}
 
 		userSerializer := serializer.NewUserSerializer(&result.User)
-		spotSerializer := serializer.NewSpotSerializer(result, userSerializer)
-		jsonResponse := presenter.NewJsonResponse(true, err.Error(), spotSerializer.DetailSerialize())
+		categorySerializer := serializer.NewCategorySerializer(&result.Category)
+		spotSerializer := serializer.NewSpotSerializer(result, userSerializer, categorySerializer)
+		jsonResponse := presenter.NewJsonResponse(true, "", spotSerializer.DetailSerialize())
 
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
@@ -68,7 +69,8 @@ func GetMySpots(service spot.Service) fiber.Handler {
 
 		for _, fetchedItem := range *fetched {
 			userSerializer := serializer.NewUserSerializer(&fetchedItem.User)
-			spotSerializer := serializer.NewSpotSerializer(&fetchedItem, userSerializer)
+			categorySerializer := serializer.NewCategorySerializer(&fetchedItem.Category)
+			spotSerializer := serializer.NewSpotSerializer(&fetchedItem, userSerializer, categorySerializer)
 			spotsSerialized = append(spotsSerialized, spotSerializer.ListSerialize())
 		}
 
@@ -107,7 +109,8 @@ func UpdateSpot(service spot.Service) fiber.Handler {
 		}
 
 		userSerializer := serializer.NewUserSerializer(&fetchedSpot.User)
-		spotSerializer := serializer.NewSpotSerializer(fetchedSpot, userSerializer)
+		categorySerializer := serializer.NewCategorySerializer(&fetchedSpot.Category)
+		spotSerializer := serializer.NewSpotSerializer(fetchedSpot, userSerializer, categorySerializer)
 		jsonResponse := presenter.NewJsonResponse(false, "", spotSerializer.DetailSerialize())
 
 		return c.Status(http.StatusOK).JSON(jsonResponse)
@@ -137,7 +140,8 @@ func GetSpot(service spot.Service) fiber.Handler {
 		}
 
 		userSerializer := serializer.NewUserSerializer(&fetched.User)
-		spotSerializer := serializer.NewSpotSerializer(fetched, userSerializer)
+		categorySerializer := serializer.NewCategorySerializer(&fetched.Category)
+		spotSerializer := serializer.NewSpotSerializer(fetched, userSerializer, categorySerializer)
 
 		jsonResponse := presenter.NewJsonResponse(false, "", spotSerializer.DetailSerialize())
 		return c.Status(http.StatusOK).JSON(jsonResponse)
@@ -191,7 +195,8 @@ func GetAllSpots(service spot.Service) fiber.Handler {
 		responseSpots := make([]dto.SpotListOut, 0)
 		for _, s := range *spots {
 			userSerializer := serializer.NewUserSerializer(&s.User)
-			spotSerializer := serializer.NewSpotSerializer(&s, userSerializer)
+			categorySerializer := serializer.NewCategorySerializer(&s.Category)
+			spotSerializer := serializer.NewSpotSerializer(&s, userSerializer, categorySerializer)
 			responseSpots = append(responseSpots, spotSerializer.ListSerialize())
 		}
 

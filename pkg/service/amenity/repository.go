@@ -11,7 +11,7 @@ import (
 
 type Repository interface {
 	Create(input *dto.CreateAmenityIn, ctx *fiber.Ctx) (*entities.Amenity, error)
-	GetAmenityById(id int, ctx *fiber.Ctx) (*entities.Amenity, error)
+	GetAmenityById(id int) (*entities.Amenity, error)
 	GetAmenityList(ctx *fiber.Ctx) (*[]entities.Amenity, error)
 	UpdateAmenity(input *dto.UpdateAmenityIn, id int, ctx *fiber.Ctx) (*entities.Amenity, error)
 	DeleteAmenity(id int, ctx *fiber.Ctx) error
@@ -23,7 +23,7 @@ type repository struct {
 }
 
 func (r *repository) DeleteAmenity(id int, ctx *fiber.Ctx) error {
-	amenity, err := r.GetAmenityById(id, ctx)
+	amenity, err := r.GetAmenityById(id)
 	if err != nil {
 		return err
 	}
@@ -36,7 +36,7 @@ func (r *repository) DeleteAmenity(id int, ctx *fiber.Ctx) error {
 }
 
 func (r *repository) UpdateAmenity(input *dto.UpdateAmenityIn, id int, ctx *fiber.Ctx) (*entities.Amenity, error) {
-	amenity, err := r.GetAmenityById(id, ctx)
+	amenity, err := r.GetAmenityById(id)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +58,7 @@ func (r *repository) UpdateAmenity(input *dto.UpdateAmenityIn, id int, ctx *fibe
 	return amenity, nil
 }
 
-func (r *repository) GetAmenityById(id int, ctx *fiber.Ctx) (*entities.Amenity, error) {
+func (r *repository) GetAmenityById(id int) (*entities.Amenity, error) {
 	var amenity entities.Amenity
 	if err := r.DBConn.First(&amenity, id).Error; err != nil {
 		return nil, err

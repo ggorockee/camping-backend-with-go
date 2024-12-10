@@ -1,6 +1,7 @@
 package category
 
 import (
+	"camping-backend-with-go/pkg/dto"
 	"camping-backend-with-go/pkg/entities"
 	"camping-backend-with-go/pkg/service/user"
 	"log"
@@ -12,9 +13,9 @@ import (
 
 type Repository interface {
 	GetCategoryList(ctx *fiber.Ctx) (*[]entities.Category, error)
-	CreateCategory(createCategoryInput *entities.CreateCategoryInput, ctx *fiber.Ctx) (*entities.Category, error)
+	CreateCategory(input *dto.CreateCategoryIn, ctx *fiber.Ctx) (*entities.Category, error)
 	GetCategory(id int, ctx *fiber.Ctx) (*entities.Category, error)
-	UpdateCategory(updateCategoryInput *entities.UpdateCategoryInput, id int, ctx *fiber.Ctx) (*entities.Category, error)
+	UpdateCategory(input *dto.UpdateCategoryIn, id int, ctx *fiber.Ctx) (*entities.Category, error)
 	DeleteCategory(id int, ctx *fiber.Ctx) error
 	GetCategoryById(id int) (*entities.Category, error)
 }
@@ -35,7 +36,7 @@ func (r *repository) GetCategoryById(id int) (*entities.Category, error) {
 }
 
 // CreateCategory implements Repository.
-func (r *repository) CreateCategory(createCategoryInput *entities.CreateCategoryInput, ctx *fiber.Ctx) (*entities.Category, error) {
+func (r *repository) CreateCategory(input *dto.CreateCategoryIn, ctx *fiber.Ctx) (*entities.Category, error) {
 	// Login 인증
 	userId := r.UserRepo.GetValueFromToken("user_id", ctx)
 	LoginUser, err := r.UserRepo.GetUserById(userId)
@@ -54,7 +55,7 @@ func (r *repository) CreateCategory(createCategoryInput *entities.CreateCategory
 	category.CreatedAt = time.Now()
 	category.UpdatedAt = time.Now()
 
-	category.Name = createCategoryInput.Name
+	category.Name = input.Name
 
 	if err := r.DBConn.Create(&category).Error; err != nil {
 		return nil, err
@@ -115,7 +116,7 @@ func (r *repository) GetCategoryList(ctx *fiber.Ctx) (*[]entities.Category, erro
 }
 
 // UpdateCategory implements Repository.
-func (r *repository) UpdateCategory(updateCategoryInput *entities.UpdateCategoryInput, id int, ctx *fiber.Ctx) (*entities.Category, error) {
+func (r *repository) UpdateCategory(input *dto.UpdateCategoryIn, id int, ctx *fiber.Ctx) (*entities.Category, error) {
 	// Login 인증
 	userId := r.UserRepo.GetValueFromToken("user_id", ctx)
 
@@ -129,8 +130,8 @@ func (r *repository) UpdateCategory(updateCategoryInput *entities.UpdateCategory
 	// 1. Admin이나 staff가 아닐 경우 fail
 	log.Println("Validation Admin이나 staff가 아닐 경우 fail", userId)
 
-	if updateCategoryInput.Name != "" {
-		fetchedCategory.Name = updateCategoryInput.Name
+	if input.Name != "" {
+		fetchedCategory.Name = input.Name
 	}
 
 	fetchedCategory.UpdatedAt = time.Now()

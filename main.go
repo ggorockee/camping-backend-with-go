@@ -42,17 +42,13 @@ func main() {
 	healthcheckService := healthcheck.NewService()
 
 	userRepo := user.NewRepo(db)
-	userService := user.NewService(userRepo)
-
-	spotRepo := spot.NewRepo(db, userRepo)
-	spotService := spot.NewService(spotRepo)
-
-	// Category
-	categoryRepo := category.NewRepo(db, userRepo)
-	categoryService := category.NewService(categoryRepo)
-
-	//Amenity
 	amenityRepo := amenity.NewRepo(db, userRepo)
+	categoryRepo := category.NewRepo(db, userRepo)
+	spotRepo := spot.NewRepo(db, userRepo, amenityRepo, categoryRepo)
+
+	userService := user.NewService(userRepo)
+	spotService := spot.NewService(spotRepo)
+	categoryService := category.NewService(categoryRepo)
 	amenityService := amenity.NewService(amenityRepo)
 
 	app := fiber.New()

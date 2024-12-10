@@ -1,6 +1,6 @@
 basePath: /v1
 definitions:
-  entities.AmenityDetailOut:
+  dto.AmenityDetailOut:
     properties:
       created_at:
         type: string
@@ -13,13 +13,141 @@ definitions:
       updated_at:
         type: string
     type: object
-  entities.AmenityListOut:
+  dto.AmenityListOut:
     properties:
       description:
         type: string
       id:
         type: integer
       name:
+        type: string
+    type: object
+  dto.CategoryDetailOut:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.CategoryListOut:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  dto.ChangePasswordIn:
+    properties:
+      new_password:
+        type: string
+      new_password_confirm:
+        type: string
+      old_password:
+        type: string
+    type: object
+  dto.CreateAmenityIn:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.CreateCategoryIn:
+    properties:
+      name:
+        type: string
+    type: object
+  dto.CreateSpotIn:
+    properties:
+      address:
+        type: string
+      amenities:
+        items:
+          type: integer
+        type: array
+      category:
+        type: integer
+      city:
+        type: string
+      country:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      pet_friendly:
+        type: boolean
+      price:
+        type: integer
+    type: object
+  dto.LoginIn:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  dto.SignUpIn:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      password_confirm:
+        type: string
+      username:
+        type: string
+    type: object
+  dto.UpdateAmenityIn:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.UpdateCategoryIn:
+    properties:
+      name:
+        type: string
+    type: object
+  dto.UpdateSpotIn:
+    properties:
+      address:
+        type: string
+      amenities:
+        items:
+          type: integer
+        type: array
+      category:
+        type: integer
+      city:
+        type: string
+      country:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      pet_friendly:
+        type: boolean
+      price:
+        type: integer
+    type: object
+  entities.Amenity:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
         type: string
     type: object
   entities.Category:
@@ -34,129 +162,41 @@ definitions:
         description: Time Logging
         type: string
     type: object
-  entities.CategoryDetailOut:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  entities.CategoryListOut:
-    properties:
-      id:
-        type: integer
-      name:
-        type: string
-    type: object
-  entities.ChangePasswordInputSchema:
-    properties:
-      new_password:
-        type: string
-      new_password_confirm:
-        type: string
-      old_password:
-        type: string
-    type: object
-  entities.CreateAmenityInput:
-    properties:
-      description:
-        type: string
-      name:
-        type: string
-    type: object
-  entities.CreateCategoryInput:
-    properties:
-      name:
-        type: string
-    type: object
-  entities.CreateSpotInputSchema:
-    properties:
-      location:
-        type: string
-      review:
-        type: string
-      title:
-        type: string
-    type: object
-  entities.LoginInputSchema:
-    properties:
-      email:
-        type: string
-      password:
-        type: string
-    type: object
-  entities.SignUpInputSchema:
-    properties:
-      email:
-        type: string
-      password:
-        type: string
-      password_confirm:
-        type: string
-      username:
-        type: string
-    type: object
   entities.Spot:
     properties:
-      author:
+      address:
         type: string
+      amenities:
+        items:
+          $ref: '#/definitions/entities.Amenity'
+        type: array
       category:
-        allOf:
-        - $ref: '#/definitions/entities.Category'
-        description: |-
-          sqlite에서 SET NULL, mysql, postgresql에서는 SetNull
-          배포시 아래 주석
-          sqlite 설정
+        $ref: '#/definitions/entities.Category'
       category_id:
         description: CategoryId가 null일 수가 있음
         type: integer
-      cover_img:
+      city:
+        type: string
+      country:
         type: string
       created_at:
         type: string
+      description:
+        type: string
       id:
         type: integer
-      location:
+      name:
         type: string
-      review:
-        type: string
-      title:
-        description: |-
-          배포시 아래 주석해제
-          rds 설정
-          Category  Category  `gorm:"foreignKey:CategoryId;constraint:OnDelete:SetNull;"`
-        type: string
+      pet_friendly:
+        type: boolean
+      price:
+        type: integer
       updated_at:
         type: string
       user:
         $ref: '#/definitions/entities.User'
       user_id:
         type: integer
-    type: object
-  entities.UpdateAmenityInput:
-    properties:
-      description:
-        type: string
-      name:
-        type: string
-    type: object
-  entities.UpdateCategoryInput:
-    properties:
-      name:
-        type: string
-    type: object
-  entities.UpdateSpotSchema:
-    properties:
-      location:
-        type: string
-      review:
-        type: string
-      title:
-        type: string
     type: object
   entities.User:
     properties:
@@ -201,7 +241,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/entities.LoginInputSchema'
+          $ref: '#/definitions/dto.LoginIn'
       produces:
       - application/json
       responses:
@@ -237,7 +277,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/entities.CategoryListOut'
+                    $ref: '#/definitions/dto.CategoryListOut'
                   type: array
               type: object
         "503":
@@ -259,7 +299,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/entities.CreateCategoryInput'
+          $ref: '#/definitions/dto.CreateCategoryIn'
       produces:
       - application/json
       responses:
@@ -270,7 +310,7 @@ paths:
             - $ref: '#/definitions/presenter.JsonResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/entities.CategoryListOut'
+                  $ref: '#/definitions/dto.CategoryListOut'
               type: object
         "503":
           description: Service Unavailable
@@ -328,7 +368,7 @@ paths:
             - $ref: '#/definitions/presenter.JsonResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/entities.CategoryDetailOut'
+                  $ref: '#/definitions/dto.CategoryDetailOut'
               type: object
         "503":
           description: Service Unavailable
@@ -354,7 +394,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/entities.UpdateCategoryInput'
+          $ref: '#/definitions/dto.UpdateCategoryIn'
       produces:
       - application/json
       responses:
@@ -365,7 +405,7 @@ paths:
             - $ref: '#/definitions/presenter.JsonResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/entities.CategoryDetailOut'
+                  $ref: '#/definitions/dto.CategoryDetailOut'
               type: object
         "503":
           description: Service Unavailable
@@ -424,7 +464,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/entities.CreateSpotInputSchema'
+          $ref: '#/definitions/dto.CreateSpotIn'
       produces:
       - application/json
       responses:
@@ -519,7 +559,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/entities.UpdateSpotSchema'
+          $ref: '#/definitions/dto.UpdateSpotIn'
       produces:
       - application/json
       responses:
@@ -557,7 +597,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/entities.AmenityListOut'
+                    $ref: '#/definitions/dto.AmenityListOut'
                   type: array
               type: object
         "503":
@@ -568,7 +608,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/entities.AmenityListOut'
+                    $ref: '#/definitions/dto.AmenityListOut'
                   type: array
               type: object
       security:
@@ -586,7 +626,7 @@ paths:
         name: amenity
         required: true
         schema:
-          $ref: '#/definitions/entities.CreateAmenityInput'
+          $ref: '#/definitions/dto.CreateAmenityIn'
       produces:
       - application/json
       responses:
@@ -597,7 +637,7 @@ paths:
             - $ref: '#/definitions/presenter.JsonResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/entities.AmenityDetailOut'
+                  $ref: '#/definitions/dto.AmenityDetailOut'
               type: object
         "503":
           description: Service Unavailable
@@ -629,7 +669,7 @@ paths:
             - $ref: '#/definitions/presenter.JsonResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/entities.AmenityDetailOut'
+                  $ref: '#/definitions/dto.AmenityDetailOut'
               type: object
         "503":
           description: Service Unavailable
@@ -660,7 +700,7 @@ paths:
             - $ref: '#/definitions/presenter.JsonResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/entities.AmenityDetailOut'
+                  $ref: '#/definitions/dto.AmenityDetailOut'
               type: object
         "503":
           description: Service Unavailable
@@ -686,7 +726,7 @@ paths:
         name: amenity
         required: true
         schema:
-          $ref: '#/definitions/entities.UpdateAmenityInput'
+          $ref: '#/definitions/dto.UpdateAmenityIn'
       produces:
       - application/json
       responses:
@@ -697,7 +737,7 @@ paths:
             - $ref: '#/definitions/presenter.JsonResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/entities.AmenityDetailOut'
+                  $ref: '#/definitions/dto.AmenityDetailOut'
               type: object
         "503":
           description: Service Unavailable
@@ -747,7 +787,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/entities.ChangePasswordInputSchema'
+          $ref: '#/definitions/dto.ChangePasswordIn'
       produces:
       - application/json
       responses:
@@ -775,7 +815,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/entities.SignUpInputSchema'
+          $ref: '#/definitions/dto.SignUpIn'
       produces:
       - application/json
       responses:

@@ -9,7 +9,7 @@ import (
 type Service interface {
 	AddAmenity(input *dto.CreateAmenityIn, ctx *fiber.Ctx) (*entities.Amenity, error)
 	GetAmenities(ctx *fiber.Ctx) (*[]entities.Amenity, error)
-	GetAmenity(id int, ctx *fiber.Ctx) (*entities.Amenity, error)
+	GetAmenity(id int) (*entities.Amenity, error)
 	UpdateAmenity(input *dto.UpdateAmenityIn, id int, ctx *fiber.Ctx) (*entities.Amenity, error)
 	DeleteAmenity(id int, ctx *fiber.Ctx) error
 }
@@ -31,8 +31,8 @@ func (s *service) GetAmenities(ctx *fiber.Ctx) (*[]entities.Amenity, error) {
 	return s.Repo.GetAmenityList(ctx)
 }
 
-func (s *service) GetAmenity(id int, ctx *fiber.Ctx) (*entities.Amenity, error) {
-	return s.Repo.GetAmenityById(id, ctx)
+func (s *service) GetAmenity(id int) (*entities.Amenity, error) {
+	return s.Repo.GetAmenityById(id)
 }
 
 func (s *service) AddAmenity(input *dto.CreateAmenityIn, ctx *fiber.Ctx) (*entities.Amenity, error) {

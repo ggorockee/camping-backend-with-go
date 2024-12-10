@@ -42,7 +42,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.LoginInputSchema"
+                            "$ref": "#/definitions/dto.LoginIn"
                         }
                     }
                 ],
@@ -106,7 +106,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/entities.CategoryListOut"
+                                                "$ref": "#/definitions/dto.CategoryListOut"
                                             }
                                         }
                                     }
@@ -146,7 +146,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.CreateCategoryInput"
+                            "$ref": "#/definitions/dto.CreateCategoryIn"
                         }
                     }
                 ],
@@ -162,7 +162,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/entities.CategoryListOut"
+                                            "$ref": "#/definitions/dto.CategoryListOut"
                                         }
                                     }
                                 }
@@ -217,7 +217,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/entities.CategoryDetailOut"
+                                            "$ref": "#/definitions/dto.CategoryDetailOut"
                                         }
                                     }
                                 }
@@ -263,7 +263,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.UpdateCategoryInput"
+                            "$ref": "#/definitions/dto.UpdateCategoryIn"
                         }
                     }
                 ],
@@ -279,7 +279,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/entities.CategoryDetailOut"
+                                            "$ref": "#/definitions/dto.CategoryDetailOut"
                                         }
                                     }
                                 }
@@ -417,7 +417,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.CreateSpotInputSchema"
+                            "$ref": "#/definitions/dto.CreateSpotIn"
                         }
                     }
                 ],
@@ -481,7 +481,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/entities.AmenityListOut"
+                                                "$ref": "#/definitions/dto.AmenityListOut"
                                             }
                                         }
                                     }
@@ -502,7 +502,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/entities.AmenityListOut"
+                                                "$ref": "#/definitions/dto.AmenityListOut"
                                             }
                                         }
                                     }
@@ -536,7 +536,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.CreateAmenityInput"
+                            "$ref": "#/definitions/dto.CreateAmenityIn"
                         }
                     }
                 ],
@@ -552,7 +552,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/entities.AmenityDetailOut"
+                                            "$ref": "#/definitions/dto.AmenityDetailOut"
                                         }
                                     }
                                 }
@@ -607,7 +607,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/entities.AmenityDetailOut"
+                                            "$ref": "#/definitions/dto.AmenityDetailOut"
                                         }
                                     }
                                 }
@@ -653,7 +653,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.UpdateAmenityInput"
+                            "$ref": "#/definitions/dto.UpdateAmenityIn"
                         }
                     }
                 ],
@@ -669,7 +669,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/entities.AmenityDetailOut"
+                                            "$ref": "#/definitions/dto.AmenityDetailOut"
                                         }
                                     }
                                 }
@@ -722,7 +722,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/entities.AmenityDetailOut"
+                                            "$ref": "#/definitions/dto.AmenityDetailOut"
                                         }
                                     }
                                 }
@@ -872,7 +872,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.UpdateSpotSchema"
+                            "$ref": "#/definitions/dto.UpdateSpotIn"
                         }
                     }
                 ],
@@ -970,7 +970,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.ChangePasswordInputSchema"
+                            "$ref": "#/definitions/dto.ChangePasswordIn"
                         }
                     }
                 ],
@@ -1010,7 +1010,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.SignUpInputSchema"
+                            "$ref": "#/definitions/dto.SignUpIn"
                         }
                     }
                 ],
@@ -1044,7 +1044,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "entities.AmenityDetailOut": {
+        "dto.AmenityDetailOut": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -1064,7 +1064,7 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.AmenityListOut": {
+        "dto.AmenityListOut": {
             "type": "object",
             "properties": {
                 "description": {
@@ -1074,6 +1074,204 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CategoryDetailOut": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CategoryListOut": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ChangePasswordIn": {
+            "type": "object",
+            "properties": {
+                "new_password": {
+                    "type": "string"
+                },
+                "new_password_confirm": {
+                    "type": "string"
+                },
+                "old_password": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateAmenityIn": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateCategoryIn": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateSpotIn": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "amenities": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "category": {
+                    "type": "integer"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "pet_friendly": {
+                    "type": "boolean"
+                },
+                "price": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.LoginIn": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SignUpIn": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "password_confirm": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateAmenityIn": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateCategoryIn": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateSpotIn": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "amenities": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "category": {
+                    "type": "integer"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "pet_friendly": {
+                    "type": "boolean"
+                },
+                "price": {
+                    "type": "integer"
+                }
+            }
+        },
+        "entities.Amenity": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -1096,145 +1294,48 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.CategoryDetailOut": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "entities.CategoryListOut": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "entities.ChangePasswordInputSchema": {
-            "type": "object",
-            "properties": {
-                "new_password": {
-                    "type": "string"
-                },
-                "new_password_confirm": {
-                    "type": "string"
-                },
-                "old_password": {
-                    "type": "string"
-                }
-            }
-        },
-        "entities.CreateAmenityInput": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "entities.CreateCategoryInput": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "entities.CreateSpotInputSchema": {
-            "type": "object",
-            "properties": {
-                "location": {
-                    "type": "string"
-                },
-                "review": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "entities.LoginInputSchema": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                }
-            }
-        },
-        "entities.SignUpInputSchema": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "password_confirm": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
         "entities.Spot": {
             "type": "object",
             "properties": {
-                "author": {
+                "address": {
                     "type": "string"
                 },
+                "amenities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Amenity"
+                    }
+                },
                 "category": {
-                    "description": "sqlite에서 SET NULL, mysql, postgresql에서는 SetNull\n배포시 아래 주석\nsqlite 설정",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/entities.Category"
-                        }
-                    ]
+                    "$ref": "#/definitions/entities.Category"
                 },
                 "category_id": {
                     "description": "CategoryId가 null일 수가 있음",
                     "type": "integer"
                 },
-                "cover_img": {
+                "city": {
+                    "type": "string"
+                },
+                "country": {
                     "type": "string"
                 },
                 "created_at": {
                     "type": "string"
                 },
+                "description": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
-                "location": {
+                "name": {
                     "type": "string"
                 },
-                "review": {
-                    "type": "string"
+                "pet_friendly": {
+                    "type": "boolean"
                 },
-                "title": {
-                    "description": "배포시 아래 주석해제\nrds 설정\nCategory  Category  ` + "`" + `gorm:\"foreignKey:CategoryId;constraint:OnDelete:SetNull;\"` + "`" + `",
-                    "type": "string"
+                "price": {
+                    "type": "integer"
                 },
                 "updated_at": {
                     "type": "string"
@@ -1244,39 +1345,6 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "integer"
-                }
-            }
-        },
-        "entities.UpdateAmenityInput": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "entities.UpdateCategoryInput": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "entities.UpdateSpotSchema": {
-            "type": "object",
-            "properties": {
-                "location": {
-                    "type": "string"
-                },
-                "review": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
                 }
             }
         },

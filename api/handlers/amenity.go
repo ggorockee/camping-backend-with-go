@@ -15,7 +15,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param amenity body dto.CreateAmenityIn true "Create Amenity"
-// @Success 200 {object} presenter.JsonResponse{data=entities.AmenityDetailOut}
+// @Success 200 {object} presenter.JsonResponse{data=dto.AmenityDetailOut}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /spot/amenity [post]
 // @Security Bearer
@@ -49,8 +49,8 @@ func CreateAmenity(service amenity.Service) fiber.Handler {
 // @Tags Amenity
 // @Accept json
 // @Produce json
-// @Success 200 {object} presenter.JsonResponse{data=[]entities.AmenityListOut}
-// @Failure 503 {object} presenter.JsonResponse{data=[]entities.AmenityListOut}
+// @Success 200 {object} presenter.JsonResponse{data=[]dto.AmenityListOut}
+// @Failure 503 {object} presenter.JsonResponse{data=[]dto.AmenityListOut}
 // @Router /spot/amenity [get]
 // @Security Bearer
 func GetAmenities(service amenity.Service) fiber.Handler {
@@ -80,7 +80,7 @@ func GetAmenities(service amenity.Service) fiber.Handler {
 // @Accept json
 // @Produce json
 // @Param id path int true "Amenity ID"
-// @Success 200 {object} presenter.JsonResponse{data=entities.AmenityDetailOut}
+// @Success 200 {object} presenter.JsonResponse{data=dto.AmenityDetailOut}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /spot/amenity/{id} [get]
 // @Security Bearer
@@ -92,7 +92,7 @@ func GetAmenity(service amenity.Service) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		fetchedAmenity, err := service.GetAmenity(id, c)
+		fetchedAmenity, err := service.GetAmenity(id)
 		if err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
@@ -115,7 +115,7 @@ func GetAmenity(service amenity.Service) fiber.Handler {
 // @Produce json
 // @Param id path int true "Amenity ID"
 // @Param amenity body dto.UpdateAmenityIn true "Update Amenity"
-// @Success 200 {object} presenter.JsonResponse{data=entities.AmenityDetailOut}
+// @Success 200 {object} presenter.JsonResponse{data=dto.AmenityDetailOut}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /spot/amenity/{id} [put]
 // @Security Bearer
@@ -153,7 +153,7 @@ func UpdateAmenity(service amenity.Service) fiber.Handler {
 // @Accept json
 // @Produce json
 // @Param id path int true "Amenity ID"
-// @Success 200 {object} presenter.JsonResponse{data=entities.AmenityDetailOut}
+// @Success 200 {object} presenter.JsonResponse{data=dto.AmenityDetailOut}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /spot/amenity/{id} [delete]
 // @Security Bearer
