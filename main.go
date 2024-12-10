@@ -60,6 +60,9 @@ func main() {
 		return c.Next()
 	})
 
+	// request middleware 구현
+	//app.Use(middleware.AuthMiddleware())
+
 	// swagger settings
 	//swaggerCfg := swagger.Config{
 	//	BasePath: "/v1",

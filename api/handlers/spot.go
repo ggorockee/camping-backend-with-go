@@ -148,7 +148,7 @@ func GetSpot(service spot.Service) fiber.Handler {
 		categorySerializer := serializer.NewCategorySerializer(&fetched.Category)
 		spotSerializer := serializer.NewSpotSerializer(fetched, userSerializer, categorySerializer)
 
-		jsonResponse := presenter.NewJsonResponse(false, "", spotSerializer.DetailSerialize(db))
+		jsonResponse := presenter.NewJsonResponse(false, "", spotSerializer.DetailSerialize(db, c))
 		return c.Status(http.StatusOK).JSON(jsonResponse)
 	}
 }

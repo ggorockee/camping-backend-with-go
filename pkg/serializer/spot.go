@@ -3,6 +3,8 @@ package serializer
 import (
 	"camping-backend-with-go/pkg/dto"
 	"camping-backend-with-go/pkg/entities"
+	"fmt"
+	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 	"log"
 	"math"
@@ -10,7 +12,7 @@ import (
 
 type SpotSerializer interface {
 	ListSerialize(db *gorm.DB) dto.SpotListOut
-	DetailSerialize(db *gorm.DB) dto.SpotDetailOut
+	DetailSerialize(db *gorm.DB, contexts ...*fiber.Ctx) dto.SpotDetailOut
 }
 
 type spotSerializer struct {
@@ -64,7 +66,7 @@ func (s *spotSerializer) ListSerialize(db *gorm.DB) dto.SpotListOut {
 	}
 }
 
-func (s *spotSerializer) DetailSerialize(db *gorm.DB) dto.SpotDetailOut {
+func (s *spotSerializer) DetailSerialize(db *gorm.DB, contexts ...*fiber.Ctx) dto.SpotDetailOut {
 	amenityListOuts := make([]dto.AmenityListOut, 0)
 	for _, amenity := range s.spot.Amenities {
 		amenitySerializer := NewAmenitySerializer(&amenity)
@@ -88,6 +90,15 @@ func (s *spotSerializer) DetailSerialize(db *gorm.DB) dto.SpotDetailOut {
 		}
 		rating = totalRating / float64(count)
 		rating = math.Round(rating*100) / 100
+	}
+
+	// context
+
+	if len(contexts) > 0 {
+		ctx := contexts[0]
+		fmt.Println(ctx.Locals("request_user").(entities.User))
+		fmt.Println(ctx.Locals("is_authenticated").(bool))
+
 	}
 
 	return dto.SpotDetailOut{

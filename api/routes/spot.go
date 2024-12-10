@@ -15,7 +15,7 @@ func SpotRouter(app fiber.Router, service spot.Service) {
 	publicSpotRouter.Get("/spot", handlers.GetAllSpots(service))
 
 	//private router
-	privateSpotRouter := app.Group("/spot", middleware.Protected())
+	privateSpotRouter := app.Group("/spot", middleware.Protected(), middleware.AuthMiddleware())
 	privateSpotRouter.Get("/me", middleware.RoleMiddleware(
 		dto.Client,
 		dto.Owner,

@@ -61,7 +61,8 @@ type SpotDetailOut struct {
 	Category    CategoryListOut   `json:"category"`
 	Amenities   *[]AmenityListOut `json:"amenities"`
 
-	Rating    float64   `json:"rating"`
+	Rating    float64   `json:"rating"` // method serializer
+	IsOwner   bool      `json:"is_owner"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

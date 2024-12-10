@@ -3,6 +3,9 @@ package middleware
 import (
 	"camping-backend-with-go/api/presenter"
 	"camping-backend-with-go/pkg/config"
+	"camping-backend-with-go/pkg/entities"
+	"github.com/golang-jwt/jwt/v5"
+	"gorm.io/gorm"
 	"net/http"
 
 	jwtware "github.com/gofiber/contrib/jwt"
@@ -26,4 +29,23 @@ func jwtError(c *fiber.Ctx, err error) error {
 
 	jsonResponse := presenter.NewJsonResponse(false, "Invalid or expired JWT", nil)
 	return c.Status(http.StatusUnauthorized).JSON(jsonResponse)
+}
+
+func AuthMiddleware() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		token := c.Locals("user").(*jwt.Token)
+		claims := token.Claims.(jwt.MapClaims)
+		userId := int(claims["user_id"].(float64))
+		db := c.Locals("db").(*gorm.DB)
+		var user entities.User
+		if err := db.First(&user, userId).Error; err != nil {
+			c.Locals("is_authenticated", false)
+			c.Locals("request_user", "anonymous")
+			return c.Next()
+		}
+
+		c.Locals("is_authenticated", true)
+		c.Locals("request_user", user)
+		return c.Next()
+	}
 }
