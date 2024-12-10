@@ -3,7 +3,6 @@ package serializer
 import (
 	"camping-backend-with-go/pkg/dto"
 	"camping-backend-with-go/pkg/entities"
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 	"log"
@@ -11,8 +10,9 @@ import (
 )
 
 type SpotSerializer interface {
-	ListSerialize(db *gorm.DB) dto.SpotListOut
+	ListSerialize(db *gorm.DB, contexts ...*fiber.Ctx) dto.SpotListOut
 	DetailSerialize(db *gorm.DB, contexts ...*fiber.Ctx) dto.SpotDetailOut
+	GetIsOwner(ctx *fiber.Ctx) bool
 }
 
 type spotSerializer struct {
@@ -21,7 +21,16 @@ type spotSerializer struct {
 	category CategorySerializer
 }
 
-func (s *spotSerializer) ListSerialize(db *gorm.DB) dto.SpotListOut {
+func (s *spotSerializer) GetIsOwner(ctx *fiber.Ctx) bool {
+	requestUser, ok := ctx.Locals("request_user").(entities.User)
+	if !ok {
+		return false
+	}
+
+	return s.spot.User == requestUser
+}
+
+func (s *spotSerializer) ListSerialize(db *gorm.DB, contexts ...*fiber.Ctx) dto.SpotListOut {
 
 	amenityListOuts := make([]dto.AmenityListOut, 0)
 	for _, amenity := range s.spot.Amenities {
@@ -47,6 +56,12 @@ func (s *spotSerializer) ListSerialize(db *gorm.DB) dto.SpotListOut {
 		rating = totalRating / float64(count)
 		rating = math.Round(rating*100) / 100
 	}
+
+	ctx := MakeContext(contexts)
+	if ctx == nil {
+		log.Fatalf("failed loading fiber.Ctx...")
+	}
+
 	return dto.SpotListOut{
 		Id:          int(s.spot.Id),
 		User:        s.user.TinyUserSerialize(),
@@ -60,6 +75,7 @@ func (s *spotSerializer) ListSerialize(db *gorm.DB) dto.SpotListOut {
 		Category:    s.category.ListSerialize(),
 		Amenities:   &amenityListOuts,
 		Rating:      rating,
+		IsOwner:     s.GetIsOwner(ctx),
 
 		CreatedAt: s.spot.CreatedAt,
 		UpdatedAt: s.spot.UpdatedAt,
@@ -93,12 +109,9 @@ func (s *spotSerializer) DetailSerialize(db *gorm.DB, contexts ...*fiber.Ctx) dt
 	}
 
 	// context
-
-	if len(contexts) > 0 {
-		ctx := contexts[0]
-		fmt.Println(ctx.Locals("request_user").(entities.User))
-		fmt.Println(ctx.Locals("is_authenticated").(bool))
-
+	ctx := MakeContext(contexts)
+	if ctx == nil {
+		log.Fatalf("failed loading fiber.Ctx...")
 	}
 
 	return dto.SpotDetailOut{
@@ -114,8 +127,10 @@ func (s *spotSerializer) DetailSerialize(db *gorm.DB, contexts ...*fiber.Ctx) dt
 		Category:    s.category.ListSerialize(),
 		Amenities:   &amenityListOuts,
 		Rating:      rating,
-		CreatedAt:   s.spot.CreatedAt,
-		UpdatedAt:   s.spot.UpdatedAt,
+		IsOwner:     s.GetIsOwner(ctx),
+
+		CreatedAt: s.spot.CreatedAt,
+		UpdatedAt: s.spot.UpdatedAt,
 	}
 }
 

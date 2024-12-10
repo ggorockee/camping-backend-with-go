@@ -43,6 +43,7 @@ type SpotListOut struct {
 	Category    CategoryListOut   `json:"category"`
 	Amenities   *[]AmenityListOut `json:"amenities"`
 	Rating      float64           `json:"rating"`
+	IsOwner     bool              `json:"is_owner"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

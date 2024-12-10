@@ -162,6 +162,27 @@ definitions:
         description: Time Logging
         type: string
     type: object
+  entities.Review:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      payload:
+        type: string
+      rating:
+        type: integer
+      spot:
+        $ref: '#/definitions/entities.Spot'
+      spot_id:
+        type: integer
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/entities.User'
+      user_id:
+        type: integer
+    type: object
   entities.Spot:
     properties:
       address:
@@ -191,6 +212,10 @@ definitions:
         type: boolean
       price:
         type: integer
+      reviews:
+        items:
+          $ref: '#/definitions/entities.Review'
+        type: array
       updated_at:
         type: string
       user:
@@ -451,6 +476,8 @@ paths:
           description: Service Unavailable
           schema:
             $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
       summary: GetAllSpots
       tags:
       - Spot
@@ -748,34 +775,6 @@ paths:
       summary: UpdateAmenity
       tags:
       - Amenity
-  /spot/me:
-    get:
-      consumes:
-      - application/json
-      description: GetMySpots
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/entities.Spot'
-                  type: array
-              type: object
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/presenter.JsonResponse'
-      security:
-      - Bearer: []
-      summary: GetMySpots
-      tags:
-      - Spot
   /user/changepw:
     put:
       consumes:

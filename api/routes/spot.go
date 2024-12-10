@@ -11,17 +11,13 @@ import (
 
 func SpotRouter(app fiber.Router, service spot.Service) {
 	//public router
-	publicSpotRouter := app.Group("/spot/amenity")
-	publicSpotRouter.Get("/spot", handlers.GetAllSpots(service))
+	publicSpotRouter := app.Group("/spot")
+	publicSpotRouter.Get("/", handlers.GetAllSpots(service))
 
 	//private router
-	privateSpotRouter := app.Group("/spot", middleware.Protected(), middleware.AuthMiddleware())
-	privateSpotRouter.Get("/me", middleware.RoleMiddleware(
-		dto.Client,
-		dto.Owner,
-		dto.Admin,
-		dto.Staff,
-	), handlers.GetMySpots(service))
+	privateSpotRouter := app.Group("/spot", middleware.Protected())
+	//privateSpotRouter := app.Group("/spot", middleware.Protected())
+	
 	privateSpotRouter.Get("/:id", middleware.RoleMiddleware(
 		dto.Client,
 		dto.Owner,

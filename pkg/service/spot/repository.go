@@ -72,27 +72,27 @@ func (r *repository) GetSpot(id int, ctx *fiber.Ctx) (*entities.Spot, error) {
 	// Login이 되어있어야함
 	// 0. middleware 처리 (v)
 	// 1. jwtToken을 가지고와서 userId를 얻음(from localstorage)
-	userId := r.UserRepo.GetValueFromToken("user_id", ctx)
+	//userId := r.UserRepo.GetValueFromToken("user_id", ctx)
 
 	// 2. userId를 이용해 user instance를 가지고옴
-	fetchedUser, err := r.UserRepo.GetUserById(userId)
-	if err != nil {
-		return nil, err
-	}
+	//fetchedUser, err := r.UserRepo.GetUserById(userId)
+	//if err != nil {
+	//	return nil, err
+	//}
 
 	// 3. :id를 이용해 spot인스턴스를 가져옴
 	fetchedSpot, err := r.GetSpotById(id)
 	if err != nil {
 		return nil, err
 	}
-	spotUserId := int(fetchedSpot.UserId)
+	//spotUserId := int(fetchedSpot.UserId)
 
 	// validation
 	// 4. spot instance의 userid와 user instance의 id가 같은지 비교
-	err = r.UserRepo.ValidUser(spotUserId, fetchedUser)
-	if err != nil {
-		return nil, err
-	}
+	//err = r.UserRepo.ValidUser(spotUserId, fetchedUser)
+	//if err != nil {
+	//	return nil, err
+	//}
 
 	// success
 	// 5. 모든 과정이 통과되었다면 spot객체 return

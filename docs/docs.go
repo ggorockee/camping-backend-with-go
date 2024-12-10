@@ -367,6 +367,11 @@ const docTemplate = `{
         },
         "/spot": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "GetAllSpots",
                 "consumes": [
                     "application/json"
@@ -723,55 +728,6 @@ const docTemplate = `{
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/dto.AmenityDetailOut"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "$ref": "#/definitions/presenter.JsonResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/spot/me": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "GetMySpots",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Spot"
-                ],
-                "summary": "GetMySpots",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/presenter.JsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/entities.Spot"
-                                            }
                                         }
                                     }
                                 }
@@ -1294,6 +1250,38 @@ const docTemplate = `{
                 }
             }
         },
+        "entities.Review": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "payload": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "integer"
+                },
+                "spot": {
+                    "$ref": "#/definitions/entities.Spot"
+                },
+                "spot_id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/entities.User"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "entities.Spot": {
             "type": "object",
             "properties": {
@@ -1336,6 +1324,12 @@ const docTemplate = `{
                 },
                 "price": {
                     "type": "integer"
+                },
+                "reviews": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Review"
+                    }
                 },
                 "updated_at": {
                     "type": "string"

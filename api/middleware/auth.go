@@ -7,18 +7,36 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"gorm.io/gorm"
 	"net/http"
+	"strings"
 
 	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
 )
 
 func Protected() fiber.Handler {
+
 	return jwtware.New(jwtware.Config{
-		ErrorHandler: jwtError,
-		SigningKey:   jwtware.SigningKey{Key: []byte(config.Config("JWT_SECRET"))},
-		AuthScheme:   "Bearer",
-		TokenLookup:  "header:Authorization",
+		ErrorHandler:   jwtError,
+		SuccessHandler: successHandler,
+		SigningKey:     jwtware.SigningKey{Key: []byte(config.Config("JWT_SECRET"))},
+		AuthScheme:     "Bearer",
+		TokenLookup:    "header:Authorization",
 	})
+}
+
+func successHandler(c *fiber.Ctx) error {
+	token := c.Locals("user").(*jwt.Token)
+	claims := token.Claims.(jwt.MapClaims)
+	userId := claims["user_id"]
+
+	db := c.Locals("db").(*gorm.DB)
+
+	var user entities.User
+	db.First(&user, userId)
+
+	c.Locals("is_authenticated", true)
+	c.Locals("request_user", user)
+	return c.Next()
 }
 
 func jwtError(c *fiber.Ctx, err error) error {
@@ -31,21 +49,71 @@ func jwtError(c *fiber.Ctx, err error) error {
 	return c.Status(http.StatusUnauthorized).JSON(jsonResponse)
 }
 
-func AuthMiddleware() fiber.Handler {
+func RequestAuthMiddleware() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		token := c.Locals("user").(*jwt.Token)
-		claims := token.Claims.(jwt.MapClaims)
-		userId := int(claims["user_id"].(float64))
+		// 기본적으로 인증되지 않은 상태로 설정
+		c.Locals("is_authenticated", false)
+		c.Locals("request_user", "anonymous")
+
+		// Authorization 헤더에서 토큰 추출
+		authHeader := c.Get("Authorization")
+		if authHeader == "" {
+			return c.Next()
+		}
+
+		// Bearer 접두사 제거
+		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+		if tokenString == authHeader {
+			// "Bearer" 접두사가 없으면 잘못된 형식
+			return c.Next()
+		}
+
+		// 토큰 검증
+
+		token, err := validateToken(tokenString)
+		if err != nil {
+			// 토큰이 유효하지 않으면 다음 미들웨어로 넘어감
+			return c.Next()
+		}
+
+		// 토큰이 유효하면 사용자 정보 설정
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok {
+			return c.Next()
+		}
+
+		userId, ok := claims["user_id"].(float64)
+
 		db := c.Locals("db").(*gorm.DB)
+
 		var user entities.User
-		if err := db.First(&user, userId).Error; err != nil {
-			c.Locals("is_authenticated", false)
-			c.Locals("request_user", "anonymous")
+		if err := db.First(&user, int(userId)).Error; err != nil {
 			return c.Next()
 		}
 
 		c.Locals("is_authenticated", true)
 		c.Locals("request_user", user)
+
 		return c.Next()
+
 	}
+}
+
+func validateToken(tokenString string) (*jwt.Token, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, jwt.ErrSignatureInvalid
+		}
+		return []byte(config.Config("JWT_SECRET")), nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if !token.Valid {
+		return nil, jwt.ErrTokenInvalidId
+	}
+
+	return token, nil
 }

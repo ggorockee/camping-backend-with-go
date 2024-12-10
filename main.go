@@ -1,6 +1,7 @@
 package main
 
 import (
+	"camping-backend-with-go/api/middleware"
 	"camping-backend-with-go/api/routes"
 	_ "camping-backend-with-go/docs"
 	"camping-backend-with-go/pkg/config"
@@ -61,7 +62,7 @@ func main() {
 	})
 
 	// request middleware 구현
-	//app.Use(middleware.AuthMiddleware())
+	app.Use(middleware.RequestAuthMiddleware())
 
 	// swagger settings
 	//swaggerCfg := swagger.Config{
