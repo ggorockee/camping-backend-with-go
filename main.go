@@ -115,6 +115,8 @@ func databaseConnection() *gorm.DB {
 		&entities.User{},
 		&entities.Category{},
 		&entities.Amenity{},
+		&entities.Review{},
+		&entities.WishList{},
 	)
 	if err != nil {
 		log.Println(err.Error())

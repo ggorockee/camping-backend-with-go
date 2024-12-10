@@ -24,4 +24,5 @@ type Spot struct {
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+	Reviews   []Review  `gorm:"foreignKey:SpotId" json:"reviews"`
 }

@@ -42,8 +42,10 @@ type SpotListOut struct {
 	PetFriendly bool              `json:"pet_friendly"`
 	Category    CategoryListOut   `json:"category"`
 	Amenities   *[]AmenityListOut `json:"amenities"`
-	CreatedAt   time.Time         `json:"created_at"`
-	UpdatedAt   time.Time         `json:"updated_at"`
+	Rating      float64           `json:"rating"`
+
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type SpotDetailOut struct {
@@ -58,6 +60,8 @@ type SpotDetailOut struct {
 	PetFriendly bool              `json:"pet_friendly"`
 	Category    CategoryListOut   `json:"category"`
 	Amenities   *[]AmenityListOut `json:"amenities"`
-	CreatedAt   time.Time         `json:"created_at"`
-	UpdatedAt   time.Time         `json:"updated_at"`
+
+	Rating    float64   `json:"rating"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }

@@ -3,12 +3,14 @@ package serializer
 import (
 	"camping-backend-with-go/pkg/dto"
 	"camping-backend-with-go/pkg/entities"
-	"time"
+	"gorm.io/gorm"
+	"log"
+	"math"
 )
 
 type SpotSerializer interface {
-	ListSerialize() dto.SpotListOut
-	DetailSerialize() dto.SpotDetailOut
+	ListSerialize(db *gorm.DB) dto.SpotListOut
+	DetailSerialize(db *gorm.DB) dto.SpotDetailOut
 }
 
 type spotSerializer struct {
@@ -17,12 +19,31 @@ type spotSerializer struct {
 	category CategorySerializer
 }
 
-func (s *spotSerializer) ListSerialize() dto.SpotListOut {
+func (s *spotSerializer) ListSerialize(db *gorm.DB) dto.SpotListOut {
 
 	amenityListOuts := make([]dto.AmenityListOut, 0)
 	for _, amenity := range s.spot.Amenities {
 		amenitySerializer := NewAmenitySerializer(&amenity)
 		amenityListOuts = append(amenityListOuts, amenitySerializer.ListSerialize())
+	}
+
+	var reviews []entities.Review
+	err := db.Where("spot_id = ?", s.spot.Id).Preload("Spot").Find(&reviews).Error
+	if err != nil {
+		log.Fatalf("DeatilSerializer Error, cannot fetched spot instance, %s\n", err.Error())
+	}
+
+	count := len(reviews)
+	var rating float64
+	if count == 0 {
+		rating = 0
+	} else {
+		totalRating := 0.0
+		for _, review := range reviews {
+			totalRating += float64(review.Rating)
+		}
+		rating = totalRating / float64(count)
+		rating = math.Round(rating*100) / 100
 	}
 	return dto.SpotListOut{
 		Id:          int(s.spot.Id),
@@ -36,17 +57,37 @@ func (s *spotSerializer) ListSerialize() dto.SpotListOut {
 		PetFriendly: s.spot.PetFriendly,
 		Category:    s.category.ListSerialize(),
 		Amenities:   &amenityListOuts,
+		Rating:      rating,
 
-		CreatedAt: time.Time{},
-		UpdatedAt: time.Time{},
+		CreatedAt: s.spot.CreatedAt,
+		UpdatedAt: s.spot.UpdatedAt,
 	}
 }
 
-func (s *spotSerializer) DetailSerialize() dto.SpotDetailOut {
+func (s *spotSerializer) DetailSerialize(db *gorm.DB) dto.SpotDetailOut {
 	amenityListOuts := make([]dto.AmenityListOut, 0)
 	for _, amenity := range s.spot.Amenities {
 		amenitySerializer := NewAmenitySerializer(&amenity)
 		amenityListOuts = append(amenityListOuts, amenitySerializer.ListSerialize())
+	}
+
+	var reviews []entities.Review
+	err := db.Where("spot_id = ?", s.spot.Id).Preload("Spot").Find(&reviews).Error
+	if err != nil {
+		log.Fatalf("DeatilSerializer Error, cannot fetched spot instance, %s\n", err.Error())
+	}
+
+	count := len(reviews)
+	var rating float64
+	if count == 0 {
+		rating = 0
+	} else {
+		totalRating := 0.0
+		for _, review := range reviews {
+			totalRating += float64(review.Rating)
+		}
+		rating = totalRating / float64(count)
+		rating = math.Round(rating*100) / 100
 	}
 
 	return dto.SpotDetailOut{
@@ -61,9 +102,9 @@ func (s *spotSerializer) DetailSerialize() dto.SpotDetailOut {
 		PetFriendly: s.spot.PetFriendly,
 		Category:    s.category.ListSerialize(),
 		Amenities:   &amenityListOuts,
-
-		CreatedAt: s.spot.CreatedAt,
-		UpdatedAt: s.spot.UpdatedAt,
+		Rating:      rating,
+		CreatedAt:   s.spot.CreatedAt,
+		UpdatedAt:   s.spot.UpdatedAt,
 	}
 }
 

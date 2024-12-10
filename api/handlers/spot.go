@@ -5,6 +5,7 @@ import (
 	"camping-backend-with-go/pkg/dto"
 	"camping-backend-with-go/pkg/serializer"
 	"camping-backend-with-go/pkg/service/spot"
+	"gorm.io/gorm"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
@@ -24,6 +25,7 @@ import (
 func AddSpot(service spot.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var requestBody dto.CreateSpotIn
+		db := c.Locals("db").(*gorm.DB)
 
 		err := c.BodyParser(&requestBody)
 		if err != nil {
@@ -40,7 +42,7 @@ func AddSpot(service spot.Service) fiber.Handler {
 		userSerializer := serializer.NewUserSerializer(&result.User)
 		categorySerializer := serializer.NewCategorySerializer(&result.Category)
 		spotSerializer := serializer.NewSpotSerializer(result, userSerializer, categorySerializer)
-		jsonResponse := presenter.NewJsonResponse(true, "", spotSerializer.DetailSerialize())
+		jsonResponse := presenter.NewJsonResponse(true, "", spotSerializer.DetailSerialize(db))
 
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
@@ -59,6 +61,7 @@ func AddSpot(service spot.Service) fiber.Handler {
 func GetMySpots(service spot.Service) fiber.Handler {
 
 	return func(c *fiber.Ctx) error {
+		db := c.Locals("db").(*gorm.DB)
 		fetched, err := service.FetchMySpots(c)
 		if err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
@@ -71,7 +74,7 @@ func GetMySpots(service spot.Service) fiber.Handler {
 			userSerializer := serializer.NewUserSerializer(&fetchedItem.User)
 			categorySerializer := serializer.NewCategorySerializer(&fetchedItem.Category)
 			spotSerializer := serializer.NewSpotSerializer(&fetchedItem, userSerializer, categorySerializer)
-			spotsSerialized = append(spotsSerialized, spotSerializer.ListSerialize())
+			spotsSerialized = append(spotsSerialized, spotSerializer.ListSerialize(db))
 		}
 
 		jsonResponse := presenter.NewJsonResponse(false, "", spotsSerialized)
@@ -93,6 +96,7 @@ func GetMySpots(service spot.Service) fiber.Handler {
 // @Security Bearer
 func UpdateSpot(service spot.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		db := c.Locals("db").(*gorm.DB)
 		var requestBody dto.UpdateSpotIn
 
 		err := c.BodyParser(&requestBody)
@@ -111,7 +115,7 @@ func UpdateSpot(service spot.Service) fiber.Handler {
 		userSerializer := serializer.NewUserSerializer(&fetchedSpot.User)
 		categorySerializer := serializer.NewCategorySerializer(&fetchedSpot.Category)
 		spotSerializer := serializer.NewSpotSerializer(fetchedSpot, userSerializer, categorySerializer)
-		jsonResponse := presenter.NewJsonResponse(false, "", spotSerializer.DetailSerialize())
+		jsonResponse := presenter.NewJsonResponse(false, "", spotSerializer.DetailSerialize(db))
 
 		return c.Status(http.StatusOK).JSON(jsonResponse)
 	}
@@ -130,6 +134,7 @@ func UpdateSpot(service spot.Service) fiber.Handler {
 // @Security Bearer
 func GetSpot(service spot.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		db := c.Locals("db").(*gorm.DB)
 
 		id, _ := c.ParamsInt("id")
 		fetched, err := service.GetSpot(id, c)
@@ -143,7 +148,7 @@ func GetSpot(service spot.Service) fiber.Handler {
 		categorySerializer := serializer.NewCategorySerializer(&fetched.Category)
 		spotSerializer := serializer.NewSpotSerializer(fetched, userSerializer, categorySerializer)
 
-		jsonResponse := presenter.NewJsonResponse(false, "", spotSerializer.DetailSerialize())
+		jsonResponse := presenter.NewJsonResponse(false, "", spotSerializer.DetailSerialize(db))
 		return c.Status(http.StatusOK).JSON(jsonResponse)
 	}
 }
@@ -185,6 +190,7 @@ func RemoveSpot(service spot.Service) fiber.Handler {
 // @Router /spot [get]
 func GetAllSpots(service spot.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		db := c.Locals("db").(*gorm.DB)
 		spots, err := service.GetAllSpots() //*[]entities.Spot
 
 		if err != nil {
@@ -197,7 +203,7 @@ func GetAllSpots(service spot.Service) fiber.Handler {
 			userSerializer := serializer.NewUserSerializer(&s.User)
 			categorySerializer := serializer.NewCategorySerializer(&s.Category)
 			spotSerializer := serializer.NewSpotSerializer(&s, userSerializer, categorySerializer)
-			responseSpots = append(responseSpots, spotSerializer.ListSerialize())
+			responseSpots = append(responseSpots, spotSerializer.ListSerialize(db))
 		}
 
 		jsonResponse := presenter.NewJsonResponse(false, "", responseSpots)
