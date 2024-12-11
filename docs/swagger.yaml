@@ -608,6 +608,38 @@ paths:
       summary: UpdateSpot
       tags:
       - Spot
+  /spot/{id}/reviews:
+    get:
+      consumes:
+      - application/json
+      description: SpotReviews
+      parameters:
+      - description: Spot ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
+      summary: SpotReviews
+      tags:
+      - Spot
   /spot/amenity:
     get:
       consumes:

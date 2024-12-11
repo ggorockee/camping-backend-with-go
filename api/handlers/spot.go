@@ -7,6 +7,7 @@ import (
 	"camping-backend-with-go/pkg/service/spot"
 	"gorm.io/gorm"
 	"net/http"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -176,6 +177,68 @@ func RemoveSpot(service spot.Service) fiber.Handler {
 
 		jsonResponse := presenter.NewJsonResponse(false, "successfully delete", nil)
 		return c.Status(http.StatusOK).JSON(jsonResponse)
+	}
+}
+
+// SpotReviews is a function SpotReviews
+// @Summary SpotReviews
+// @Description SpotReviews
+// @Tags Spot
+// @Accept json
+// @Produce json
+// @param id path int true "Spot ID"
+// @Param page query int false "Page number" default(1)
+// @Success 200 {object} presenter.JsonResponse{}
+// @Failure 503 {object} presenter.JsonResponse{}
+// @Router /spot/{id}/reviews [get]
+// @Security Bearer
+func SpotReviews(service spot.Service) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		id, err := c.ParamsInt("id")
+		if err != nil {
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
+			return c.Status(fiber.StatusBadRequest).JSON(jsonResponse)
+		}
+
+		spotObj, err := service.GetSpot(id)
+		if err != nil {
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
+			return c.Status(fiber.StatusBadRequest).JSON(jsonResponse)
+		}
+
+		reviews, err := service.GetReviewsFromSpot(spotObj)
+
+		// query params
+		pageStr := c.Query("page", "1")
+		page, err := strconv.Atoi(pageStr)
+		if err != nil {
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
+			return c.Status(fiber.StatusBadRequest).JSON(jsonResponse)
+		}
+
+		pageSize := 5
+		pageStart := (page - 1) * pageSize
+		pageEnd := pageStart + pageSize
+
+		reviewsSerializer := serializer.NewReviewsSerializer(reviews)
+
+		//jsonResponse := presenter.NewJsonResponse(false, "", reviewsSerializer.Serializer()[pageStart:pageEnd])
+		serializedReviews := reviewsSerializer.Serialize()
+		paginatedReviews := make([]serializer.ReviewOut, 0)
+		switch {
+		case len(serializedReviews) == 0:
+		case len(serializedReviews) <= pageStart:
+			// pageStart가 전체 리뷰 수를 초과할 경우 마지막 페이지 반환
+			lastPageStart := (len(serializedReviews) - 1) / pageSize * pageSize
+			paginatedReviews = serializedReviews[lastPageStart:]
+		case len(serializedReviews) < pageEnd:
+			paginatedReviews = serializedReviews[pageStart:]
+		default:
+			paginatedReviews = serializedReviews[pageStart:pageEnd]
+		}
+
+		jsonResponse := presenter.NewJsonResponse(false, "", paginatedReviews)
+		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
 }
 
