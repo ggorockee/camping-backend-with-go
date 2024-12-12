@@ -11,5 +11,5 @@ import (
 func WishListRouter(app fiber.Router, controller wishlistsvc.Controller) {
 	wishlistRouter := app.Group("/wishlist", middleware.Protected())
 	wishlistRouter.Get("/", handlers.GetWishList(controller))
-	// wishlistRouter.Post("/", handlers.ddd(controller))
+	wishlistRouter.Put("/:id/spot/:spotId", handlers.WishListToggle(controller))
 }

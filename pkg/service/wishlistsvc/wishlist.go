@@ -7,15 +7,21 @@ import (
 )
 
 type Controller interface {
-	GetWishList(contexts ...*fiber.Ctx) (*[]entities.WishList, error)
+	GetWishLists(contexts ...*fiber.Ctx) (*[]entities.WishList, error)
+	WishListToggle(contexts ...*fiber.Ctx) (*entities.WishList, error)
 }
 
 type controller struct {
 	repository Repository
 }
 
+func (c *controller) WishListToggle(contexts ...*fiber.Ctx) (*entities.WishList, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 // GetWishList implements Controller.
-func (c *controller) GetWishList(contexts ...*fiber.Ctx) (*[]entities.WishList, error) {
+func (c *controller) GetWishLists(contexts ...*fiber.Ctx) (*[]entities.WishList, error) {
 	return c.repository.GetWishList(contexts...)
 }
 

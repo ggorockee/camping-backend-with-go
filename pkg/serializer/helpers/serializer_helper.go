@@ -9,7 +9,7 @@ import (
 )
 
 func SerializeSpot(spots []entities.Spot, db *gorm.DB, c *fiber.Ctx) []dto.SpotListOut {
-	var spotListRes []dto.SpotListOut
+	spotListRes := make([]dto.SpotListOut, 0)
 	for _, spot := range spots {
 		userSerializer := serializer.NewUserSerializer(&spot.User)
 		categorySerializer := serializer.NewCategorySerializer(&spot.Category)

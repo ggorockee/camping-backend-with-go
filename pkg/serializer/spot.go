@@ -15,6 +15,24 @@ type SpotSerializer interface {
 	GetIsOwner(ctx *fiber.Ctx) bool
 }
 
+// Serializer
+func SpotsSerializer(spots []entities.Spot, db *gorm.DB, c *fiber.Ctx) []dto.SpotListOut {
+	spotListsRes := make([]dto.SpotListOut, 0)
+	for _, spot := range spots {
+		userSerializer := NewUserSerializer(&spot.User)
+		categorySerializer := NewCategorySerializer(&spot.Category)
+		spotSerializer := NewSpotSerializer(&spot, userSerializer, categorySerializer)
+		spotListOut := spotSerializer.ListSerialize(db, c)
+
+		if spotListOut.User == nil || spotListOut.User.Id == 0 {
+			spotListOut.User = nil
+		}
+
+		spotListsRes = append(spotListsRes, spotListOut)
+	}
+	return spotListsRes
+}
+
 type spotSerializer struct {
 	spot     *entities.Spot
 	user     UserSerializer
