@@ -32,7 +32,7 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @BasePath /v1
+// @BasePath /api/v1
 // @securityDefinitions.apikey Bearer
 // @in header
 // @name Authorization
@@ -72,7 +72,7 @@ func main() {
 	//}
 	//app.Use(swagger.New(swaggerCfg))
 
-	v1 := app.Group("/v1")
+	v1 := app.Group("/api/v1")
 
 	routes.UserRouter(v1, userService)
 	routes.AuthRouter(v1, userService)
@@ -110,7 +110,6 @@ func databaseConnection() *gorm.DB {
 
 	if err != nil {
 		log.Fatal("Failed to connect to database. \n", err)
-		os.Exit(2)
 	}
 
 	log.Println("connected")

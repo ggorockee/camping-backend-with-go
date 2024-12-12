@@ -6,6 +6,7 @@ import (
 	"camping-backend-with-go/pkg/service/amenity"
 	"camping-backend-with-go/pkg/service/category"
 	"camping-backend-with-go/pkg/service/user"
+	"camping-backend-with-go/pkg/service/util"
 	"errors"
 	"log"
 	"time"
@@ -24,6 +25,7 @@ type Repository interface {
 	GetSpotById(id int) (*entities.Spot, error)
 	GetAllSpots() (*[]entities.Spot, error)
 	GetReviewsFromSpot(spot *entities.Spot, contexts ...*fiber.Ctx) (*[]entities.Review, error)
+	CreateSpotReview(input *dto.CreateSpotReviewReq, spot *entities.Spot, contexts ...*fiber.Ctx) (*entities.Review, error)
 }
 
 type repository struct {
@@ -31,6 +33,37 @@ type repository struct {
 	UserRepo    user.Repository
 	AmenityRepo amenity.Repository
 	CatRepo     category.Repository
+}
+
+// CreateSpotReview implements Repository.
+func (r *repository) CreateSpotReview(input *dto.CreateSpotReviewReq, spot *entities.Spot, contexts ...*fiber.Ctx) (*entities.Review, error) {
+	c, err := util.ContextParser(contexts...)
+	if err != nil {
+		return nil, err
+	}
+
+	requestUser, ok := c.Locals("request_user").(entities.User)
+	if !ok {
+		return nil, errors.New("use is not authenticated")
+	}
+
+	// spot은 이미 불러와짐
+	review := entities.Review{
+		Id:        0,
+		User:      requestUser,
+		Spot:      *spot,
+		Payload:   input.Payload,
+		Rating:    input.Rating,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	if err := r.DBConn.Create(&review).Error; err != nil {
+		return nil, err
+	}
+
+	return &review, nil
+
 }
 
 func (r *repository) GetReviewsFromSpot(spot *entities.Spot, contexts ...*fiber.Ctx) (*[]entities.Review, error) {

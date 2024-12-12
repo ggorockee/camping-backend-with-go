@@ -1,4 +1,4 @@
-basePath: /v1
+basePath: /api/v1
 definitions:
   dto.AmenityDetailOut:
     properties:
@@ -84,6 +84,13 @@ definitions:
       price:
         type: integer
     type: object
+  dto.CreateSpotReviewReq:
+    properties:
+      payload:
+        type: string
+      rating:
+        type: integer
+    type: object
   dto.LoginIn:
     properties:
       email:
@@ -98,6 +105,17 @@ definitions:
       password:
         type: string
       password_confirm:
+        type: string
+      username:
+        type: string
+    type: object
+  dto.TinyUserOut:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      role:
         type: string
       username:
         type: string
@@ -243,6 +261,25 @@ definitions:
         type: boolean
       message:
         type: string
+    type: object
+  serializer.ReviewOut:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      payload:
+        type: string
+      rating:
+        type: integer
+      updated_at:
+        type: string
+      user:
+        allOf:
+        - $ref: '#/definitions/dto.TinyUserOut'
+        description: |-
+          UserId int  `json:"user_id"`
+          User   entities.User `gorm:"foreignKey:UserId;constraint:OnDelete:CASCADE"`
     type: object
 info:
   contact:
@@ -606,6 +643,44 @@ paths:
       security:
       - Bearer: []
       summary: UpdateSpot
+      tags:
+      - Spot
+  /spot/{id}/review:
+    post:
+      consumes:
+      - application/json
+      description: AddSpotReview
+      parameters:
+      - description: Create Review
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateSpotReviewReq'
+      - description: Spot ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/serializer.ReviewOut'
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
+      summary: AddSpotReview
       tags:
       - Spot
   /spot/{id}/reviews:

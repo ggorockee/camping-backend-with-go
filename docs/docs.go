@@ -901,6 +901,70 @@ const docTemplate = `{
                 }
             }
         },
+        "/spot/{id}/review": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "AddSpotReview",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Spot"
+                ],
+                "summary": "AddSpotReview",
+                "parameters": [
+                    {
+                        "description": "Create Review",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateSpotReviewReq"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Spot ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/presenter.JsonResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/serializer.ReviewOut"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.JsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/spot/{id}/reviews": {
             "get": {
                 "security": [
@@ -1180,6 +1244,17 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CreateSpotReviewReq": {
+            "type": "object",
+            "properties": {
+                "payload": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.LoginIn": {
             "type": "object",
             "properties": {
@@ -1201,6 +1276,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password_confirm": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.TinyUserOut": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "role": {
                     "type": "string"
                 },
                 "username": {
@@ -1423,6 +1515,34 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "serializer.ReviewOut": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "payload": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user": {
+                    "description": "UserId int  ` + "`" + `json:\"user_id\"` + "`" + `\nUser   entities.User ` + "`" + `gorm:\"foreignKey:UserId;constraint:OnDelete:CASCADE\"` + "`" + `",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/dto.TinyUserOut"
+                        }
+                    ]
+                }
+            }
         }
     },
     "securityDefinitions": {
@@ -1439,7 +1559,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "",
-	BasePath:         "/v1",
+	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "ggocamping App",
 	Description:      "This is an API for ggocamping Application",

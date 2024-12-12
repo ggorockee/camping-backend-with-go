@@ -5,12 +5,59 @@ import (
 	"camping-backend-with-go/pkg/dto"
 	"camping-backend-with-go/pkg/serializer"
 	"camping-backend-with-go/pkg/service/spot"
-	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 
+	"gorm.io/gorm"
+
 	"github.com/gofiber/fiber/v2"
 )
+
+// AddSpotReview
+// @Summary AddSpotReview
+// @Description AddSpotReview
+// @Tags Spot
+// @Accept json
+// @Produce json
+// @Param user body dto.CreateSpotReviewReq true "Create Review"
+// @Param id path int true "Spot ID"
+// @Success 200 {object} presenter.JsonResponse{data=serializer.ReviewOut}
+// @Failure 503 {object} presenter.JsonResponse
+// @Router /spot/{id}/review [post]
+// @Security Bearer
+func AddSpotReview(service spot.Service) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		var requestBody dto.CreateSpotReviewReq
+		if err := c.BodyParser(&requestBody); err != nil {
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		spotId, err := c.ParamsInt("id")
+		if err != nil {
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		spot, err := service.GetSpot(spotId, c)
+		if err != nil {
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		review, err := service.CreateSpotReview(&requestBody, spot, c)
+		if err != nil {
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		userSerializer := serializer.NewUserSerializer(&review.User)
+		serializedReview := serializer.NewReviewSerializer(review, userSerializer)
+
+		jsonResponse := presenter.NewJsonResponse(false, "", serializedReview.Serialize())
+		return c.Status(fiber.StatusOK).JSON(jsonResponse)
+	}
+}
 
 // AddSpot is a function to create spot data to database
 // @Summary AddSpot

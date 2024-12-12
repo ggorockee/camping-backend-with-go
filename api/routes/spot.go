@@ -16,8 +16,16 @@ func SpotRouter(app fiber.Router, service spot.Service) {
 	publicSpotRouter.Get("/:id/reviews", handlers.SpotReviews(service))
 
 	//private router
+	// 로그인 인증이 되어야함
 	privateSpotRouter := app.Group("/spot", middleware.Protected())
 	//privateSpotRouter := app.Group("/spot", middleware.Protected())
+
+	privateSpotRouter.Post("/:id/review", middleware.RoleMiddleware(
+		dto.Client,
+		dto.Owner,
+		dto.Admin,
+		dto.Staff,
+	), handlers.AddSpotReview(service))
 
 	privateSpotRouter.Get("/:id", middleware.RoleMiddleware(
 		dto.Client,

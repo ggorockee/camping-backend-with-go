@@ -4,10 +4,11 @@ import (
 	"camping-backend-with-go/api/presenter"
 	"camping-backend-with-go/pkg/config"
 	"camping-backend-with-go/pkg/entities"
-	"github.com/golang-jwt/jwt/v5"
-	"gorm.io/gorm"
 	"net/http"
 	"strings"
+
+	"github.com/golang-jwt/jwt/v5"
+	"gorm.io/gorm"
 
 	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
@@ -116,4 +117,55 @@ func validateToken(tokenString string) (*jwt.Token, error) {
 	}
 
 	return token, nil
+}
+
+func IsAuthenticatedOrReadOnly() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		method := c.Method()
+
+		// GET 요청은 모두 허용
+		if method == fiber.MethodGet {
+			return c.Next()
+		}
+
+		authHeader := c.Get("Authorization")
+		if authHeader == "" || !isAuthenticated(authHeader, c) {
+			jsonResponse := presenter.NewJsonResponse(true, "인증되지 않은 사용자입니다.", nil)
+			return c.Status(fiber.StatusUnauthorized).JSON(jsonResponse)
+		}
+
+		return c.Next()
+	}
+}
+
+func isAuthenticated(bearerToken string, contexts ...*fiber.Ctx) bool {
+
+	tokenString := strings.TrimPrefix(bearerToken, "Bearer ")
+	if bearerToken == tokenString {
+		// Bearer 값이 없으면 error
+		return false
+	}
+
+	token, err := validateToken(tokenString)
+	if err != nil {
+		return err == nil
+	}
+
+	c := ContextParser(contexts...)
+	db, ok := c.Locals("db").(*gorm.DB)
+	if !ok {
+		return false
+	}
+
+	userId, ok := token.Claims.(jwt.MapClaims)["user_id"].(float64)
+	if !ok {
+		return false
+	}
+
+	var user entities.User
+	if err := db.First(&user, userId).Error; err != nil {
+		return false
+	}
+
+	return true
 }

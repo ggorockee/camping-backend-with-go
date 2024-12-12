@@ -14,10 +14,16 @@ type Service interface {
 	RemoveSpot(id int, ctx *fiber.Ctx) error
 	GetAllSpots() (*[]entities.Spot, error)
 	GetReviewsFromSpot(spot *entities.Spot, contexts ...*fiber.Ctx) (*[]entities.Review, error)
+	CreateSpotReview(input *dto.CreateSpotReviewReq, spot *entities.Spot, contexts ...*fiber.Ctx) (*entities.Review, error)
 }
 
 type service struct {
 	repository Repository
+}
+
+// CreateSpotReview implements Service.
+func (s *service) CreateSpotReview(input *dto.CreateSpotReviewReq, spot *entities.Spot, contexts ...*fiber.Ctx) (*entities.Review, error) {
+	return s.repository.CreateSpotReview(input, spot, contexts...)
 }
 
 func (s *service) GetReviewsFromSpot(spot *entities.Spot, contexts ...*fiber.Ctx) (*[]entities.Review, error) {
