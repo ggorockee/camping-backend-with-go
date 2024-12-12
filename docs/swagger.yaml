@@ -109,6 +109,41 @@ definitions:
       username:
         type: string
     type: object
+  dto.SpotListOut:
+    properties:
+      address:
+        type: string
+      amenities:
+        items:
+          $ref: '#/definitions/dto.AmenityListOut'
+        type: array
+      category:
+        $ref: '#/definitions/dto.CategoryListOut'
+      city:
+        type: string
+      country:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      is_owner:
+        type: boolean
+      name:
+        type: string
+      pet_friendly:
+        type: boolean
+      price:
+        type: integer
+      rating:
+        type: number
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/dto.TinyUserOut'
+    type: object
   dto.TinyUserOut:
     properties:
       email:
@@ -280,6 +315,23 @@ definitions:
         description: |-
           UserId int  `json:"user_id"`
           User   entities.User `gorm:"foreignKey:UserId;constraint:OnDelete:CASCADE"`
+    type: object
+  serializer.WishListRes:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      spots:
+        items:
+          $ref: '#/definitions/dto.SpotListOut'
+        type: array
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/dto.TinyUserOut'
     type: object
 info:
   contact:
@@ -941,6 +993,34 @@ paths:
       summary: Create User
       tags:
       - Users
+  /wishlist:
+    get:
+      consumes:
+      - application/json
+      description: GetWishList
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/serializer.WishListRes'
+                  type: array
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
+      summary: GetWishList
+      tags:
+      - WishList
 securityDefinitions:
   Bearer:
     description: Type "Bearer" followed by a space and JWT token.

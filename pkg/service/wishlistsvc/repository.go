@@ -30,7 +30,11 @@ func (r *repository) GetWishList(contexts ...*fiber.Ctx) (*[]entities.WishList, 
 	}
 
 	var wishList []entities.WishList
-	if err := r.dbConn.Preload("User").Where("user = ?", requestUser).Find(&wishList).Error; err != nil {
+	if err := r.dbConn.
+		Preload("User").
+		Preload("Spots").
+		Where("user_id = ?", requestUser.Id).
+		Find(&wishList).Error; err != nil {
 		return nil, err
 	}
 

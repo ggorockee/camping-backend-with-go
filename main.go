@@ -11,6 +11,7 @@ import (
 	"camping-backend-with-go/pkg/service/healthcheck"
 	"camping-backend-with-go/pkg/service/spot"
 	"camping-backend-with-go/pkg/service/user"
+	"camping-backend-with-go/pkg/service/wishlistsvc"
 	"fmt"
 	"log"
 	"os"
@@ -46,11 +47,13 @@ func main() {
 	amenityRepo := amenity.NewRepo(db, userRepo)
 	categoryRepo := category.NewRepo(db, userRepo)
 	spotRepo := spot.NewRepo(db, userRepo, amenityRepo, categoryRepo)
+	wishRepo := wishlistsvc.NewRepo(db)
 
 	userService := user.NewService(userRepo)
 	spotService := spot.NewService(spotRepo)
 	categoryService := category.NewService(categoryRepo)
 	amenityService := amenity.NewService(amenityRepo)
+	wishListService := wishlistsvc.NewController(wishRepo)
 
 	app := fiber.New()
 	app.Use(cors.New())
@@ -79,6 +82,7 @@ func main() {
 	routes.SpotRouter(v1, spotService)
 	routes.CategoryRouter(v1, categoryService)
 	routes.AmenityRouter(v1, amenityService)
+	routes.WishListRouter(v1, wishListService)
 	routes.SwaggerRouter(v1)
 	routes.HealthCheckRouter(v1, healthcheckService)
 	log.Fatal(app.Listen(":3000"))

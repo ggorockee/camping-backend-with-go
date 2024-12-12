@@ -32,7 +32,7 @@ type UpdateSpotIn struct {
 
 type SpotListOut struct {
 	Id          int               `json:"id"`
-	User        TinyUserOut       `json:"user"`
+	User        *TinyUserOut      `json:"user,omitempty"`
 	Name        string            `json:"name"`
 	Country     string            `json:"country"`
 	City        string            `json:"city"`
