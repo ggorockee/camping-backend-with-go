@@ -16,6 +16,11 @@ func GetWishList(controller wishlistsvc.Controller) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
+		// user
+		// category
+		// amenitty
+		// spot
+
 		serializedWishList := serializer.NewWishListSerializer(wishList)
 		jsonResponse := presenter.NewJsonResponse(false, "", serializedWishList.Serialize())
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)

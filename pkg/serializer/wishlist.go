@@ -1,6 +1,7 @@
 package serializer
 
 import (
+	"camping-backend-with-go/pkg/dto"
 	"camping-backend-with-go/pkg/entities"
 	"time"
 )
@@ -13,36 +14,28 @@ type WishListRes struct {
 	Id   uint   `json:"id" gorm:"primaryKey"`
 	Name string `json:"name" gorm:"type:varchar(150)"`
 
-	Spots []entities.Spot `gorm:"many2many:wishlist_spot"`
+	Spots []dto.SpotListOut
 
-	UserId int           `json:"user_id"`
-	User   entities.User `gorm:"foreignKey:UserId;constraint:OnDelete:CASCADE;"`
+	User dto.TinyUserOut
 
 	UpdatedAt time.Time `json:"updated_at"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
-type wishlist struct {
-	wishlist *[]entities.WishList
+type wishList struct {
+	wishList    *[]entities.WishList
+	serializers any
 }
 
 // Serialize implements WishListSerializer.
-func (w *wishlist) Serialize() []WishListRes {
-	var wishListRes []WishListRes
-	for _, wishItem := range *w.wishlist {
+func (w *wishList) Serialize() []WishListRes {
+	var wishListsRes []WishListRes
 
-	}
-	return WishListRes{
-		Id:        w.wishlist.Id,
-		Name:      w.wishlist.Name,
-		Spots:     w.wishlist.Spots,
-		UserId:    w.wishlist.UserId,
-		User:      w.wishlist.User,
-		UpdatedAt: w.wishlist.UpdatedAt,
-		CreatedAt: w.wishlist.CreatedAt,
-	}
+	// some logic
+
+	return wishListsRes
 }
 
-func NewWishListSerializer(w *[]entities.WishList) WishListSerializer {
-	return &wishlist{wishlist: w}
+func NewWishListSerializer(w *[]entities.WishList, serializers ...any) WishListSerializer {
+	return &wishList{wishList: w, serializers: serializers}
 }
