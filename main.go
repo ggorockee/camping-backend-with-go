@@ -11,7 +11,7 @@ import (
 	"camping-backend-with-go/pkg/service/healthcheck"
 	"camping-backend-with-go/pkg/service/spot"
 	"camping-backend-with-go/pkg/service/user"
-	"camping-backend-with-go/pkg/service/wishlistsvc"
+	"camping-backend-with-go/pkg/service/wishlist"
 	"fmt"
 	"log"
 	"os"
@@ -47,13 +47,13 @@ func main() {
 	amenityRepo := amenity.NewRepo(db, userRepo)
 	categoryRepo := category.NewRepo(db, userRepo)
 	spotRepo := spot.NewRepo(db, userRepo, amenityRepo, categoryRepo)
-	wishRepo := wishlistsvc.NewRepo(db)
+	wishRepo := wishlist.NewRepo(db)
 
 	userService := user.NewService(userRepo)
 	spotService := spot.NewService(spotRepo)
 	categoryService := category.NewService(categoryRepo)
 	amenityService := amenity.NewService(amenityRepo)
-	wishListService := wishlistsvc.NewController(wishRepo)
+	wishListService := wishlist.NewService(wishRepo)
 
 	app := fiber.New()
 	app.Use(cors.New())

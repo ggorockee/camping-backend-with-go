@@ -316,7 +316,17 @@ definitions:
           UserId int  `json:"user_id"`
           User   entities.User `gorm:"foreignKey:UserId;constraint:OnDelete:CASCADE"`
     type: object
-  serializer.WishListRes:
+  wishdto.CreateWishListReq:
+    properties:
+      name:
+        type: string
+    type: object
+  wishdto.UpdateWishListReq:
+    properties:
+      name:
+        type: string
+    type: object
+  wishmarshal.WishListRes:
     properties:
       created_at:
         type: string
@@ -330,8 +340,6 @@ definitions:
         type: array
       updated_at:
         type: string
-      user:
-        $ref: '#/definitions/dto.TinyUserOut'
     type: object
 info:
   contact:
@@ -997,7 +1005,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: GetWishList
+      description: GetWishLists
       produces:
       - application/json
       responses:
@@ -1009,7 +1017,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/serializer.WishListRes'
+                    $ref: '#/definitions/wishmarshal.WishListRes'
                   type: array
               type: object
         "503":
@@ -1018,7 +1026,173 @@ paths:
             $ref: '#/definitions/presenter.JsonResponse'
       security:
       - Bearer: []
+      summary: GetWishLists
+      tags:
+      - WishList
+    post:
+      consumes:
+      - application/json
+      description: CreateWishList
+      parameters:
+      - description: Create WishList
+        in: body
+        name: wishlist
+        required: true
+        schema:
+          $ref: '#/definitions/wishdto.CreateWishListReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/wishmarshal.WishListRes'
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
+      summary: CreateWishList
+      tags:
+      - WishList
+  /wishlist/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: DeleteWishList
+      parameters:
+      - description: wishlist id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
+      summary: DeleteWishList
+      tags:
+      - WishList
+    get:
+      consumes:
+      - application/json
+      description: GetWishList
+      parameters:
+      - description: wishlist id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/wishmarshal.WishListRes'
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
       summary: GetWishList
+      tags:
+      - WishList
+    put:
+      consumes:
+      - application/json
+      description: UpdateWishList
+      parameters:
+      - description: wishlist id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update WishList
+        in: body
+        name: wishlist
+        required: true
+        schema:
+          $ref: '#/definitions/wishdto.UpdateWishListReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/wishmarshal.WishListRes'
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
+      summary: UpdateWishList
+      tags:
+      - WishList
+  /wishlist/{id}/spot/{spot_id}:
+    put:
+      consumes:
+      - application/json
+      description: WishListToggle
+      parameters:
+      - description: wishlist id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: spot id
+        in: path
+        name: spot_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/presenter.JsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/wishmarshal.WishListRes'
+                  type: array
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      security:
+      - Bearer: []
+      summary: WishListToggle
       tags:
       - WishList
 securityDefinitions:

@@ -1,9 +1,8 @@
-package serializer
+package wishmarshal
 
 import (
 	"camping-backend-with-go/pkg/dto"
 	"camping-backend-with-go/pkg/entities"
-	"time"
 )
 
 type WishListsSerializer interface {
@@ -12,52 +11,10 @@ type WishListsSerializer interface {
 	WithUserSerializer(s func(entities.User) dto.TinyUserOut) WishListsSerializer
 }
 
-type WishListSerializer interface {
-	Serialize() WishListRes
-	WishSpotsSerializer(s func([]entities.Spot) []dto.SpotListOut) WishListSerializer
-}
-
-type WishListRes struct {
-	Id   uint   `json:"id" gorm:"primaryKey"`
-	Name string `json:"name" gorm:"type:varchar(150)"`
-
-	Spots []dto.SpotListOut
-
-	//User dto.TinyUserOut
-
-	UpdatedAt time.Time `json:"updated_at"`
-	CreatedAt time.Time `json:"created_at"`
-}
-
 type wishLists struct {
 	wishLists       *[]entities.WishList
 	spotsSerializer func(spots []entities.Spot) []dto.SpotListOut
 	userSerializer  func(user entities.User) dto.TinyUserOut
-}
-
-type wishList struct {
-	wishList        *entities.WishList
-	spotsSerializer func(spots []entities.Spot) []dto.SpotListOut
-}
-
-func (w *wishList) Serialize() WishListRes {
-	wishListRes := WishListRes{
-		Id:        w.wishList.Id,
-		Name:      w.wishList.Name,
-		UpdatedAt: w.wishList.UpdatedAt,
-		CreatedAt: w.wishList.CreatedAt,
-	}
-
-	if w.spotsSerializer != nil {
-		wishListRes.Spots = w.spotsSerializer(w.wishList.Spots)
-	}
-
-	return wishListRes
-}
-
-func (w *wishList) WishSpotsSerializer(s func([]entities.Spot) []dto.SpotListOut) WishListSerializer {
-	w.spotsSerializer = s
-	return w
 }
 
 func (w *wishLists) WithSpotsSerializer(s func([]entities.Spot) []dto.SpotListOut) WishListsSerializer {
@@ -84,7 +41,7 @@ func (w *wishLists) Serialize() []WishListRes {
 		}
 
 		if w.spotsSerializer != nil {
-			wishItem.Spots = w.spotsSerializer(wl.Spots)
+			wishItem.Spots = w.spotsSerializer(wl.Spots.ToSlice())
 		}
 
 		//if w.userSerializer != nil {
@@ -99,10 +56,4 @@ func (w *wishLists) Serialize() []WishListRes {
 
 func NewWishListsSerializer(w *[]entities.WishList) WishListsSerializer {
 	return &wishLists{wishLists: w}
-}
-
-func NewWishListSerializer(w *entities.WishList) WishListSerializer {
-	return &wishList{
-		wishList: w,
-	}
 }
