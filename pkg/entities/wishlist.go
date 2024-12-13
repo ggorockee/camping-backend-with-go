@@ -28,7 +28,7 @@ func (w *WishList) AfterFind() error {
 
 func (w *WishList) BeforeSave() error {
 	if w.Spots != nil {
-		w.spotsData = NewSpotCollection(w.spotsData)
+		w.spotsData = w.Spots
 	}
 
 	return nil
