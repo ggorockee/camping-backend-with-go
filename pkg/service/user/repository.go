@@ -1,9 +1,9 @@
 package user
 
 import (
+	"camping-backend-with-go/internal/domain"
 	"camping-backend-with-go/pkg/config"
 	"camping-backend-with-go/pkg/dto"
-	"camping-backend-with-go/pkg/entities"
 	"errors"
 	"strconv"
 	"strings"

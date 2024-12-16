@@ -1,17 +1,18 @@
 package main
 
 import (
-	"camping-backend-with-go/api/middleware"
-	"camping-backend-with-go/api/routes"
 	_ "camping-backend-with-go/docs"
+	entities2 "camping-backend-with-go/internal/domain"
+	"camping-backend-with-go/internal/middleware"
+	"camping-backend-with-go/internal/repository"
+	"camping-backend-with-go/internal/route"
+	"camping-backend-with-go/internal/service"
 	"camping-backend-with-go/pkg/config"
-	"camping-backend-with-go/pkg/entities"
 	"camping-backend-with-go/pkg/service/amenity"
 	"camping-backend-with-go/pkg/service/category"
 	"camping-backend-with-go/pkg/service/healthcheck"
 	"camping-backend-with-go/pkg/service/spot"
 	"camping-backend-with-go/pkg/service/user"
-	"camping-backend-with-go/pkg/service/wishlist"
 	"fmt"
 	"log"
 	"os"
@@ -47,13 +48,13 @@ func main() {
 	amenityRepo := amenity.NewRepo(db, userRepo)
 	categoryRepo := category.NewRepo(db, userRepo)
 	spotRepo := spot.NewRepo(db, userRepo, amenityRepo, categoryRepo)
-	wishRepo := wishlist.NewRepo(db)
+	wishRepo := repository.NewRepo(db, spotRepo)
 
 	userService := user.NewService(userRepo)
 	spotService := spot.NewService(spotRepo)
 	categoryService := category.NewService(categoryRepo)
 	amenityService := amenity.NewService(amenityRepo)
-	wishListService := wishlist.NewService(wishRepo)
+	wishListService := service.NewService(wishRepo)
 
 	app := fiber.New()
 	app.Use(cors.New())
@@ -77,14 +78,14 @@ func main() {
 
 	v1 := app.Group("/api/v1")
 
-	routes.UserRouter(v1, userService)
-	routes.AuthRouter(v1, userService)
-	routes.SpotRouter(v1, spotService)
-	routes.CategoryRouter(v1, categoryService)
-	routes.AmenityRouter(v1, amenityService)
-	routes.WishListRouter(v1, wishListService)
-	routes.SwaggerRouter(v1)
-	routes.HealthCheckRouter(v1, healthcheckService)
+	route.UserRouter(v1, userService)
+	route.AuthRouter(v1, userService)
+	route.SpotRouter(v1, spotService)
+	route.CategoryRouter(v1, categoryService)
+	route.AmenityRouter(v1, amenityService)
+	route.WishListRouter(v1, wishListService)
+	route.SwaggerRouter(v1)
+	route.HealthCheckRouter(v1, healthcheckService)
 	log.Fatal(app.Listen(":3000"))
 }
 
@@ -118,12 +119,12 @@ func databaseConnection() *gorm.DB {
 
 	log.Println("connected")
 	err = db.AutoMigrate(
-		&entities.Spot{},
-		&entities.User{},
-		&entities.Category{},
-		&entities.Amenity{},
-		&entities.Review{},
-		&entities.WishList{},
+		&entities2.Spot{},
+		&entities2.User{},
+		&entities2.Category{},
+		&entities2.Amenity{},
+		&entities2.Review{},
+		&entities2.WishList{},
 	)
 	if err != nil {
 		log.Println(err.Error())

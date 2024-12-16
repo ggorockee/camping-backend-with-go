@@ -1,8 +1,8 @@
 package category
 
 import (
+	"camping-backend-with-go/internal/domain"
 	"camping-backend-with-go/pkg/dto"
-	"camping-backend-with-go/pkg/entities"
 	"camping-backend-with-go/pkg/service/user"
 	"log"
 	"time"

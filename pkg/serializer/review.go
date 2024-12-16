@@ -1,8 +1,8 @@
 package serializer
 
 import (
+	"camping-backend-with-go/internal/domain"
 	"camping-backend-with-go/pkg/dto"
-	"camping-backend-with-go/pkg/entities"
 	"time"
 )
 

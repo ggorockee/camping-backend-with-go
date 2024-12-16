@@ -1,8 +1,8 @@
 package amenity
 
 import (
+	"camping-backend-with-go/internal/domain"
 	"camping-backend-with-go/pkg/dto"
-	"camping-backend-with-go/pkg/entities"
 	"github.com/gofiber/fiber/v2"
 )
 

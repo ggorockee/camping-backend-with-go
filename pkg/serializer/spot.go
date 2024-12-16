@@ -1,8 +1,8 @@
 package serializer
 
 import (
+	entities2 "camping-backend-with-go/internal/domain"
 	"camping-backend-with-go/pkg/dto"
-	"camping-backend-with-go/pkg/entities"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 	"log"
@@ -16,7 +16,7 @@ type SpotSerializer interface {
 }
 
 // Serializer
-func SpotsSerializer(spots []entities.Spot, db *gorm.DB, c *fiber.Ctx) []dto.SpotListOut {
+func SpotsSerializer(spots []entities2.Spot, db *gorm.DB, c *fiber.Ctx) []dto.SpotListOut {
 	spotListsRes := make([]dto.SpotListOut, 0)
 	for _, spot := range spots {
 		userSerializer := NewUserSerializer(&spot.User)
@@ -34,13 +34,13 @@ func SpotsSerializer(spots []entities.Spot, db *gorm.DB, c *fiber.Ctx) []dto.Spo
 }
 
 type spotSerializer struct {
-	spot     *entities.Spot
+	spot     *entities2.Spot
 	user     UserSerializer
 	category CategorySerializer
 }
 
 func (s *spotSerializer) GetIsOwner(ctx *fiber.Ctx) bool {
-	requestUser, ok := ctx.Locals("request_user").(entities.User)
+	requestUser, ok := ctx.Locals("request_user").(entities2.User)
 	if !ok {
 		return false
 	}
@@ -57,8 +57,8 @@ func (s *spotSerializer) serializeAmenities() []dto.AmenityListOut {
 	return amenityListOuts
 }
 
-func (s *spotSerializer) fetchReviews(db *gorm.DB) []entities.Review {
-	var reviews []entities.Review
+func (s *spotSerializer) fetchReviews(db *gorm.DB) []entities2.Review {
+	var reviews []entities2.Review
 	err := db.Where("spot_id = ?", s.spot.Id).Preload("Spot").Find(&reviews).Error
 	if err != nil {
 		log.Fatalf("DetailSerializer Error, cannot fetch spot instance, %s\n", err.Error())
@@ -66,7 +66,7 @@ func (s *spotSerializer) fetchReviews(db *gorm.DB) []entities.Review {
 	return reviews
 }
 
-func (s *spotSerializer) calculateAverageRating(reviews []entities.Review) float64 {
+func (s *spotSerializer) calculateAverageRating(reviews []entities2.Review) float64 {
 	count := len(reviews)
 	if count == 0 {
 		return 0
@@ -128,7 +128,7 @@ func (s *spotSerializer) DetailSerialize(db *gorm.DB, contexts ...*fiber.Ctx) dt
 		amenityListOuts = append(amenityListOuts, amenitySerializer.ListSerialize())
 	}
 
-	var reviews []entities.Review
+	var reviews []entities2.Review
 	err := db.Where("spot_id = ?", s.spot.Id).Preload("Spot").Find(&reviews).Error
 	if err != nil {
 		log.Fatalf("DeatilSerializer Error, cannot fetched spot instance, %s\n", err.Error())
@@ -173,6 +173,6 @@ func (s *spotSerializer) DetailSerialize(db *gorm.DB, contexts ...*fiber.Ctx) dt
 	}
 }
 
-func NewSpotSerializer(s *entities.Spot, u UserSerializer, c CategorySerializer) SpotSerializer {
+func NewSpotSerializer(s *entities2.Spot, u UserSerializer, c CategorySerializer) SpotSerializer {
 	return &spotSerializer{spot: s, user: u, category: c}
 }

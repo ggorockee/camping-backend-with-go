@@ -1,18 +1,18 @@
 package wishmarshal
 
 import (
+	entities2 "camping-backend-with-go/internal/domain"
 	"camping-backend-with-go/pkg/dto"
-	"camping-backend-with-go/pkg/entities"
 )
 
 type WishListSerializer interface {
 	Serialize() WishListRes
-	WishSpotsSerializer(s func([]entities.Spot) []dto.SpotListOut) WishListSerializer
+	WishSpotsSerializer(s func([]entities2.Spot) []dto.SpotListOut) WishListSerializer
 }
 
 type wishList struct {
-	wishList        *entities.WishList
-	spotsSerializer func(spots []entities.Spot) []dto.SpotListOut
+	wishList        *entities2.WishList
+	spotsSerializer func(spots []entities2.Spot) []dto.SpotListOut
 }
 
 func (w *wishList) Serialize() WishListRes {
@@ -30,12 +30,12 @@ func (w *wishList) Serialize() WishListRes {
 	return wishListRes
 }
 
-func (w *wishList) WishSpotsSerializer(s func([]entities.Spot) []dto.SpotListOut) WishListSerializer {
+func (w *wishList) WishSpotsSerializer(s func([]entities2.Spot) []dto.SpotListOut) WishListSerializer {
 	w.spotsSerializer = s
 	return w
 }
 
-func NewWishListSerializer(w *entities.WishList) WishListSerializer {
+func NewWishListSerializer(w *entities2.WishList) WishListSerializer {
 	return &wishList{
 		wishList: w,
 	}
