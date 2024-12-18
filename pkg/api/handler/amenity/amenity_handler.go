@@ -2,6 +2,8 @@ package amenityhandler
 
 import (
 	amenitydto "camping-backend-with-go/internal/application/dto/amenity"
+	"camping-backend-with-go/internal/application/serializer"
+	"camping-backend-with-go/internal/application/serializer/response"
 	"camping-backend-with-go/internal/domain/presenter"
 	amenityservice "camping-backend-with-go/internal/domain/service/amenity"
 	"github.com/gofiber/fiber/v2"
@@ -36,6 +38,7 @@ func CreateAmenity(service amenityservice.AmenityService) fiber.Handler {
 
 		//serializer = createdAmenity
 		//AmenitySerializer := serializer.NewAmenitySerializer(createdAmenity)
+
 		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 		log.Println(">>>> serialize not implemented")
 		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
@@ -106,7 +109,15 @@ func GetAmenity(service amenityservice.AmenityService) fiber.Handler {
 		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 		log.Println(">>>> serialize not implemented")
 		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-		jsonResponse := presenter.NewJsonResponse(false, "", amenity)
+
+		var serializedAmenity response.AmenityTinyRes
+		err = serializer.GeneralSerializer(amenity, &serializedAmenity)
+		if err != nil {
+			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		jsonResponse := presenter.NewJsonResponse(false, "", serializedAmenity)
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
 }

@@ -3,6 +3,8 @@ package spothandler
 import (
 	reviewdto "camping-backend-with-go/internal/application/dto/review"
 	spotdto "camping-backend-with-go/internal/application/dto/spot"
+	"camping-backend-with-go/internal/application/serializer"
+	"camping-backend-with-go/internal/application/serializer/response"
 	"camping-backend-with-go/internal/domain/presenter"
 	spotservice "camping-backend-with-go/internal/domain/service/spot"
 	"github.com/gofiber/fiber/v2"
@@ -138,7 +140,10 @@ func UpdateSpot(service spotservice.SpotService) fiber.Handler {
 		//userSerializer := serializer.NewUserSerializer(&fetchedSpot.User)
 		//categorySerializer := serializer.NewCategorySerializer(&fetchedSpot.Category)
 		//spotSerializer := serializer.NewSpotSerializer(fetchedSpot, userSerializer, categorySerializer)
-		jsonResponse := presenter.NewJsonResponse(false, "", spot)
+		var serializedSpot response.SpotDetailRes
+		err = serializer.GeneralSerializer(spot, &serializedSpot)
+
+		jsonResponse := presenter.NewJsonResponse(false, "", serializedSpot)
 
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
