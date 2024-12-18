@@ -7,15 +7,18 @@ import (
 	amenityservice "camping-backend-with-go/internal/domain/service/amenity"
 	authservice "camping-backend-with-go/internal/domain/service/auth"
 	categoryservice "camping-backend-with-go/internal/domain/service/category"
+	healthcheckservice "camping-backend-with-go/internal/domain/service/healthcheck"
 	"camping-backend-with-go/internal/infrastructure/database"
 	amenityroute "camping-backend-with-go/pkg/api/route/amenity"
 	authroute "camping-backend-with-go/pkg/api/route/auth"
 	categoryroute "camping-backend-with-go/pkg/api/route/category"
+	healthcheckroute "camping-backend-with-go/pkg/api/route/healthcheck"
 	"fmt"
+	"log"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"log"
 )
 
 var port int
@@ -57,12 +60,14 @@ func Start(aport ...int) {
 	authService := authservice.NewAuthService(authRepo)
 	categoryService := categoryservice.NewCategoryService(categoryRepo)
 	amenityService := amenityservice.NewAmenityService(amenityRepo)
+	healthcheckService := healthcheckservice.NewHealthCheckService()
 
 	// attach router
 	v1 := app.Group("/api/v1")
 	authroute.AuthRouter(v1, authService)
 	categoryroute.CategoryRouter(v1, categoryService)
 	amenityroute.AmenityRouter(v1, amenityService)
+	healthcheckroute.HealthCheckRouter(v1, healthcheckService)
 
 	log.Fatal(app.Listen(fmt.Sprintf(":%d", port)))
 }

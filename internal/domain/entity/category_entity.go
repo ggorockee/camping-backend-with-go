@@ -1,4 +1,4 @@
-package categoryentity
+package entity
 
 import "time"
 

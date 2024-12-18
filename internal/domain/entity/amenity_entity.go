@@ -1,4 +1,4 @@
-package amenityentity
+package entity
 
 import "time"
 
