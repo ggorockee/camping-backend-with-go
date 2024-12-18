@@ -2,26 +2,26 @@ package categoryrepository
 
 import (
 	categorydto "camping-backend-with-go/internal/application/dto/category"
-	categoryentity "camping-backend-with-go/internal/domain/entity/category"
+	"camping-backend-with-go/internal/domain/entity"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 	"time"
 )
 
 type CategoryRepository interface {
-	GetCategoryList(contexts ...*fiber.Ctx) (*[]categoryentity.Category, error)
-	CreateCategory(input *categorydto.CreateCategoryReq, contexts ...*fiber.Ctx) (*categoryentity.Category, error)
-	UpdateCategory(input *categorydto.UpdateCategoryReq, id int, contexts ...*fiber.Ctx) (*categoryentity.Category, error)
-	DeleteCategory(id int, contexts ...*fiber.Ctx) error
-	GetCategoryById(id int, contexts ...*fiber.Ctx) (*categoryentity.Category, error)
+	GetCategoryList(context ...*fiber.Ctx) (*[]entity.Category, error)
+	CreateCategory(input *categorydto.CreateCategoryReq, context ...*fiber.Ctx) (*entity.Category, error)
+	UpdateCategory(input *categorydto.UpdateCategoryReq, id int, context ...*fiber.Ctx) (*entity.Category, error)
+	DeleteCategory(id int, context ...*fiber.Ctx) error
+	GetCategoryById(id int, context ...*fiber.Ctx) (*entity.Category, error)
 }
 
 type categoryRepository struct {
 	dbConn *gorm.DB
 }
 
-func (r *categoryRepository) GetCategoryList(contexts ...*fiber.Ctx) (*[]categoryentity.Category, error) {
-	var categories []categoryentity.Category
+func (r *categoryRepository) GetCategoryList(context ...*fiber.Ctx) (*[]entity.Category, error) {
+	var categories []entity.Category
 	if err := r.dbConn.Find(&categories).Error; err != nil {
 		return nil, err
 	}
@@ -29,8 +29,8 @@ func (r *categoryRepository) GetCategoryList(contexts ...*fiber.Ctx) (*[]categor
 	return &categories, nil
 }
 
-func (r *categoryRepository) CreateCategory(input *categorydto.CreateCategoryReq, contexts ...*fiber.Ctx) (*categoryentity.Category, error) {
-	var category categoryentity.Category
+func (r *categoryRepository) CreateCategory(input *categorydto.CreateCategoryReq, context ...*fiber.Ctx) (*entity.Category, error) {
+	var category entity.Category
 	category.CreatedAt = time.Now()
 	category.UpdatedAt = time.Now()
 
@@ -42,8 +42,8 @@ func (r *categoryRepository) CreateCategory(input *categorydto.CreateCategoryReq
 	return &category, nil
 }
 
-func (r *categoryRepository) GetCategoryById(id int, contexts ...*fiber.Ctx) (*categoryentity.Category, error) {
-	var category categoryentity.Category
+func (r *categoryRepository) GetCategoryById(id int, context ...*fiber.Ctx) (*entity.Category, error) {
+	var category entity.Category
 	if err := r.dbConn.Where("id = ?", id).First(&category).Error; err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (r *categoryRepository) GetCategoryById(id int, contexts ...*fiber.Ctx) (*c
 	return &category, nil
 }
 
-func (r *categoryRepository) UpdateCategory(input *categorydto.UpdateCategoryReq, id int, contexts ...*fiber.Ctx) (*categoryentity.Category, error) {
+func (r *categoryRepository) UpdateCategory(input *categorydto.UpdateCategoryReq, id int, context ...*fiber.Ctx) (*entity.Category, error) {
 	category, err := r.GetCategoryById(id)
 	if err != nil {
 		return nil, err
@@ -69,8 +69,8 @@ func (r *categoryRepository) UpdateCategory(input *categorydto.UpdateCategoryReq
 	return category, nil
 }
 
-func (r *categoryRepository) DeleteCategory(id int, contexts ...*fiber.Ctx) error {
-	var category categoryentity.Category
+func (r *categoryRepository) DeleteCategory(id int, context ...*fiber.Ctx) error {
+	var category entity.Category
 	if err := r.dbConn.Delete(&category, id).Error; err != nil {
 		return err
 	}

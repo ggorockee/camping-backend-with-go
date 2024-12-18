@@ -2,26 +2,26 @@ package amenityrepository
 
 import (
 	amenitydto "camping-backend-with-go/internal/application/dto/amenity"
-	amenityentity "camping-backend-with-go/internal/domain/entity/amenity"
+	"camping-backend-with-go/internal/domain/entity"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 	"time"
 )
 
 type AmenityRepository interface {
-	CreateAmenity(input *amenitydto.CreateAmenityReq, contexts ...*fiber.Ctx) (*amenityentity.Amenity, error)
-	GetAmenityById(id int, contexts ...*fiber.Ctx) (*amenityentity.Amenity, error)
-	GetAmenityList(contexts ...*fiber.Ctx) (*[]amenityentity.Amenity, error)
-	UpdateAmenity(input *amenitydto.UpdateAmenityReq, id int, contexts ...*fiber.Ctx) (*amenityentity.Amenity, error)
-	DeleteAmenity(id int, contexts ...*fiber.Ctx) error
+	CreateAmenity(input *amenitydto.CreateAmenityReq, context ...*fiber.Ctx) (*entity.Amenity, error)
+	GetAmenityById(id int, context ...*fiber.Ctx) (*entity.Amenity, error)
+	GetAmenityList(context ...*fiber.Ctx) (*[]entity.Amenity, error)
+	UpdateAmenity(input *amenitydto.UpdateAmenityReq, id int, context ...*fiber.Ctx) (*entity.Amenity, error)
+	DeleteAmenity(id int, context ...*fiber.Ctx) error
 }
 
 type amenityRepository struct {
 	dbConn *gorm.DB
 }
 
-func (r *amenityRepository) CreateAmenity(input *amenitydto.CreateAmenityReq, contexts ...*fiber.Ctx) (*amenityentity.Amenity, error) {
-	var amenity amenityentity.Amenity
+func (r *amenityRepository) CreateAmenity(input *amenitydto.CreateAmenityReq, context ...*fiber.Ctx) (*entity.Amenity, error) {
+	var amenity entity.Amenity
 
 	amenity.Name = input.Name
 	amenity.Description = input.Description
@@ -35,8 +35,8 @@ func (r *amenityRepository) CreateAmenity(input *amenitydto.CreateAmenityReq, co
 	return &amenity, nil
 }
 
-func (r *amenityRepository) GetAmenityById(id int, contexts ...*fiber.Ctx) (*amenityentity.Amenity, error) {
-	var amenity amenityentity.Amenity
+func (r *amenityRepository) GetAmenityById(id int, context ...*fiber.Ctx) (*entity.Amenity, error) {
+	var amenity entity.Amenity
 	if err := r.dbConn.First(&amenity, id).Error; err != nil {
 		return nil, err
 	}
@@ -44,8 +44,8 @@ func (r *amenityRepository) GetAmenityById(id int, contexts ...*fiber.Ctx) (*ame
 	return &amenity, nil
 }
 
-func (r *amenityRepository) GetAmenityList(contexts ...*fiber.Ctx) (*[]amenityentity.Amenity, error) {
-	var amenities []amenityentity.Amenity
+func (r *amenityRepository) GetAmenityList(context ...*fiber.Ctx) (*[]entity.Amenity, error) {
+	var amenities []entity.Amenity
 	if err := r.dbConn.Find(&amenities).Error; err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func (r *amenityRepository) GetAmenityList(contexts ...*fiber.Ctx) (*[]amenityen
 	return &amenities, nil
 }
 
-func (r *amenityRepository) UpdateAmenity(input *amenitydto.UpdateAmenityReq, id int, contexts ...*fiber.Ctx) (*amenityentity.Amenity, error) {
+func (r *amenityRepository) UpdateAmenity(input *amenitydto.UpdateAmenityReq, id int, context ...*fiber.Ctx) (*entity.Amenity, error) {
 	amenity, err := r.GetAmenityById(id)
 	if err != nil {
 		return nil, err
@@ -74,7 +74,7 @@ func (r *amenityRepository) UpdateAmenity(input *amenitydto.UpdateAmenityReq, id
 	return amenity, nil
 }
 
-func (r *amenityRepository) DeleteAmenity(id int, contexts ...*fiber.Ctx) error {
+func (r *amenityRepository) DeleteAmenity(id int, context ...*fiber.Ctx) error {
 	amenity, err := r.GetAmenityById(id)
 	if err != nil {
 		return err

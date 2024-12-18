@@ -4,15 +4,22 @@ import (
 	amenityrepository "camping-backend-with-go/internal/domain/repository/amenity"
 	authrepository "camping-backend-with-go/internal/domain/repository/auth"
 	categoryrepository "camping-backend-with-go/internal/domain/repository/category"
+	spotrepository "camping-backend-with-go/internal/domain/repository/spot"
+	userrepository "camping-backend-with-go/internal/domain/repository/user"
 	amenityservice "camping-backend-with-go/internal/domain/service/amenity"
 	authservice "camping-backend-with-go/internal/domain/service/auth"
 	categoryservice "camping-backend-with-go/internal/domain/service/category"
 	healthcheckservice "camping-backend-with-go/internal/domain/service/healthcheck"
+	spotservice "camping-backend-with-go/internal/domain/service/spot"
+	userservice "camping-backend-with-go/internal/domain/service/user"
 	"camping-backend-with-go/internal/infrastructure/database"
 	amenityroute "camping-backend-with-go/pkg/api/route/amenity"
 	authroute "camping-backend-with-go/pkg/api/route/auth"
 	categoryroute "camping-backend-with-go/pkg/api/route/category"
 	healthcheckroute "camping-backend-with-go/pkg/api/route/healthcheck"
+	spotroute "camping-backend-with-go/pkg/api/route/spot"
+	swaggerroute "camping-backend-with-go/pkg/api/route/swagger"
+	userroute "camping-backend-with-go/pkg/api/route/user"
 	"fmt"
 	"log"
 
@@ -53,20 +60,29 @@ func Start(aport ...int) {
 
 	// repository 초기화
 	authRepo := authrepository.NewAuthRepository(db)
+	userRepo := userrepository.NewUserRepository(db)
 	categoryRepo := categoryrepository.NewCategoryRepository(db)
 	amenityRepo := amenityrepository.NewAmenityRepository(db)
+	spotRepo := spotrepository.NewSpotRepository(db, userRepo, categoryRepo, amenityRepo)
 
 	// service 초기화
 	authService := authservice.NewAuthService(authRepo)
+	userService := userservice.NewUserService(userRepo)
 	categoryService := categoryservice.NewCategoryService(categoryRepo)
 	amenityService := amenityservice.NewAmenityService(amenityRepo)
+	spotService := spotservice.NewSpotService(spotRepo)
+
 	healthcheckService := healthcheckservice.NewHealthCheckService()
 
 	// attach router
 	v1 := app.Group("/api/v1")
 	authroute.AuthRouter(v1, authService)
+	userroute.UserRouter(v1, userService)
 	categoryroute.CategoryRouter(v1, categoryService)
 	amenityroute.AmenityRouter(v1, amenityService)
+	spotroute.SpotRouter(v1, spotService)
+	swaggerroute.SwaggerRouter(v1)
+
 	healthcheckroute.HealthCheckRouter(v1, healthcheckService)
 
 	log.Fatal(app.Listen(fmt.Sprintf(":%d", port)))

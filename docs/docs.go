@@ -9,14 +9,7 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {
-            "name": "ggorockee",
-            "email": "ggorockee@gmail.com"
-        },
-        "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        },
+        "contact": {},
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -37,12 +30,12 @@ const docTemplate = `{
                 "summary": "Login",
                 "parameters": [
                     {
-                        "description": "Login Schema",
-                        "name": "user",
+                        "description": "requestBody",
+                        "name": "requestBody",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.LoginIn"
+                            "$ref": "#/definitions/authdto.LoginReq"
                         }
                     }
                 ],
@@ -50,19 +43,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/presenter.JsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/presenter.JsonResponse"
                         }
                     },
                     "503": {
@@ -96,22 +77,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/presenter.JsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/dto.CategoryListOut"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/presenter.JsonResponse"
                         }
                     },
                     "503": {
@@ -141,12 +107,12 @@ const docTemplate = `{
                 "summary": "CreateCategory",
                 "parameters": [
                     {
-                        "description": "Create Category Schema",
-                        "name": "user",
+                        "description": "requestBody",
+                        "name": "requestBody",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.CreateCategoryIn"
+                            "$ref": "#/definitions/categorydto.CreateCategoryReq"
                         }
                     }
                 ],
@@ -154,19 +120,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/presenter.JsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/dto.CategoryListOut"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/presenter.JsonResponse"
                         }
                     },
                     "503": {
@@ -199,7 +153,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Category Id",
+                        "description": "category id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -209,19 +163,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/presenter.JsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/dto.CategoryDetailOut"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/presenter.JsonResponse"
                         }
                     },
                     "503": {
@@ -252,18 +194,18 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Category Id",
+                        "description": "category id",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Update Category",
-                        "name": "user",
+                        "description": "requestBody",
+                        "name": "requestBody",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UpdateCategoryIn"
+                            "$ref": "#/definitions/categorydto.UpdateCategoryReq"
                         }
                     }
                 ],
@@ -271,19 +213,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/presenter.JsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/dto.CategoryDetailOut"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/presenter.JsonResponse"
                         }
                     },
                     "503": {
@@ -314,7 +244,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Category Id",
+                        "description": "category id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -417,12 +347,12 @@ const docTemplate = `{
                 "summary": "AddSpot",
                 "parameters": [
                     {
-                        "description": "Create Spot",
-                        "name": "user",
+                        "description": "requestBody",
+                        "name": "requestBody",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.CreateSpotIn"
+                            "$ref": "#/definitions/spotdto.CreateSpotReq"
                         }
                     }
                 ],
@@ -430,19 +360,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/presenter.JsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/entities.Spot"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/presenter.JsonResponse"
                         }
                     },
                     "503": {
@@ -476,43 +394,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/presenter.JsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/dto.AmenityListOut"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/presenter.JsonResponse"
                         }
                     },
                     "503": {
                         "description": "Service Unavailable",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/presenter.JsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/dto.AmenityListOut"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/presenter.JsonResponse"
                         }
                     }
                 }
@@ -536,12 +424,12 @@ const docTemplate = `{
                 "summary": "CreateAmenity",
                 "parameters": [
                     {
-                        "description": "Create Amenity",
-                        "name": "amenity",
+                        "description": "requestBody",
+                        "name": "requestBody",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.CreateAmenityIn"
+                            "$ref": "#/definitions/amenitydto.CreateAmenityReq"
                         }
                     }
                 ],
@@ -549,19 +437,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/presenter.JsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/dto.AmenityDetailOut"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/presenter.JsonResponse"
                         }
                     },
                     "503": {
@@ -594,7 +470,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Amenity ID",
+                        "description": "amenity id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -604,19 +480,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/presenter.JsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/dto.AmenityDetailOut"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/presenter.JsonResponse"
                         }
                     },
                     "503": {
@@ -647,18 +511,18 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Amenity ID",
+                        "description": "amenity id",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Update Amenity",
-                        "name": "amenity",
+                        "description": "requestBody",
+                        "name": "requestBody",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UpdateAmenityIn"
+                            "$ref": "#/definitions/amenitydto.UpdateAmenityReq"
                         }
                     }
                 ],
@@ -666,19 +530,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/presenter.JsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/dto.AmenityDetailOut"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/presenter.JsonResponse"
                         }
                     },
                     "503": {
@@ -709,7 +561,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Amenity ID",
+                        "description": "amenity id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -719,19 +571,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/presenter.JsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/dto.AmenityDetailOut"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/presenter.JsonResponse"
                         }
                     },
                     "503": {
@@ -764,7 +604,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Spot id",
+                        "description": "spot id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -774,19 +614,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/presenter.JsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/entities.Spot"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/presenter.JsonResponse"
                         }
                     },
                     "503": {
@@ -817,18 +645,18 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Spot id",
+                        "description": "spot id",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Update Spot",
-                        "name": "user",
+                        "description": "requestBody",
+                        "name": "requestBody",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UpdateSpotIn"
+                            "$ref": "#/definitions/spotdto.UpdateSpotReq"
                         }
                     }
                 ],
@@ -836,19 +664,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/presenter.JsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/entities.Spot"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/presenter.JsonResponse"
                         }
                     },
                     "503": {
@@ -879,7 +695,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Spot id",
+                        "description": "spot id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -921,17 +737,17 @@ const docTemplate = `{
                 "summary": "AddSpotReview",
                 "parameters": [
                     {
-                        "description": "Create Review",
-                        "name": "user",
+                        "description": "requestBody",
+                        "name": "requestBody",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.CreateSpotReviewReq"
+                            "$ref": "#/definitions/reviewdto.CreateSpotReviewReq"
                         }
                     },
                     {
                         "type": "integer",
-                        "description": "Spot ID",
+                        "description": "spot id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -941,19 +757,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/presenter.JsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/serializer.ReviewOut"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/presenter.JsonResponse"
                         }
                     },
                     "503": {
@@ -986,7 +790,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Spot ID",
+                        "description": "spot id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1015,7 +819,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/changepw": {
+        "/user/change-password": {
             "put": {
                 "security": [
                     {
@@ -1035,12 +839,12 @@ const docTemplate = `{
                 "summary": "ChangePassword",
                 "parameters": [
                     {
-                        "description": "Change Password",
-                        "name": "user",
+                        "description": "requestBody",
+                        "name": "requestBody",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.ChangePasswordIn"
+                            "$ref": "#/definitions/userdto.ChangePasswordReq"
                         }
                     }
                 ],
@@ -1075,12 +879,12 @@ const docTemplate = `{
                 "summary": "Create User",
                 "parameters": [
                     {
-                        "description": "Register user",
-                        "name": "user",
+                        "description": "requestBody",
+                        "name": "requestBody",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.SignUpIn"
+                            "$ref": "#/definitions/authdto.SignUpReq"
                         }
                     }
                 ],
@@ -1088,346 +892,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/presenter.JsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/entities.User"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
                             "$ref": "#/definitions/presenter.JsonResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/wishlist": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "GetWishLists",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "WishList"
-                ],
-                "summary": "GetWishLists",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/presenter.JsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/wishmarshal.WishListRes"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "$ref": "#/definitions/presenter.JsonResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "CreateWishList",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "WishList"
-                ],
-                "summary": "CreateWishList",
-                "parameters": [
-                    {
-                        "description": "Create WishList",
-                        "name": "wishlist",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/wishdto.CreateWishListReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/presenter.JsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/wishmarshal.WishListRes"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "$ref": "#/definitions/presenter.JsonResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/wishlist/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "GetWishList",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "WishList"
-                ],
-                "summary": "GetWishList",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "wishlist id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/presenter.JsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/wishmarshal.WishListRes"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "$ref": "#/definitions/presenter.JsonResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "UpdateWishList",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "WishList"
-                ],
-                "summary": "UpdateWishList",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "wishlist id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Update WishList",
-                        "name": "wishlist",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/wishdto.UpdateWishListReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/presenter.JsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/wishmarshal.WishListRes"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "$ref": "#/definitions/presenter.JsonResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "DeleteWishList",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "WishList"
-                ],
-                "summary": "DeleteWishList",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "wishlist id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/presenter.JsonResponse"
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "$ref": "#/definitions/presenter.JsonResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/wishlist/{id}/spot/{spot_id}": {
-            "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "WishListToggle",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "WishList"
-                ],
-                "summary": "WishListToggle",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "wishlist id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "spot id",
-                        "name": "spot_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/presenter.JsonResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/wishmarshal.WishListRes"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
                         }
                     },
                     "503": {
@@ -1441,83 +906,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "dto.AmenityDetailOut": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.AmenityListOut": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.CategoryDetailOut": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.CategoryListOut": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.ChangePasswordIn": {
-            "type": "object",
-            "properties": {
-                "new_password": {
-                    "type": "string"
-                },
-                "new_password_confirm": {
-                    "type": "string"
-                },
-                "old_password": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.CreateAmenityIn": {
+        "amenitydto.CreateAmenityReq": {
             "type": "object",
             "properties": {
                 "description": {
@@ -1528,61 +917,18 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.CreateCategoryIn": {
+        "amenitydto.UpdateAmenityReq": {
             "type": "object",
             "properties": {
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.CreateSpotIn": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "amenities": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "category": {
-                    "type": "integer"
-                },
-                "city": {
-                    "type": "string"
-                },
-                "country": {
-                    "type": "string"
-                },
                 "description": {
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
-                },
-                "pet_friendly": {
-                    "type": "boolean"
-                },
-                "price": {
-                    "type": "integer"
                 }
             }
         },
-        "dto.CreateSpotReviewReq": {
-            "type": "object",
-            "properties": {
-                "payload": {
-                    "type": "string"
-                },
-                "rating": {
-                    "type": "integer"
-                }
-            }
-        },
-        "dto.LoginIn": {
+        "authdto.LoginReq": {
             "type": "object",
             "properties": {
                 "email": {
@@ -1593,7 +939,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.SignUpIn": {
+        "authdto.SignUpReq": {
             "type": "object",
             "properties": {
                 "email": {
@@ -1610,96 +956,46 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.SpotListOut": {
+        "categorydto.CreateCategoryReq": {
             "type": "object",
             "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "amenities": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dto.AmenityListOut"
-                    }
-                },
-                "category": {
-                    "$ref": "#/definitions/dto.CategoryListOut"
-                },
-                "city": {
-                    "type": "string"
-                },
-                "country": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "is_owner": {
-                    "type": "boolean"
-                },
                 "name": {
                     "type": "string"
-                },
-                "pet_friendly": {
+                }
+            }
+        },
+        "categorydto.UpdateCategoryReq": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "presenter.JsonResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "error": {
                     "type": "boolean"
                 },
-                "price": {
-                    "type": "integer"
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "reviewdto.CreateSpotReviewReq": {
+            "type": "object",
+            "properties": {
+                "payload": {
+                    "type": "string"
                 },
                 "rating": {
-                    "type": "number"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user": {
-                    "$ref": "#/definitions/dto.TinyUserOut"
-                }
-            }
-        },
-        "dto.TinyUserOut": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "id": {
                     "type": "integer"
-                },
-                "role": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
                 }
             }
         },
-        "dto.UpdateAmenityIn": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.UpdateCategoryIn": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.UpdateSpotIn": {
+        "spotdto.CreateSpotReq": {
             "type": "object",
             "properties": {
                 "address": {
@@ -1734,77 +1030,7 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.Amenity": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "entities.Category": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "description": "Time Logging",
-                    "type": "string"
-                }
-            }
-        },
-        "entities.Review": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "payload": {
-                    "type": "string"
-                },
-                "rating": {
-                    "type": "integer"
-                },
-                "spot": {
-                    "$ref": "#/definitions/entities.Spot"
-                },
-                "spot_id": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user": {
-                    "$ref": "#/definitions/entities.User"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "entities.Spot": {
+        "spotdto.UpdateSpotReq": {
             "type": "object",
             "properties": {
                 "address": {
@@ -1813,14 +1039,10 @@ const docTemplate = `{
                 "amenities": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/entities.Amenity"
+                        "type": "integer"
                     }
                 },
                 "category": {
-                    "$ref": "#/definitions/entities.Category"
-                },
-                "category_id": {
-                    "description": "CategoryId가 null일 수가 있음",
                     "type": "integer"
                 },
                 "city": {
@@ -1829,14 +1051,8 @@ const docTemplate = `{
                 "country": {
                     "type": "string"
                 },
-                "created_at": {
-                    "type": "string"
-                },
                 "description": {
                     "type": "string"
-                },
-                "id": {
-                    "type": "integer"
                 },
                 "name": {
                     "type": "string"
@@ -1846,142 +1062,34 @@ const docTemplate = `{
                 },
                 "price": {
                     "type": "integer"
-                },
-                "reviews": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/entities.Review"
-                    }
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user": {
-                    "$ref": "#/definitions/entities.User"
-                },
-                "user_id": {
-                    "type": "integer"
                 }
             }
         },
-        "entities.User": {
+        "userdto.ChangePasswordReq": {
             "type": "object",
             "properties": {
-                "email": {
+                "new_password": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "integer"
-                },
-                "password": {
+                "new_password_confirm": {
                     "type": "string"
                 },
-                "role": {
-                    "type": "string"
-                },
-                "username": {
+                "old_password": {
                     "type": "string"
                 }
             }
-        },
-        "presenter.JsonResponse": {
-            "type": "object",
-            "properties": {
-                "data": {},
-                "error": {
-                    "type": "boolean"
-                },
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "serializer.ReviewOut": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "payload": {
-                    "type": "string"
-                },
-                "rating": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user": {
-                    "description": "UserId int  ` + "`" + `json:\"user_id\"` + "`" + `\nUser   entities.User ` + "`" + `gorm:\"foreignKey:UserId;constraint:OnDelete:CASCADE\"` + "`" + `",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/dto.TinyUserOut"
-                        }
-                    ]
-                }
-            }
-        },
-        "wishdto.CreateWishListReq": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "wishdto.UpdateWishListReq": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "wishmarshal.WishListRes": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "spots": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dto.SpotListOut"
-                    }
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        }
-    },
-    "securityDefinitions": {
-        "Bearer": {
-            "description": "Type \"Bearer\" followed by a space and JWT token.",
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header"
         }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
+	Version:          "",
 	Host:             "",
-	BasePath:         "/api/v1",
+	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "ggocamping App",
-	Description:      "This is an API for ggocamping Application",
+	Title:            "",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

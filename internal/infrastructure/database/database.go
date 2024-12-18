@@ -1,8 +1,8 @@
 package database
 
 import (
-	categoryentity "camping-backend-with-go/internal/domain/entity/category"
-	userentity "camping-backend-with-go/internal/domain/entity/user"
+	"camping-backend-with-go/internal/domain/entity"
+	
 	"camping-backend-with-go/pkg/config"
 	"fmt"
 	"gorm.io/driver/mysql"
@@ -39,8 +39,8 @@ func Connection() *gorm.DB {
 
 	log.Println("connected")
 	err = db.AutoMigrate(
-		&userentity.User{},
-		&categoryentity.Category{},
+		&entity.User{},
+		&entity.Category{},
 	)
 	if err != nil {
 		log.Println(err.Error())

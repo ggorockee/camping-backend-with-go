@@ -6,7 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func ContextParser(contexts ...*fiber.Ctx) (*fiber.Ctx, error) {
+func ContextParser(context ...*fiber.Ctx) (*fiber.Ctx, error) {
 	if len(contexts) != 1 {
 		return nil, errors.New("exactly one context must be provided")
 	}

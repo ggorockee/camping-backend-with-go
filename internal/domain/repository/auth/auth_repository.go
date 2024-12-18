@@ -2,27 +2,28 @@ package authrepository
 
 import (
 	authdto "camping-backend-with-go/internal/application/dto/auth"
-	userentity "camping-backend-with-go/internal/domain/entity/user"
+	"camping-backend-with-go/internal/domain/entity"
 	"camping-backend-with-go/pkg/util"
 	"errors"
+
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"strconv"
 )
 
 type AuthRepository interface {
 	Login(input *authdto.LoginReq) (string, error)
 	CreateUser(input *authdto.SignUpReq) error
-	ChangePassword(input *authdto.ChangePasswordReq, contexts ...*fiber.Ctx) error
+	ChangePassword(input *authdto.ChangePasswordReq, context ...*fiber.Ctx) error
 
 	hashPassword(password string) (string, error)
-	GetUserByEmail(email string) (*userentity.User, error)
+	GetUserByEmail(email string) (*entity.User, error)
 	CheckPasswordHash(password, hash string) bool
 	ValidToken(t *jwt.Token, id string) bool
-	GetUserById(id int) (*userentity.User, error)
+	GetUserById(id int) (*entity.User, error)
 	GetValueFromToken(key string, c *fiber.Ctx) int
 }
 
@@ -40,11 +41,11 @@ func (a *authRepository) CreateUser(input *authdto.SignUpReq) error {
 	panic("implement me")
 }
 
-func (a *authRepository) ChangePassword(input *authdto.ChangePasswordReq, contexts ...*fiber.Ctx) error {
+func (a *authRepository) ChangePassword(input *authdto.ChangePasswordReq, context ...*fiber.Ctx) error {
 
 	newPassword := input.NewPassword
 	oldPassword := input.OldPassword
-	c, err := util.ContextParser(contexts...)
+	c, err := util.ContextParser(context...)
 	util.HandleFunc(err)
 
 	userId := a.GetValueFromToken("user_id", c)
@@ -69,8 +70,8 @@ func (a *authRepository) hashPassword(password string) (string, error) {
 	return string(bytes), err
 }
 
-func (a *authRepository) GetUserByEmail(email string) (*userentity.User, error) {
-	var user userentity.User
+func (a *authRepository) GetUserByEmail(email string) (*entity.User, error) {
+	var user entity.User
 	if err := a.dbConn.Where("email = ?", email).First(&user).Error; err != nil {
 		return nil, err
 	}
@@ -95,8 +96,8 @@ func (a *authRepository) ValidToken(t *jwt.Token, id string) bool {
 	return uid == n
 }
 
-func (a *authRepository) GetUserById(id int) (*userentity.User, error) {
-	var user userentity.User
+func (a *authRepository) GetUserById(id int) (*entity.User, error) {
+	var user entity.User
 	if err := a.dbConn.Where("id = ?", id).First(&user).Error; err != nil {
 		return nil, err
 	}

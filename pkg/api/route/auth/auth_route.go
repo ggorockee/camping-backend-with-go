@@ -10,5 +10,4 @@ func AuthRouter(app fiber.Router, service authservice.AuthService) {
 	authRouter := app.Group("/auth")
 	authRouter.Post("/signup", authhandler.CreateUser(service))
 	authRouter.Post("/login", authhandler.Login(service))
-	authRouter.Put("/change-password", authhandler.ChangePassword(service))
 }

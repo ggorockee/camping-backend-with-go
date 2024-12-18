@@ -1,104 +1,26 @@
-basePath: /api/v1
 definitions:
-  dto.AmenityDetailOut:
-    properties:
-      created_at:
-        type: string
-      description:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  dto.AmenityListOut:
-    properties:
-      description:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-    type: object
-  dto.CategoryDetailOut:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  dto.CategoryListOut:
-    properties:
-      id:
-        type: integer
-      name:
-        type: string
-    type: object
-  dto.ChangePasswordIn:
-    properties:
-      new_password:
-        type: string
-      new_password_confirm:
-        type: string
-      old_password:
-        type: string
-    type: object
-  dto.CreateAmenityIn:
+  amenitydto.CreateAmenityReq:
     properties:
       description:
         type: string
       name:
         type: string
     type: object
-  dto.CreateCategoryIn:
+  amenitydto.UpdateAmenityReq:
     properties:
-      name:
-        type: string
-    type: object
-  dto.CreateSpotIn:
-    properties:
-      address:
-        type: string
-      amenities:
-        items:
-          type: integer
-        type: array
-      category:
-        type: integer
-      city:
-        type: string
-      country:
-        type: string
       description:
         type: string
       name:
         type: string
-      pet_friendly:
-        type: boolean
-      price:
-        type: integer
     type: object
-  dto.CreateSpotReviewReq:
-    properties:
-      payload:
-        type: string
-      rating:
-        type: integer
-    type: object
-  dto.LoginIn:
+  authdto.LoginReq:
     properties:
       email:
         type: string
       password:
         type: string
     type: object
-  dto.SignUpIn:
+  authdto.SignUpReq:
     properties:
       email:
         type: string
@@ -109,65 +31,32 @@ definitions:
       username:
         type: string
     type: object
-  dto.SpotListOut:
+  categorydto.CreateCategoryReq:
     properties:
-      address:
-        type: string
-      amenities:
-        items:
-          $ref: '#/definitions/dto.AmenityListOut'
-        type: array
-      category:
-        $ref: '#/definitions/dto.CategoryListOut'
-      city:
-        type: string
-      country:
-        type: string
-      created_at:
-        type: string
-      description:
-        type: string
-      id:
-        type: integer
-      is_owner:
-        type: boolean
       name:
         type: string
-      pet_friendly:
+    type: object
+  categorydto.UpdateCategoryReq:
+    properties:
+      name:
+        type: string
+    type: object
+  presenter.JsonResponse:
+    properties:
+      data: {}
+      error:
         type: boolean
-      price:
-        type: integer
+      message:
+        type: string
+    type: object
+  reviewdto.CreateSpotReviewReq:
+    properties:
+      payload:
+        type: string
       rating:
-        type: number
-      updated_at:
-        type: string
-      user:
-        $ref: '#/definitions/dto.TinyUserOut'
-    type: object
-  dto.TinyUserOut:
-    properties:
-      email:
-        type: string
-      id:
         type: integer
-      role:
-        type: string
-      username:
-        type: string
     type: object
-  dto.UpdateAmenityIn:
-    properties:
-      description:
-        type: string
-      name:
-        type: string
-    type: object
-  dto.UpdateCategoryIn:
-    properties:
-      name:
-        type: string
-    type: object
-  dto.UpdateSpotIn:
+  spotdto.CreateSpotReq:
     properties:
       address:
         type: string
@@ -190,167 +79,40 @@ definitions:
       price:
         type: integer
     type: object
-  entities.Amenity:
-    properties:
-      created_at:
-        type: string
-      description:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  entities.Category:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      updated_at:
-        description: Time Logging
-        type: string
-    type: object
-  entities.Review:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: integer
-      payload:
-        type: string
-      rating:
-        type: integer
-      spot:
-        $ref: '#/definitions/entities.Spot'
-      spot_id:
-        type: integer
-      updated_at:
-        type: string
-      user:
-        $ref: '#/definitions/entities.User'
-      user_id:
-        type: integer
-    type: object
-  entities.Spot:
+  spotdto.UpdateSpotReq:
     properties:
       address:
         type: string
       amenities:
         items:
-          $ref: '#/definitions/entities.Amenity'
+          type: integer
         type: array
       category:
-        $ref: '#/definitions/entities.Category'
-      category_id:
-        description: CategoryId가 null일 수가 있음
         type: integer
       city:
         type: string
       country:
         type: string
-      created_at:
-        type: string
       description:
         type: string
-      id:
-        type: integer
       name:
         type: string
       pet_friendly:
         type: boolean
       price:
         type: integer
-      reviews:
-        items:
-          $ref: '#/definitions/entities.Review'
-        type: array
-      updated_at:
-        type: string
-      user:
-        $ref: '#/definitions/entities.User'
-      user_id:
-        type: integer
     type: object
-  entities.User:
+  userdto.ChangePasswordReq:
     properties:
-      email:
+      new_password:
         type: string
-      id:
-        type: integer
-      password:
+      new_password_confirm:
         type: string
-      role:
-        type: string
-      username:
-        type: string
-    type: object
-  presenter.JsonResponse:
-    properties:
-      data: {}
-      error:
-        type: boolean
-      message:
-        type: string
-    type: object
-  serializer.ReviewOut:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: integer
-      payload:
-        type: string
-      rating:
-        type: integer
-      updated_at:
-        type: string
-      user:
-        allOf:
-        - $ref: '#/definitions/dto.TinyUserOut'
-        description: |-
-          UserId int  `json:"user_id"`
-          User   entities.User `gorm:"foreignKey:UserId;constraint:OnDelete:CASCADE"`
-    type: object
-  wishdto.CreateWishListReq:
-    properties:
-      name:
-        type: string
-    type: object
-  wishdto.UpdateWishListReq:
-    properties:
-      name:
-        type: string
-    type: object
-  wishmarshal.WishListRes:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      spots:
-        items:
-          $ref: '#/definitions/dto.SpotListOut'
-        type: array
-      updated_at:
+      old_password:
         type: string
     type: object
 info:
-  contact:
-    email: ggorockee@gmail.com
-    name: ggorockee
-  description: This is an API for ggocamping Application
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  title: ggocamping App
-  version: "1.0"
+  contact: {}
 paths:
   /auth/login:
     post:
@@ -358,24 +120,19 @@ paths:
       - application/json
       description: Login
       parameters:
-      - description: Login Schema
+      - description: requestBody
         in: body
-        name: user
+        name: requestBody
         required: true
         schema:
-          $ref: '#/definitions/dto.LoginIn'
+          $ref: '#/definitions/authdto.LoginReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  type: string
-              type: object
+            $ref: '#/definitions/presenter.JsonResponse'
         "503":
           description: Service Unavailable
           schema:
@@ -394,14 +151,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/dto.CategoryListOut'
-                  type: array
-              type: object
+            $ref: '#/definitions/presenter.JsonResponse'
         "503":
           description: Service Unavailable
           schema:
@@ -416,24 +166,19 @@ paths:
       - application/json
       description: CreateCategory
       parameters:
-      - description: Create Category Schema
+      - description: requestBody
         in: body
-        name: user
+        name: requestBody
         required: true
         schema:
-          $ref: '#/definitions/dto.CreateCategoryIn'
+          $ref: '#/definitions/categorydto.CreateCategoryReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/dto.CategoryListOut'
-              type: object
+            $ref: '#/definitions/presenter.JsonResponse'
         "503":
           description: Service Unavailable
           schema:
@@ -449,7 +194,7 @@ paths:
       - application/json
       description: DeleteCategory
       parameters:
-      - description: Category Id
+      - description: category id
         in: path
         name: id
         required: true
@@ -475,7 +220,7 @@ paths:
       - application/json
       description: GetCategory
       parameters:
-      - description: Category Id
+      - description: category id
         in: path
         name: id
         required: true
@@ -486,12 +231,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/dto.CategoryDetailOut'
-              type: object
+            $ref: '#/definitions/presenter.JsonResponse'
         "503":
           description: Service Unavailable
           schema:
@@ -506,29 +246,24 @@ paths:
       - application/json
       description: UpdateCategory
       parameters:
-      - description: Category Id
+      - description: category id
         in: path
         name: id
         required: true
         type: integer
-      - description: Update Category
+      - description: requestBody
         in: body
-        name: user
+        name: requestBody
         required: true
         schema:
-          $ref: '#/definitions/dto.UpdateCategoryIn'
+          $ref: '#/definitions/categorydto.UpdateCategoryReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/dto.CategoryDetailOut'
-              type: object
+            $ref: '#/definitions/presenter.JsonResponse'
         "503":
           description: Service Unavailable
           schema:
@@ -583,24 +318,19 @@ paths:
       - application/json
       description: AddSpot
       parameters:
-      - description: Create Spot
+      - description: requestBody
         in: body
-        name: user
+        name: requestBody
         required: true
         schema:
-          $ref: '#/definitions/dto.CreateSpotIn'
+          $ref: '#/definitions/spotdto.CreateSpotReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/entities.Spot'
-              type: object
+            $ref: '#/definitions/presenter.JsonResponse'
         "503":
           description: Service Unavailable
           schema:
@@ -616,7 +346,7 @@ paths:
       - application/json
       description: RemoveSpot
       parameters:
-      - description: Spot id
+      - description: spot id
         in: path
         name: id
         required: true
@@ -642,7 +372,7 @@ paths:
       - application/json
       description: GetSpot
       parameters:
-      - description: Spot id
+      - description: spot id
         in: path
         name: id
         required: true
@@ -653,12 +383,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/entities.Spot'
-              type: object
+            $ref: '#/definitions/presenter.JsonResponse'
         "503":
           description: Service Unavailable
           schema:
@@ -673,29 +398,24 @@ paths:
       - application/json
       description: UpdateSpot
       parameters:
-      - description: Spot id
+      - description: spot id
         in: path
         name: id
         required: true
         type: integer
-      - description: Update Spot
+      - description: requestBody
         in: body
-        name: user
+        name: requestBody
         required: true
         schema:
-          $ref: '#/definitions/dto.UpdateSpotIn'
+          $ref: '#/definitions/spotdto.UpdateSpotReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/entities.Spot'
-              type: object
+            $ref: '#/definitions/presenter.JsonResponse'
         "503":
           description: Service Unavailable
           schema:
@@ -711,13 +431,13 @@ paths:
       - application/json
       description: AddSpotReview
       parameters:
-      - description: Create Review
+      - description: requestBody
         in: body
-        name: user
+        name: requestBody
         required: true
         schema:
-          $ref: '#/definitions/dto.CreateSpotReviewReq'
-      - description: Spot ID
+          $ref: '#/definitions/reviewdto.CreateSpotReviewReq'
+      - description: spot id
         in: path
         name: id
         required: true
@@ -728,12 +448,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/serializer.ReviewOut'
-              type: object
+            $ref: '#/definitions/presenter.JsonResponse'
         "503":
           description: Service Unavailable
           schema:
@@ -749,7 +464,7 @@ paths:
       - application/json
       description: SpotReviews
       parameters:
-      - description: Spot ID
+      - description: spot id
         in: path
         name: id
         required: true
@@ -786,25 +501,11 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/dto.AmenityListOut'
-                  type: array
-              type: object
+            $ref: '#/definitions/presenter.JsonResponse'
         "503":
           description: Service Unavailable
           schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/dto.AmenityListOut'
-                  type: array
-              type: object
+            $ref: '#/definitions/presenter.JsonResponse'
       security:
       - Bearer: []
       summary: GetAmenities
@@ -815,24 +516,19 @@ paths:
       - application/json
       description: CreateAmenity
       parameters:
-      - description: Create Amenity
+      - description: requestBody
         in: body
-        name: amenity
+        name: requestBody
         required: true
         schema:
-          $ref: '#/definitions/dto.CreateAmenityIn'
+          $ref: '#/definitions/amenitydto.CreateAmenityReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/dto.AmenityDetailOut'
-              type: object
+            $ref: '#/definitions/presenter.JsonResponse'
         "503":
           description: Service Unavailable
           schema:
@@ -848,7 +544,7 @@ paths:
       - application/json
       description: DeleteAmenity
       parameters:
-      - description: Amenity ID
+      - description: amenity id
         in: path
         name: id
         required: true
@@ -859,12 +555,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/dto.AmenityDetailOut'
-              type: object
+            $ref: '#/definitions/presenter.JsonResponse'
         "503":
           description: Service Unavailable
           schema:
@@ -879,7 +570,7 @@ paths:
       - application/json
       description: GetAmenity
       parameters:
-      - description: Amenity ID
+      - description: amenity id
         in: path
         name: id
         required: true
@@ -890,12 +581,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/dto.AmenityDetailOut'
-              type: object
+            $ref: '#/definitions/presenter.JsonResponse'
         "503":
           description: Service Unavailable
           schema:
@@ -910,29 +596,24 @@ paths:
       - application/json
       description: UpdateAmenity
       parameters:
-      - description: Amenity ID
+      - description: amenity id
         in: path
         name: id
         required: true
         type: integer
-      - description: Update Amenity
+      - description: requestBody
         in: body
-        name: amenity
+        name: requestBody
         required: true
         schema:
-          $ref: '#/definitions/dto.UpdateAmenityIn'
+          $ref: '#/definitions/amenitydto.UpdateAmenityReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/dto.AmenityDetailOut'
-              type: object
+            $ref: '#/definitions/presenter.JsonResponse'
         "503":
           description: Service Unavailable
           schema:
@@ -942,18 +623,18 @@ paths:
       summary: UpdateAmenity
       tags:
       - Amenity
-  /user/changepw:
+  /user/change-password:
     put:
       consumes:
       - application/json
       description: ChangePassword
       parameters:
-      - description: Change Password
+      - description: requestBody
         in: body
-        name: user
+        name: requestBody
         required: true
         schema:
-          $ref: '#/definitions/dto.ChangePasswordIn'
+          $ref: '#/definitions/userdto.ChangePasswordReq'
       produces:
       - application/json
       responses:
@@ -976,24 +657,19 @@ paths:
       - application/json
       description: Create User
       parameters:
-      - description: Register user
+      - description: requestBody
         in: body
-        name: user
+        name: requestBody
         required: true
         schema:
-          $ref: '#/definitions/dto.SignUpIn'
+          $ref: '#/definitions/authdto.SignUpReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/entities.User'
-              type: object
+            $ref: '#/definitions/presenter.JsonResponse'
         "503":
           description: Service Unavailable
           schema:
@@ -1001,204 +677,4 @@ paths:
       summary: Create User
       tags:
       - Users
-  /wishlist:
-    get:
-      consumes:
-      - application/json
-      description: GetWishLists
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/wishmarshal.WishListRes'
-                  type: array
-              type: object
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/presenter.JsonResponse'
-      security:
-      - Bearer: []
-      summary: GetWishLists
-      tags:
-      - WishList
-    post:
-      consumes:
-      - application/json
-      description: CreateWishList
-      parameters:
-      - description: Create WishList
-        in: body
-        name: wishlist
-        required: true
-        schema:
-          $ref: '#/definitions/wishdto.CreateWishListReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/wishmarshal.WishListRes'
-              type: object
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/presenter.JsonResponse'
-      security:
-      - Bearer: []
-      summary: CreateWishList
-      tags:
-      - WishList
-  /wishlist/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: DeleteWishList
-      parameters:
-      - description: wishlist id
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/presenter.JsonResponse'
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/presenter.JsonResponse'
-      security:
-      - Bearer: []
-      summary: DeleteWishList
-      tags:
-      - WishList
-    get:
-      consumes:
-      - application/json
-      description: GetWishList
-      parameters:
-      - description: wishlist id
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/wishmarshal.WishListRes'
-              type: object
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/presenter.JsonResponse'
-      security:
-      - Bearer: []
-      summary: GetWishList
-      tags:
-      - WishList
-    put:
-      consumes:
-      - application/json
-      description: UpdateWishList
-      parameters:
-      - description: wishlist id
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Update WishList
-        in: body
-        name: wishlist
-        required: true
-        schema:
-          $ref: '#/definitions/wishdto.UpdateWishListReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/wishmarshal.WishListRes'
-              type: object
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/presenter.JsonResponse'
-      security:
-      - Bearer: []
-      summary: UpdateWishList
-      tags:
-      - WishList
-  /wishlist/{id}/spot/{spot_id}:
-    put:
-      consumes:
-      - application/json
-      description: WishListToggle
-      parameters:
-      - description: wishlist id
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: spot id
-        in: path
-        name: spot_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/presenter.JsonResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/wishmarshal.WishListRes'
-                  type: array
-              type: object
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/presenter.JsonResponse'
-      security:
-      - Bearer: []
-      summary: WishListToggle
-      tags:
-      - WishList
-securityDefinitions:
-  Bearer:
-    description: Type "Bearer" followed by a space and JWT token.
-    in: header
-    name: Authorization
-    type: apiKey
 swagger: "2.0"

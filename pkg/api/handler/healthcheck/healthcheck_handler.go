@@ -1,8 +1,9 @@
 package healthcheckhandler
 
 import (
+	"camping-backend-with-go/internal/domain/presenter"
 	healthcheckservice "camping-backend-with-go/internal/domain/service/healthcheck"
-	"camping-backend-with-go/internal_backup/presenter"
+
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
