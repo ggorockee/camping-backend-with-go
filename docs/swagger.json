@@ -1,8 +1,19 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "This is an API for ggocamping Application",
+        "title": "ggocamping App",
+        "contact": {
+            "name": "ggorockee",
+            "email": "ggorockee@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
     },
+    "basePath": "/api/v1",
     "paths": {
         "/auth/login": {
             "post": {
@@ -863,7 +874,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Users"
+                    "Auth"
                 ],
                 "summary": "Create User",
                 "parameters": [
@@ -1067,6 +1078,14 @@
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "description": "Type \"Bearer\" followed by a space and JWT token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

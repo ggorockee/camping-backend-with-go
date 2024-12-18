@@ -7,8 +7,8 @@ import (
 )
 
 func ContextParser(context ...*fiber.Ctx) (*fiber.Ctx, error) {
-	if len(contexts) != 1 {
+	if len(context) != 1 {
 		return nil, errors.New("exactly one context must be provided")
 	}
-	return contexts[0], nil
+	return context[0], nil
 }

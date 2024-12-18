@@ -11,7 +11,7 @@ import (
 // CreateUser
 // @Summary Create User
 // @Description Create User
-// @Tags Users
+// @Tags Auth
 // @Accept json
 // @Produce json
 // @Param requestBody body authdto.SignUpReq true "requestBody"

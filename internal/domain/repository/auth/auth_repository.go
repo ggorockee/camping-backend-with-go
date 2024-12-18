@@ -3,8 +3,10 @@ package authrepository
 import (
 	authdto "camping-backend-with-go/internal/application/dto/auth"
 	"camping-backend-with-go/internal/domain/entity"
+	"camping-backend-with-go/pkg/config"
 	"camping-backend-with-go/pkg/util"
 	"errors"
+	"strings"
 
 	"strconv"
 
@@ -32,13 +34,58 @@ type authRepository struct {
 }
 
 func (a *authRepository) Login(input *authdto.LoginReq) (string, error) {
-	//TODO implement me
-	panic("implement me")
+	email := input.Email
+	password := input.Password
+
+	user, err := a.GetUserByEmail(email)
+	if err != nil {
+		return "", err
+	}
+
+	if !a.CheckPasswordHash(password, user.Password) {
+		return "", errors.New("invalid credentials")
+	}
+
+	token := jwt.New(jwt.SigningMethodHS256)
+
+	claims := token.Claims.(jwt.MapClaims)
+	claims["user_id"] = user.Id
+
+	t, err := token.SignedString([]byte(config.Config("JWT_SECRET")))
+	if err != nil {
+		return "", err
+	}
+
+	return t, nil
 }
 
 func (a *authRepository) CreateUser(input *authdto.SignUpReq) error {
-	//TODO implement me
-	panic("implement me")
+	var user entity.User
+	// hashing password
+	password := input.Password
+	email := input.Email
+	username := input.Username
+	hashedPassword, err := a.hashPassword(password)
+	if err != nil {
+		return err
+	}
+
+	user.Password = hashedPassword
+	user.Email = email
+
+	// username
+	if username == nil {
+		username = &strings.Split(email, "@")[0]
+		user.Username = *username
+
+	} else {
+		user.Username = *input.Username
+	}
+
+	if err := a.dbConn.Create(&user).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 func (a *authRepository) ChangePassword(input *authdto.ChangePasswordReq, context ...*fiber.Ctx) error {

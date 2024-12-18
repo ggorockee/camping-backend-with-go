@@ -1,3 +1,4 @@
+basePath: /api/v1
 definitions:
   amenitydto.CreateAmenityReq:
     properties:
@@ -112,7 +113,15 @@ definitions:
         type: string
     type: object
 info:
-  contact: {}
+  contact:
+    email: ggorockee@gmail.com
+    name: ggorockee
+  description: This is an API for ggocamping Application
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: ggocamping App
+  version: "1.0"
 paths:
   /auth/login:
     post:
@@ -676,5 +685,11 @@ paths:
             $ref: '#/definitions/presenter.JsonResponse'
       summary: Create User
       tags:
-      - Users
+      - Auth
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
