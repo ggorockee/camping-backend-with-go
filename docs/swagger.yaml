@@ -63,10 +63,10 @@ definitions:
         type: string
       amenities:
         items:
-          type: integer
+          type: string
         type: array
       category:
-        type: integer
+        type: string
       city:
         type: string
       country:
@@ -149,6 +149,32 @@ paths:
       summary: Login
       tags:
       - Auth
+  /auth/signup:
+    post:
+      consumes:
+      - application/json
+      description: Create User
+      parameters:
+      - description: requestBody
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/authdto.SignUpReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/presenter.JsonResponse'
+      summary: Create User
+      tags:
+      - Auth
   /category:
     get:
       consumes:
@@ -207,7 +233,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -233,7 +259,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -259,7 +285,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: requestBody
         in: body
         name: requestBody
@@ -359,7 +385,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -385,7 +411,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -411,7 +437,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: requestBody
         in: body
         name: requestBody
@@ -450,7 +476,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -477,7 +503,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - default: 1
         description: Page number
         in: query
@@ -557,7 +583,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -583,7 +609,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -609,7 +635,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: requestBody
         in: body
         name: requestBody
@@ -660,32 +686,6 @@ paths:
       summary: ChangePassword
       tags:
       - Users
-  /user/signup:
-    post:
-      consumes:
-      - application/json
-      description: Create User
-      parameters:
-      - description: requestBody
-        in: body
-        name: requestBody
-        required: true
-        schema:
-          $ref: '#/definitions/authdto.SignUpReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/presenter.JsonResponse'
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/presenter.JsonResponse'
-      summary: Create User
-      tags:
-      - Auth
 securityDefinitions:
   Bearer:
     description: Type "Bearer" followed by a space and JWT token.

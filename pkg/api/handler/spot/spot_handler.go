@@ -3,14 +3,14 @@ package spothandler
 import (
 	reviewdto "camping-backend-with-go/internal/application/dto/review"
 	spotdto "camping-backend-with-go/internal/application/dto/spot"
-	"camping-backend-with-go/internal/application/serializer"
-	"camping-backend-with-go/internal/application/serializer/response"
+
 	"camping-backend-with-go/internal/domain/presenter"
 	spotservice "camping-backend-with-go/internal/domain/service/spot"
-	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
 	"log"
 	"strconv"
+
+	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
 // AddSpotReview
@@ -20,7 +20,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param requestBody body reviewdto.CreateSpotReviewReq true "requestBody"
-// @Param id path int true "spot id"
+// @Param id path string true "spot id"
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /spot/{id}/review [post]
@@ -33,9 +33,9 @@ func AddSpotReview(service spotservice.SpotService) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		spotId, err := c.ParamsInt("id")
-		if err != nil {
-			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
+		spotId := c.Params("id", "")
+		if spotId == "" {
+			jsonResponse := presenter.NewJsonResponse(true, "id parsing 실패", nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
@@ -49,13 +49,10 @@ func AddSpotReview(service spotservice.SpotService) fiber.Handler {
 		if err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+
 		}
 
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-		log.Println(">>>> serialize not implemented")
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-		//userSerializer := serializer.NewUserSerializer(&review.User)
-		//serializedReview := serializer.NewReviewSerializer(review, userSerializer)
+		// ser := serializer.New(review, commonhandler.SerializerFactory)
 
 		jsonResponse := presenter.NewJsonResponse(false, "", review)
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
@@ -90,13 +87,8 @@ func AddSpot(service spotservice.SpotService) fiber.Handler {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
+		log.Println(">>> handler", spot.User)
 
-		//userSerializer := serializer.NewUserSerializer(&result.User)
-		//categorySerializer := serializer.NewCategorySerializer(&result.Category)
-		//spotSerializer := serializer.NewSpotSerializer(result, userSerializer, categorySerializer)
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-		log.Println(">>>> serialize not implemented")
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 		jsonResponse := presenter.NewJsonResponse(true, "", spot)
 
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
@@ -109,7 +101,7 @@ func AddSpot(service spotservice.SpotService) fiber.Handler {
 // @Tags Spot
 // @Accept json
 // @Produce json
-// @Param id path int true "spot id"
+// @Param id path string true "spot id"
 // @Param requestBody body spotdto.UpdateSpotReq true "requestBody"
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
@@ -122,13 +114,13 @@ func UpdateSpot(service spotservice.SpotService) fiber.Handler {
 		var requestBody spotdto.UpdateSpotReq
 
 		err := c.BodyParser(&requestBody)
-		id, _ := c.ParamsInt("id")
-		if err != nil {
-			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
-			return c.Status(fiber.StatusBadRequest).JSON(jsonResponse)
+		spotId := c.Params("id", "")
+		if spotId == "" {
+			jsonResponse := presenter.NewJsonResponse(true, "id parsing 실패", nil)
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		spot, err := service.UpdateSpot(&requestBody, id, c)
+		spot, err := service.UpdateSpot(&requestBody, spotId, c)
 		if err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
@@ -140,10 +132,10 @@ func UpdateSpot(service spotservice.SpotService) fiber.Handler {
 		//userSerializer := serializer.NewUserSerializer(&fetchedSpot.User)
 		//categorySerializer := serializer.NewCategorySerializer(&fetchedSpot.Category)
 		//spotSerializer := serializer.NewSpotSerializer(fetchedSpot, userSerializer, categorySerializer)
-		var serializedSpot response.SpotDetailRes
-		err = serializer.GeneralSerializer(spot, &serializedSpot)
+		// var serializedSpot response.SpotDetailRes
+		// err = serializer.GeneralSerializer(spot, &serializedSpot)
 
-		jsonResponse := presenter.NewJsonResponse(false, "", serializedSpot)
+		jsonResponse := presenter.NewJsonResponse(false, "", spot)
 
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
@@ -155,30 +147,36 @@ func UpdateSpot(service spotservice.SpotService) fiber.Handler {
 // @Tags Spot
 // @Accept json
 // @Produce json
-// @Param id path int true "spot id"
+// @Param id path string true "spot id"
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /spot/{id} [get]
 // @Security Bearer
 func GetSpot(service spotservice.SpotService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		db := c.Locals("db").(*gorm.DB)
-		log.Printf("db %v\n", db)
+		// Get the spot ID from the request parameters
+		spotId := c.Params("id", "")
+		if spotId == "" {
+			// Return an error response if the ID is missing
+			jsonResponse := presenter.NewJsonResponse(true, "Missing spot ID", nil)
+			return c.Status(fiber.StatusBadRequest).JSON(jsonResponse)
+		}
 
-		id, _ := c.ParamsInt("id")
-		spot, err := service.GetSpotById(id, c)
-
+		// Fetch the spot from the service
+		spot, err := service.GetSpotById(spotId, c)
 		if err != nil {
-			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
+			// Return an error response if the spot couldn't be fetched
+			jsonResponse := presenter.NewJsonResponse(true, "Failed to fetch spot: "+err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		//userSerializer := serializer.NewUserSerializer(&fetched.User)
-		//categorySerializer := serializer.NewCategorySerializer(&fetched.Category)
-		//spotSerializer := serializer.NewSpotSerializer(fetched, userSerializer, categorySerializer)
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-		log.Println(">>>> serialize not implemented")
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+		// Create a new SpotDetailSerializer
+		// spotSerializer := &spotserializer.SpotDetailSerializer{Spot: spot}
+
+		// Serialize the spot
+		// serializedSpot := spotSerializer.Serialize()
+
+		// Create and return the JSON response
 		jsonResponse := presenter.NewJsonResponse(false, "", spot)
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
@@ -190,7 +188,7 @@ func GetSpot(service spotservice.SpotService) fiber.Handler {
 // @Tags Spot
 // @Accept json
 // @Produce json
-// @Param id path int true "spot id"
+// @Param id path string true "spot id"
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /spot/{id} [delete]
@@ -198,8 +196,12 @@ func GetSpot(service spotservice.SpotService) fiber.Handler {
 func RemoveSpot(service spotservice.SpotService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 
-		id, _ := c.ParamsInt("id")
-		err := service.DeleteSpot(id, c)
+		spotId := c.Params("id", "")
+		if spotId == "" {
+			jsonResponse := presenter.NewJsonResponse(true, "id parsing 실패", nil)
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+		err := service.DeleteSpot(spotId, c)
 		if err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
@@ -216,7 +218,7 @@ func RemoveSpot(service spotservice.SpotService) fiber.Handler {
 // @Tags Spot
 // @Accept json
 // @Produce json
-// @param id path int true "spot id"
+// @Param id path string true "spot id"
 // @Param page query int false "Page number" default(1)
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
@@ -224,13 +226,13 @@ func RemoveSpot(service spotservice.SpotService) fiber.Handler {
 // @Security Bearer
 func SpotReviews(service spotservice.SpotService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		id, err := c.ParamsInt("id")
-		if err != nil {
-			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
-			return c.Status(fiber.StatusBadRequest).JSON(jsonResponse)
+		spotId := c.Params("id", "")
+		if spotId == "" {
+			jsonResponse := presenter.NewJsonResponse(true, "id parsing 실패", nil)
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		spot, err := service.GetSpotById(id, c)
+		spot, err := service.GetSpotById(spotId, c)
 		if err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusBadRequest).JSON(jsonResponse)

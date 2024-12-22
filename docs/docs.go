@@ -62,6 +62,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/signup": {
+            "post": {
+                "description": "Create User",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Create User",
+                "parameters": [
+                    {
+                        "description": "requestBody",
+                        "name": "requestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/authdto.SignUpReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.JsonResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.JsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/category": {
             "get": {
                 "security": [
@@ -159,7 +199,7 @@ const docTemplate = `{
                 "summary": "GetCategory",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "category id",
                         "name": "id",
                         "in": "path",
@@ -200,7 +240,7 @@ const docTemplate = `{
                 "summary": "UpdateCategory",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "category id",
                         "name": "id",
                         "in": "path",
@@ -250,7 +290,7 @@ const docTemplate = `{
                 "summary": "DeleteCategory",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "category id",
                         "name": "id",
                         "in": "path",
@@ -476,7 +516,7 @@ const docTemplate = `{
                 "summary": "GetAmenity",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "amenity id",
                         "name": "id",
                         "in": "path",
@@ -517,7 +557,7 @@ const docTemplate = `{
                 "summary": "UpdateAmenity",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "amenity id",
                         "name": "id",
                         "in": "path",
@@ -567,7 +607,7 @@ const docTemplate = `{
                 "summary": "DeleteAmenity",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "amenity id",
                         "name": "id",
                         "in": "path",
@@ -610,7 +650,7 @@ const docTemplate = `{
                 "summary": "GetSpot",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "spot id",
                         "name": "id",
                         "in": "path",
@@ -651,7 +691,7 @@ const docTemplate = `{
                 "summary": "UpdateSpot",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "spot id",
                         "name": "id",
                         "in": "path",
@@ -701,7 +741,7 @@ const docTemplate = `{
                 "summary": "RemoveSpot",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "spot id",
                         "name": "id",
                         "in": "path",
@@ -753,7 +793,7 @@ const docTemplate = `{
                         }
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "spot id",
                         "name": "id",
                         "in": "path",
@@ -796,7 +836,7 @@ const docTemplate = `{
                 "summary": "SpotReviews",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "spot id",
                         "name": "id",
                         "in": "path",
@@ -852,46 +892,6 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/userdto.ChangePasswordReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/presenter.JsonResponse"
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "$ref": "#/definitions/presenter.JsonResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/signup": {
-            "post": {
-                "description": "Create User",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Create User",
-                "parameters": [
-                    {
-                        "description": "requestBody",
-                        "name": "requestBody",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/authdto.SignUpReq"
                         }
                     }
                 ],
@@ -1011,11 +1011,11 @@ const docTemplate = `{
                 "amenities": {
                     "type": "array",
                     "items": {
-                        "type": "integer"
+                        "type": "string"
                     }
                 },
                 "category": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "city": {
                     "type": "string"

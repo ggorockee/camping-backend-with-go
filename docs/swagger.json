@@ -55,6 +55,46 @@
                 }
             }
         },
+        "/auth/signup": {
+            "post": {
+                "description": "Create User",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Create User",
+                "parameters": [
+                    {
+                        "description": "requestBody",
+                        "name": "requestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/authdto.SignUpReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.JsonResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.JsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/category": {
             "get": {
                 "security": [
@@ -152,7 +192,7 @@
                 "summary": "GetCategory",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "category id",
                         "name": "id",
                         "in": "path",
@@ -193,7 +233,7 @@
                 "summary": "UpdateCategory",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "category id",
                         "name": "id",
                         "in": "path",
@@ -243,7 +283,7 @@
                 "summary": "DeleteCategory",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "category id",
                         "name": "id",
                         "in": "path",
@@ -469,7 +509,7 @@
                 "summary": "GetAmenity",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "amenity id",
                         "name": "id",
                         "in": "path",
@@ -510,7 +550,7 @@
                 "summary": "UpdateAmenity",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "amenity id",
                         "name": "id",
                         "in": "path",
@@ -560,7 +600,7 @@
                 "summary": "DeleteAmenity",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "amenity id",
                         "name": "id",
                         "in": "path",
@@ -603,7 +643,7 @@
                 "summary": "GetSpot",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "spot id",
                         "name": "id",
                         "in": "path",
@@ -644,7 +684,7 @@
                 "summary": "UpdateSpot",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "spot id",
                         "name": "id",
                         "in": "path",
@@ -694,7 +734,7 @@
                 "summary": "RemoveSpot",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "spot id",
                         "name": "id",
                         "in": "path",
@@ -746,7 +786,7 @@
                         }
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "spot id",
                         "name": "id",
                         "in": "path",
@@ -789,7 +829,7 @@
                 "summary": "SpotReviews",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "spot id",
                         "name": "id",
                         "in": "path",
@@ -845,46 +885,6 @@
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/userdto.ChangePasswordReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/presenter.JsonResponse"
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "$ref": "#/definitions/presenter.JsonResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/signup": {
-            "post": {
-                "description": "Create User",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Create User",
-                "parameters": [
-                    {
-                        "description": "requestBody",
-                        "name": "requestBody",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/authdto.SignUpReq"
                         }
                     }
                 ],
@@ -1004,11 +1004,11 @@
                 "amenities": {
                     "type": "array",
                     "items": {
-                        "type": "integer"
+                        "type": "string"
                     }
                 },
                 "category": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "city": {
                     "type": "string"

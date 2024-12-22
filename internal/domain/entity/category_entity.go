@@ -1,12 +1,48 @@
 package entity
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
 
 type Category struct {
-	Id   uint   `json:"id" gorm:"primaryKey"`
-	Name string `json:"name" gorm:"uniqueIndex;type:varchar(20)"`
+	Common
+	Name  string `json:"name" gorm:"uniqueIndex;type:varchar(20)"`
+	Spots []Spot `json:"spot"`
+}
 
-	// Time Logging
-	UpdatedAt time.Time `json:"updated_at"`
-	CreatedAt time.Time `json:"created_at"`
+func (s *Category) GetId() string {
+	return s.Id
+}
+
+func (s *Category) BeforeCreate(tx *gorm.DB) (err error) {
+	if s.GetId() == "" {
+		id := uuid.New()
+		s.Id = id.String()
+	}
+	s.CreatedAt = time.Now()
+	s.UpdatedAt = time.Now()
+	return
+}
+
+func (s *Category) BeforeSave(tx *gorm.DB) (err error) {
+	s.UpdatedAt = time.Now()
+	return
+}
+
+func (s *Category) IsExist() bool {
+	return s.Id != ""
+}
+
+func (c *Category) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct {
+		Id   string `json:"id"`
+		Name string `json:"name"`
+	}{
+		Id:   c.Id,
+		Name: c.Name,
+	})
 }

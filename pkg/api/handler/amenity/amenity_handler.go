@@ -2,12 +2,11 @@ package amenityhandler
 
 import (
 	amenitydto "camping-backend-with-go/internal/application/dto/amenity"
-	"camping-backend-with-go/internal/application/serializer"
-	"camping-backend-with-go/internal/application/serializer/response"
+
 	"camping-backend-with-go/internal/domain/presenter"
 	amenityservice "camping-backend-with-go/internal/domain/service/amenity"
+
 	"github.com/gofiber/fiber/v2"
-	"log"
 )
 
 // CreateAmenity
@@ -36,12 +35,6 @@ func CreateAmenity(service amenityservice.AmenityService) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		//serializer = createdAmenity
-		//AmenitySerializer := serializer.NewAmenitySerializer(createdAmenity)
-
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-		log.Println(">>>> serialize not implemented")
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 		jsonResponse := presenter.NewJsonResponse(false, "", amenity)
 
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
@@ -67,15 +60,7 @@ func GetAmenities(service amenityservice.AmenityService) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		//serializedAmenities := make([]dto.AmenityListOut, 0)
-		//
-		//for _, fetchedAmenity := range *fetchedAmenities {
-		//	AmenitySerializer := serializer.NewAmenitySerializer(&fetchedAmenity)
-		//	serializedAmenities = append(serializedAmenities, AmenitySerializer.ListSerialize())
-		//}
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-		log.Println(">>>> serialize not implemented")
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+		// ser := serializer.New(amenities, commonhandler.SerializerFactory)
 		jsonResponse := presenter.NewJsonResponse(false, "", amenities)
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
@@ -87,37 +72,28 @@ func GetAmenities(service amenityservice.AmenityService) fiber.Handler {
 // @Tags Amenity
 // @Accept json
 // @Produce json
-// @Param id path int true "amenity id"
+// @Param id path string true "amenity id"
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /spot/amenity/{id} [get]
 // @Security Bearer
 func GetAmenity(service amenityservice.AmenityService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		id, err := c.ParamsInt("id")
+		amenityId := c.Params("id", "")
+		if amenityId == "" {
+			jsonResponse := presenter.NewJsonResponse(true, "id parsing 실패", nil)
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		amenity, err := service.GetAmenityById(amenityId)
 		if err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		amenity, err := service.GetAmenityById(id)
-		if err != nil {
-			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
-			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
-		}
-		//AmenitySerializer := serializer.NewAmenitySerializer(fetchedAmenity)
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-		log.Println(">>>> serialize not implemented")
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+		// ser := serializer.New(amenity, commonhandler.SerializerFactory)
 
-		var serializedAmenity response.AmenityTinyRes
-		err = serializer.GeneralSerializer(amenity, &serializedAmenity)
-		if err != nil {
-			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
-			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
-		}
-
-		jsonResponse := presenter.NewJsonResponse(false, "", serializedAmenity)
+		jsonResponse := presenter.NewJsonResponse(false, "", amenity)
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
 }
@@ -128,7 +104,7 @@ func GetAmenity(service amenityservice.AmenityService) fiber.Handler {
 // @Tags Amenity
 // @Accept json
 // @Produce json
-// @Param id path int true "amenity id"
+// @Param id path string true "amenity id"
 // @Param requestBody body amenitydto.UpdateAmenityReq true "requestBody"
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
@@ -143,22 +119,19 @@ func UpdateAmenity(service amenityservice.AmenityService) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		id, err := c.ParamsInt("id")
+		amenityId := c.Params("id", "")
+		if amenityId == "" {
+			jsonResponse := presenter.NewJsonResponse(true, "id parsing 실패", nil)
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		amenity, err := service.UpdateAmenity(&requestBody, amenityId, c)
 		if err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		amenity, err := service.UpdateAmenity(&requestBody, id, c)
-		if err != nil {
-			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
-			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
-		}
-
-		//AmenitySerializer := serializer.NewAmenitySerializer(updatedAmenity)
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-		log.Println(">>>> serialize not implemented")
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+		// ser := serializer.New(amenity, commonhandler.SerializerFactory)
 		jsonResponse := presenter.NewJsonResponse(false, "", amenity)
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
@@ -170,20 +143,20 @@ func UpdateAmenity(service amenityservice.AmenityService) fiber.Handler {
 // @Tags Amenity
 // @Accept json
 // @Produce json
-// @Param id path int true "amenity id"
+// @Param id path string true "amenity id"
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /spot/amenity/{id} [delete]
 // @Security Bearer
 func DeleteAmenity(service amenityservice.AmenityService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		id, err := c.ParamsInt("id")
-		if err != nil {
-			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
+		amenityId := c.Params("id", "")
+		if amenityId == "" {
+			jsonResponse := presenter.NewJsonResponse(true, "id parsing 실패", nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		err = service.DeleteAmenity(id, c)
+		err := service.DeleteAmenity(amenityId, c)
 		if err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)

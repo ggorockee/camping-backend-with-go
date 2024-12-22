@@ -32,7 +32,7 @@ func successHandler(c *fiber.Ctx) error {
 	db := c.Locals("db").(*gorm.DB)
 
 	var user entity.User
-	db.First(&user, userId)
+	db.Where("id = ?", userId).First(&user)
 
 	c.Locals("is_authenticated", true)
 	c.Locals("request_user", user)

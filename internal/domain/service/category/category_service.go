@@ -11,9 +11,9 @@ import (
 type CategoryService interface {
 	GetCategoryList(context ...*fiber.Ctx) (*[]entity.Category, error)
 	CreateCategory(input *categorydto.CreateCategoryReq, context ...*fiber.Ctx) (*entity.Category, error)
-	UpdateCategory(input *categorydto.UpdateCategoryReq, id int, context ...*fiber.Ctx) (*entity.Category, error)
-	DeleteCategory(id int, context ...*fiber.Ctx) error
-	GetCategoryById(id int, context ...*fiber.Ctx) (*entity.Category, error)
+	UpdateCategory(input *categorydto.UpdateCategoryReq, id string, context ...*fiber.Ctx) (*entity.Category, error)
+	DeleteCategory(id string, context ...*fiber.Ctx) error
+	GetCategoryById(id string, context ...*fiber.Ctx) (*entity.Category, error)
 }
 
 type categoryService struct {
@@ -28,18 +28,18 @@ func (s *categoryService) CreateCategory(input *categorydto.CreateCategoryReq, c
 	return s.categoryRepo.CreateCategory(input, context...)
 }
 
-func (s *categoryService) UpdateCategory(input *categorydto.UpdateCategoryReq, id int, context ...*fiber.Ctx) (*entity.Category, error) {
+func (s *categoryService) UpdateCategory(input *categorydto.UpdateCategoryReq, id string, context ...*fiber.Ctx) (*entity.Category, error) {
 	return s.categoryRepo.UpdateCategory(input, id, context...)
 }
 
-func (s *categoryService) DeleteCategory(id int, context ...*fiber.Ctx) error {
+func (s *categoryService) DeleteCategory(id string, context ...*fiber.Ctx) error {
 	return s.categoryRepo.DeleteCategory(id, context...)
 }
 
-func (s *categoryService) GetCategoryById(id int, context ...*fiber.Ctx) (*entity.Category, error) {
+func (s *categoryService) GetCategoryById(id string, context ...*fiber.Ctx) (*entity.Category, error) {
 	return s.categoryRepo.GetCategoryById(id, context...)
 }
 
 func NewCategoryService(c categoryrepository.CategoryRepository) CategoryService {
-	return &categoryService{}
+	return &categoryService{categoryRepo: c}
 }

@@ -2,11 +2,11 @@ package categoryhandler
 
 import (
 	categorydto "camping-backend-with-go/internal/application/dto/category"
+
 	"camping-backend-with-go/internal/domain/presenter"
 	categoryservice "camping-backend-with-go/internal/domain/service/category"
-	//"camping-backend-with-go/pkg_backup/service/category"
+
 	"github.com/gofiber/fiber/v2"
-	"log"
 )
 
 // GetCategoryList
@@ -26,16 +26,6 @@ func GetCategoryList(service categoryservice.CategoryService) fiber.Handler {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
-
-		//serializedCategories := make([]dto.CategoryListOut, 0)
-		//
-		//for _, fetchedCategory := range *fetchedCategories {
-		//	categorySerializer := serializer.NewCategorySerializer(&fetchedCategory)
-		//	serializedCategories = append(serializedCategories, categorySerializer.ListSerialize())
-		//}
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-		log.Println(">>>> serialize not implemented")
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
 		jsonResponse := presenter.NewJsonResponse(false, "", categories)
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
@@ -62,17 +52,14 @@ func CreateCategory(service categoryservice.CategoryService) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		createdCategory, err := service.CreateCategory(&requestBody, c)
+		category, err := service.CreateCategory(&requestBody, c)
 		if err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-		log.Println(">>>> serialize not implemented")
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-
-		jsonResponse := presenter.NewJsonResponse(false, "", createdCategory)
+		// ser := serializer.New(category, commonhandler.SerializerFactory)
+		jsonResponse := presenter.NewJsonResponse(false, "", category)
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
 }
@@ -83,29 +70,26 @@ func CreateCategory(service categoryservice.CategoryService) fiber.Handler {
 // @Tags Category
 // @Accept json
 // @Produce json
-// @Param id path int true "category id"
+// @Param id path string true "category id"
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /category/{id} [get]
 // @Security Bearer
 func GetCategory(service categoryservice.CategoryService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		id, err := c.ParamsInt("id")
+		categoryId := c.Params("id", "")
+		if categoryId == "" {
+			jsonResponse := presenter.NewJsonResponse(true, "id parsing 실패", nil)
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		category, err := service.GetCategoryById(categoryId, c)
 		if err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		category, err := service.GetCategoryById(id, c)
-		if err != nil {
-			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
-			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
-		}
-
-		//categorySerializer := serializer.NewCategorySerializer(category)
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-		log.Println(">>>> serialize not implemented")
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+		// ser := serializer.New(category, commonhandler.SerializerFactory)
 		jsonResponse := presenter.NewJsonResponse(false, "", category)
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
@@ -117,7 +101,7 @@ func GetCategory(service categoryservice.CategoryService) fiber.Handler {
 // @Tags Category
 // @Accept json
 // @Produce json
-// @Param id path int true "category id"
+// @Param id path string true "category id"
 // @Param requestBody body categorydto.UpdateCategoryReq true "requestBody"
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
@@ -132,22 +116,19 @@ func UpdateCategory(service categoryservice.CategoryService) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		id, err := c.ParamsInt("id")
+		categoryId := c.Params("id", "")
+		if categoryId == "" {
+			jsonResponse := presenter.NewJsonResponse(true, "id parsing 실패", nil)
+			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
+		}
+
+		category, err := service.UpdateCategory(&requestBody, categoryId, c)
 		if err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		category, err := service.UpdateCategory(&requestBody, id, c)
-		if err != nil {
-			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
-			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
-		}
-
-		//categorySerializer := serializer.NewCategorySerializer(fetchedCategory)
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-		log.Println(">>>> serialize not implemented")
-		log.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+		// ser := serializer.New(category, commonhandler.SerializerFactory)
 		jsonResponse := presenter.NewJsonResponse(false, "", category)
 
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
@@ -160,7 +141,7 @@ func UpdateCategory(service categoryservice.CategoryService) fiber.Handler {
 // @Tags Category
 // @Accept json
 // @Produce json
-// @Param id path int true "category id"
+// @Param id path string true "category id"
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /category/{id} [delete]
@@ -168,15 +149,9 @@ func UpdateCategory(service categoryservice.CategoryService) fiber.Handler {
 func DeleteCategory(service categoryservice.CategoryService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 
-		id, err := c.ParamsInt("id")
-		if err != nil {
-			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
-			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
-		}
-
-		err = service.DeleteCategory(id, c)
-		if err != nil {
-			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
+		categoryId := c.Params("id", "")
+		if categoryId == "" {
+			jsonResponse := presenter.NewJsonResponse(true, "id parsing 실패", nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 

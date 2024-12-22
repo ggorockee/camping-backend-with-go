@@ -7,19 +7,21 @@ import (
 	amenityrepository "camping-backend-with-go/internal/domain/repository/amenity"
 	categoryrepository "camping-backend-with-go/internal/domain/repository/category"
 	userrepository "camping-backend-with-go/internal/domain/repository/user"
+	"fmt"
 
 	"camping-backend-with-go/pkg/util"
 	"errors"
+
 	"github.com/gofiber/fiber/v2"
+	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
-	"time"
 )
 
 type SpotRepository interface {
 	CreateSpot(input *spotdto.CreateSpotReq, context ...*fiber.Ctx) (*entity.Spot, error)
-	UpdateSpot(input *spotdto.UpdateSpotReq, id int, context ...*fiber.Ctx) (*entity.Spot, error)
-	GetSpotById(id int, context ...*fiber.Ctx) (*entity.Spot, error)
-	DeleteSpot(id int, context ...*fiber.Ctx) error
+	UpdateSpot(input *spotdto.UpdateSpotReq, id string, context ...*fiber.Ctx) (*entity.Spot, error)
+	GetSpotById(id string, context ...*fiber.Ctx) (*entity.Spot, error)
+	DeleteSpot(id string, context ...*fiber.Ctx) error
 	GetAllSpots(context ...*fiber.Ctx) (*[]entity.Spot, error)
 	GetReviewsFromSpot(spot *entity.Spot, context ...*fiber.Ctx) (*[]entity.Review, error)
 	CreateSpotReview(input *reviewdto.CreateSpotReviewReq, spot *entity.Spot, context ...*fiber.Ctx) (*entity.Review, error)
@@ -33,96 +35,119 @@ type spotRepository struct {
 }
 
 func (r *spotRepository) CreateSpot(input *spotdto.CreateSpotReq, context ...*fiber.Ctx) (*entity.Spot, error) {
-	// jwt에서 user 불러오기
+	// 컨텍스트 파싱
 	c, err := util.ContextParser(context...)
+	if err != nil {
+		return nil, fmt.Errorf("context parsing failed: %w", err)
+	}
+
+	// 사용자 ID 토큰에서 추출
 	userId := r.userRepo.GetValueFromToken("user_id", c)
+
+	// 사용자 정보 조회
 	owner, err := r.userRepo.GetUserById(userId)
 	if err != nil {
+		return nil, fmt.Errorf("failed to get user: %w", err)
+	}
+
+	// Spot 엔티티 초기화
+	var spot entity.Spot
+
+	// input 데이터를 spot에 복사
+	if err := copier.Copy(&spot, input); err != nil {
 		return nil, err
 	}
 
-	// spot
-	spot := entity.Spot{
-		UserId:      userId, // foreginKey
-		User:        *owner, // foreginKey
-		Name:        input.Name,
-		Country:     input.Country,
-		City:        input.City,
-		Price:       input.Price,
-		Description: *input.Description,
-		Address:     input.Address,
-		PetFriendly: input.PetFriendly,
-		CategoryId:  &input.Category,    // foreginKey
-		Category:    entity.Category{},  // foreginKey
-		Amenities:   []entity.Amenity{}, // many2many
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
-	}
+	spot.UserId = owner.Id // foreginKey
 
-	// foreignKey
-	spot.User = *owner
-	spot.UserId = userId
-
-	// category
-	categoryObj, err := r.categoryRepo.GetCategoryById(input.Category)
+	// 카테고리 조회
+	category, err := r.categoryRepo.GetCategoryById(*input.Category)
 	if err != nil {
 		return nil, err
 	}
 
-	spot.Category = *categoryObj
+	spot.CategoryId = &category.Id
 
-	// spot.CategoryId = &input.Category
-
-	// many2many
-	amenities := make([]entity.Amenity, 0)
-	if input.Amenities != nil {
-		for _, amenityId := range *input.Amenities {
-			amenity, _ := r.amenityRepo.GetAmenityById(amenityId)
-			amenities = append(amenities, *amenity)
+	// 트랜잭션 시작
+	err = r.dbConn.Transaction(func(tx *gorm.DB) error {
+		// Spot 생성
+		if err := tx.Create(&spot).Error; err != nil {
+			return fmt.Errorf("failed to create spot: %w", err)
 		}
-	}
 
-	spot.Amenities = amenities
+		// Amenities 처리
+		if input.Amenities != nil {
+			amenities := make([]entity.Amenity, 0)
+			for _, amenityId := range *input.Amenities {
+				amenity, err := r.amenityRepo.GetAmenityById(amenityId)
+				if err != nil {
+					return fmt.Errorf("failed to get amenity: %w", err)
+				}
+				amenities = append(amenities, *amenity)
+			}
 
-	// value
-	if err := r.dbConn.Create(&spot).Error; err != nil {
+			// Amenities 연결
+			if err := tx.Model(&spot).Association("Amenities").Replace(amenities); err != nil {
+				return fmt.Errorf("failed to associate amenities: %w", err)
+			}
+		}
+
+		return nil
+	})
+
+	if err != nil {
 		return nil, err
 	}
 	return &spot, nil
 }
 
-func (r *spotRepository) UpdateSpot(input *spotdto.UpdateSpotReq, id int, context ...*fiber.Ctx) (*entity.Spot, error) {
+func (r *spotRepository) UpdateSpot(input *spotdto.UpdateSpotReq, id string, context ...*fiber.Ctx) (*entity.Spot, error) {
 	c, err := util.ContextParser(context...)
+	util.HandleFunc(err)
 	userId := r.userRepo.GetValueFromToken("user_id", c)
 	spot, err := r.GetSpotById(id)
 	if err != nil {
 		return nil, err
 	}
 
-	fetchedSpotUserId := int(spot.UserId)
-
-	if userId != fetchedSpotUserId {
+	if userId != spot.GetId() {
 		return nil, errors.New("permission denied")
 	}
 
-	spot.UpdatedAt = time.Now()
-	if err := r.dbConn.Model(spot).Updates(input).Error; err != nil {
+	if err := copier.Copy(spot, input); err != nil {
+		return nil, err
+	}
+
+	if err := r.dbConn.Save(spot).Error; err != nil {
 		return nil, err
 	}
 
 	return spot, nil
 }
 
-func (r *spotRepository) GetSpotById(id int, context ...*fiber.Ctx) (*entity.Spot, error) {
+func (r *spotRepository) GetSpotById(id string, context ...*fiber.Ctx) (*entity.Spot, error) {
 	var spot entity.Spot
 
-	if err := r.dbConn.Preload("User").Where("id = ?", id).First(&spot).Error; err != nil {
-		return nil, err
+	err := r.dbConn.
+		Preload("User").
+		Preload("Amenities").
+		Preload("Category").
+		Preload("Reviews.User"). // Review의 User 정보도 함께 로드
+		Where("id = ?", id).
+		First(&spot).
+		Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("spot not found: %w", err)
+		}
+		return nil, fmt.Errorf("error fetching spot: %w", err)
 	}
+
 	return &spot, nil
 }
 
-func (r *spotRepository) DeleteSpot(id int, context ...*fiber.Ctx) error {
+func (r *spotRepository) DeleteSpot(id string, context ...*fiber.Ctx) error {
 	c, err := util.ContextParser(context...)
 	util.HandleFunc(err)
 
@@ -132,7 +157,7 @@ func (r *spotRepository) DeleteSpot(id int, context ...*fiber.Ctx) error {
 		return err
 	}
 
-	if int(spot.UserId) != userId {
+	if spot.GetId() != userId {
 		return errors.New("permission denied")
 	}
 
@@ -155,7 +180,7 @@ func (r *spotRepository) GetAllSpots(context ...*fiber.Ctx) (*[]entity.Spot, err
 func (r *spotRepository) GetReviewsFromSpot(spot *entity.Spot, context ...*fiber.Ctx) (*[]entity.Review, error) {
 	var reviews []entity.Review
 
-	if err := r.dbConn.Where("spot_id = ?", spot.Id).Preload("Spot").Find(&reviews).Error; err != nil {
+	if err := r.dbConn.Where("spot_id = ?", spot.GetId()).Preload("Spot").Find(&reviews).Error; err != nil {
 		return nil, err
 	}
 
@@ -172,16 +197,25 @@ func (r *spotRepository) CreateSpotReview(input *reviewdto.CreateSpotReviewReq, 
 	}
 
 	// spot은 이미 불러와짐
-	review := entity.Review{
-		Id:        0,
-		User:      requestUser,
-		Spot:      *spot,
-		Payload:   input.Payload,
-		Rating:    input.Rating,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+	var review entity.Review
+
+	review.UserId = requestUser.Id
+	review.SpotId = &spot.Id
+
+	if err := copier.Copy(&review, input); err != nil {
+		return nil, err
 	}
-	if err := r.dbConn.Create(&review).Error; err != nil {
+
+	// Spot이 이미 존재한다고 명시적으로 설정
+	err = r.dbConn.Transaction(func(tx *gorm.DB) error {
+		tx = tx.Set("gorm:association_autoupdate", false).Set("gorm:association_autocreate", false)
+		if err := tx.Create(&review).Error; err != nil {
+			return fmt.Errorf("error creating review: %w", err)
+		}
+		return nil
+	})
+
+	if err != nil {
 		return nil, err
 	}
 

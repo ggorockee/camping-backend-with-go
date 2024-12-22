@@ -5,11 +5,11 @@ import (
 	"camping-backend-with-go/internal/domain/entity"
 	"camping-backend-with-go/pkg/util"
 	"errors"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"strconv"
 )
 
 type UserRepository interface {
@@ -18,9 +18,9 @@ type UserRepository interface {
 	CheckPasswordHash(password, hash string, context ...*fiber.Ctx) bool          // auth
 	ChangePassword(input *userdto.ChangePasswordReq, context ...*fiber.Ctx) error //
 	ValidToken(t *jwt.Token, id string, context ...*fiber.Ctx) bool
-	GetUserById(id int, context ...*fiber.Ctx) (*entity.User, error)
-	GetValueFromToken(key string, context ...*fiber.Ctx) int
-	ValidUser(id int, user *entity.User, context ...*fiber.Ctx) error
+	GetUserById(id string, context ...*fiber.Ctx) (*entity.User, error)
+	GetValueFromToken(key string, context ...*fiber.Ctx) string
+	// ValidUser(id string, user *entity.User, context ...*fiber.Ctx) error
 }
 
 type userRepository struct {
@@ -51,8 +51,9 @@ func (r *userRepository) CheckPasswordHash(password, hash string, context ...*fi
 
 func (r *userRepository) ChangePassword(input *userdto.ChangePasswordReq, context ...*fiber.Ctx) error {
 	c, err := util.ContextParser(context...)
-	newPassword := input.NewPassword
-	oldPassword := input.OldPassword
+	if err != nil {
+		return err
+	}
 
 	userId := r.GetValueFromToken("user_id", c)
 	user, err := r.GetUserById(userId)
@@ -62,11 +63,11 @@ func (r *userRepository) ChangePassword(input *userdto.ChangePasswordReq, contex
 	}
 
 	// CheckPassword
-	if !r.CheckPasswordHash(oldPassword, user.Password) {
+	if !r.CheckPasswordHash(*input.OldPassword, user.Password) {
 		return errors.New("invalid Credentials")
 	}
 
-	hashedNewPassword, err := r.HashPassword(newPassword)
+	hashedNewPassword, err := r.HashPassword(*input.NewPassword)
 	if err != nil {
 		return err
 	}
@@ -75,45 +76,34 @@ func (r *userRepository) ChangePassword(input *userdto.ChangePasswordReq, contex
 	user.Password = hashedNewPassword
 
 	// Database save
-	r.dbConn.Save(&user)
+	r.dbConn.Save(user)
 	return nil
 }
 
 func (r *userRepository) ValidToken(t *jwt.Token, id string, context ...*fiber.Ctx) bool {
-	n, err := strconv.Atoi(id)
-	if err != nil {
-		return false
-	}
 
 	claims := t.Claims.(jwt.MapClaims)
-	uid := int(claims["user_id"].(float64))
+	uid := claims["user_id"].(string)
 
-	return uid == n
+	return uid == id
 }
 
-func (r *userRepository) GetUserById(id int, context ...*fiber.Ctx) (*entity.User, error) {
+func (r *userRepository) GetUserById(id string, context ...*fiber.Ctx) (*entity.User, error) {
 	var user entity.User
-	if err := r.dbConn.Find(&user, id).Error; err != nil {
+	if err := r.dbConn.Where("id = ?", id).Find(&user).Error; err != nil {
 		return nil, err
 	}
 	return &user, nil
 }
 
-func (r *userRepository) GetValueFromToken(key string, context ...*fiber.Ctx) int {
+func (r *userRepository) GetValueFromToken(key string, context ...*fiber.Ctx) string {
 	c, err := util.ContextParser(context...)
 	util.HandleFunc(err)
 
 	token := c.Locals("user").(*jwt.Token)
 	claims := token.Claims.(jwt.MapClaims)
-	value := int(claims[key].(float64))
+	value := claims[key].(string)
 	return value
-}
-
-func (r *userRepository) ValidUser(id int, user *entity.User, context ...*fiber.Ctx) error {
-	if id != int(user.Id) {
-		return errors.New("ValidUser:: => invalid user")
-	}
-	return nil
 }
 
 func NewUserRepository(db *gorm.DB) UserRepository {

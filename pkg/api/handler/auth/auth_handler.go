@@ -17,7 +17,7 @@ import (
 // @Param requestBody body authdto.SignUpReq true "requestBody"
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
-// @Router /user/signup [post]
+// @Router /auth/signup [post]
 func CreateUser(service authservice.AuthService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var requestBody authdto.SignUpReq
@@ -37,7 +37,7 @@ func CreateUser(service authservice.AuthService) fiber.Handler {
 
 		// password와 confirm_password가 다르면 error
 		if requestBody.Password != requestBody.PasswordConfirm {
-			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
+			jsonResponse := presenter.NewJsonResponse(true, "password가 다릅니다.", nil)
 			return c.Status(fiber.StatusBadRequest).JSON(jsonResponse)
 		}
 

@@ -1,17 +1,38 @@
 package entity
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
 
 type WishList struct {
-	Id   uint   `json:"id" gorm:"primaryKey"`
+	Common
 	Name string `json:"name" gorm:"type:varchar(150)"`
 
 	//Spots     interfaces.SpotCollection `gorm:"-"`                       // GORM에서 무시
 	Spots []Spot `gorm:"many2many:wishlist_spot"` // 실제 DB 관계
 
-	UserId int  `json:"user_id"`
-	User   User `gorm:"foreignKey:UserId;constraint:OnDelete:CASCADE;"`
+	UserId string `json:"user_id" gorm:"type:varchar(255)"`
+	User   User   `gorm:"foreignKey:UserId;constraint:OnDelete:CASCADE;"`
+}
 
-	UpdatedAt time.Time `json:"updated_at"`
-	CreatedAt time.Time `json:"created_at"`
+func (s *WishList) GetId() string {
+	return s.Id
+}
+
+func (s *WishList) BeforeCreate(tx *gorm.DB) (err error) {
+	if s.GetId() == "" {
+		id := uuid.New()
+		s.Id = id.String()
+	}
+	s.CreatedAt = time.Now()
+	s.UpdatedAt = time.Now()
+	return
+}
+
+func (s *WishList) BeforeSave(tx *gorm.DB) (err error) {
+	s.UpdatedAt = time.Now()
+	return
 }

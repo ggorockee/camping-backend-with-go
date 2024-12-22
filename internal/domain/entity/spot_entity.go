@@ -2,12 +2,15 @@ package entity
 
 import (
 	"time"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type Spot struct {
-	Id     uint `json:"id" gorm:"primaryKey"`
-	UserId int  `json:"user_id"`
-	User   User `gorm:"foreignKey:UserId;constraint:OnDelete:CASCADE;"`
+	Common
+	UserId string `json:"user_id" gorm:"type:varchar(255)"`
+	User   User   `gorm:"foreignKey:UserId;constraint:OnDelete:CASCADE;"`
 
 	Name        string `json:"name"`
 	Country     string `json:"country"`
@@ -17,12 +20,30 @@ type Spot struct {
 	Address     string `json:"address"`
 	PetFriendly bool   `json:"pet_friendly"`
 
-	CategoryId *int     `gorm:"default:null" json:"category_id"` // CategoryId가 null일 수가 있음
+	CategoryId *string  `gorm:"type:varchar(255);default:null" json:"category_id"` // CategoryId가 null일 수가 있음
 	Category   Category `gorm:"foreignKey:CategoryId;constraint:OnDelete:SET NULL;"`
 
 	Amenities []Amenity `gorm:"many2many:spot_amenities"`
 
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	Reviews   []Review  `gorm:"foreignKey:SpotId" json:"reviews"`
+	Reviews []Review `gorm:"foreignKey:SpotId" json:"reviews"`
+}
+
+func (s *Spot) GetId() string {
+	return s.Id
+}
+
+func (s *Spot) BeforeCreate(tx *gorm.DB) (err error) {
+	if s.GetId() == "" {
+		id := uuid.New()
+		s.Id = id.String()
+	}
+
+	s.CreatedAt = time.Now()
+	s.UpdatedAt = time.Now()
+	return
+}
+
+func (s *Spot) BeforeSave(tx *gorm.DB) (err error) {
+	s.UpdatedAt = time.Now()
+	return
 }
