@@ -13,7 +13,8 @@ type TinyUserReponse struct {
 }
 
 type TinyUserAdapter struct {
-	*TinyUserReponse
+	element *TinyUserReponse
+	list *[]TinyUserReponse
 }
 
 func NewTinyUserAdapter(u *entity.User) *TinyUserAdapter {

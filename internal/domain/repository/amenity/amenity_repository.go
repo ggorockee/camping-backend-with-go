@@ -31,9 +31,9 @@ func (r *amenityRepository) CreateAmenity(input *amenitydto.CreateAmenityReq, co
 	}
 
 	fetched, err := r.GetAmenityByName(*input.Name)
-	if err != nil {
-		return nil, fmt.Errorf("error fetching amenity: %w", err)
-	}
+	// if err != nil {
+	// 	return nil, fmt.Errorf("error fetching amenity: %w", err)
+	// }
 
 	if fetched != nil && fetched.IsExist() {
 		return nil, fmt.Errorf("amenity name is duplicated")

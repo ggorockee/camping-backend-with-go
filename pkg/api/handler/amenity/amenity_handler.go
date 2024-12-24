@@ -2,11 +2,14 @@ package amenityhandler
 
 import (
 	amenitydto "camping-backend-with-go/internal/application/dto/amenity"
+	"camping-backend-with-go/pkg/api/response"
 
+	"camping-backend-with-go/internal/domain/entity"
 	"camping-backend-with-go/internal/domain/presenter"
 	amenityservice "camping-backend-with-go/internal/domain/service/amenity"
 
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
 // CreateAmenity
@@ -35,7 +38,13 @@ func CreateAmenity(service amenityservice.AmenityService) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		jsonResponse := presenter.NewJsonResponse(false, "", amenity)
+		// Test
+		db := c.Locals("db").(*gorm.DB)
+		var user entity.User
+		db.Where("email = ?", "test@test.com").First(&user)
+
+		dtlAdapter := response.NewAmenityDtlAdapter(amenity, &user)
+		jsonResponse := presenter.NewJsonResponse(false, "", dtlAdapter)
 
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 
