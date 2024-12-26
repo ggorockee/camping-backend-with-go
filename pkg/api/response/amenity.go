@@ -6,24 +6,35 @@ import (
 )
 
 type AmenityDetailResponse struct {
-	Id          string    `json:"id"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
-	Name        string    `json:"name" gorm:"type:varchar(20);"`
-	Description string    `json:"description"`
-
-	// test
-	User TinyUserAdapter `json:"user"`
+	Id          string          `json:"id"`
+	CreatedAt   time.Time       `json:"created_at"`
+	UpdatedAt   time.Time       `json:"updated_at"`
+	Name        string          `json:"name"`
+	Description string          `json:"description"`
+	User        TinyUserReponse `json:"user"`
 }
 
 type AmenityDetailResponseSlice []AmenityDetailResponse
 
 type AmenityResponseBuilder struct {
 	amenities []*entity.Amenity
+	userFunc  func(*entity.Amenity) TinyUserReponse
 }
 
 func NewAmenityResponseBuilder() *AmenityResponseBuilder {
-	return &AmenityResponseBuilder{}
+	return &AmenityResponseBuilder{
+		userFunc: defaultUserFunc,
+	}
+}
+
+func defaultUserFunc(amenity *entity.Amenity) TinyUserReponse {
+	// 기본적으로 빈 사용자 정보를 반환합니다.
+	return TinyUserReponse{}
+}
+
+func (b *AmenityResponseBuilder) WithUserFunc(f func(*entity.Amenity) TinyUserReponse) *AmenityResponseBuilder {
+	b.userFunc = f
+	return b
 }
 
 func (b *AmenityResponseBuilder) AddAmenity(amenity *entity.Amenity) *AmenityResponseBuilder {
@@ -44,13 +55,18 @@ func (b *AmenityResponseBuilder) Build() interface{} {
 }
 
 func (b *AmenityResponseBuilder) buildSingle(amenity *entity.Amenity) AmenityDetailResponse {
+	description := ""
+	if amenity.Description != nil {
+		description = *amenity.Description
+	}
+
 	return AmenityDetailResponse{
 		Id:          amenity.Id,
 		CreatedAt:   amenity.CreatedAt,
 		UpdatedAt:   amenity.UpdatedAt,
 		Name:        amenity.Name,
-		Description: *amenity.Description,
-		User:        TinyUserAdapter{}, // 여기에 사용자 정보를 채워넣어야 합니다
+		Description: description,
+		User:        b.userFunc(amenity),
 	}
 }
 
@@ -60,4 +76,9 @@ func (b *AmenityResponseBuilder) buildSlice() AmenityDetailResponseSlice {
 		result = append(result, b.buildSingle(amenity))
 	}
 	return result
+}
+
+func GetAmenityResponse(userFunc func(*entity.Amenity) TinyUserReponse, amenities ...*entity.Amenity) interface{} {
+	builder := NewAmenityResponseBuilder().WithUserFunc(userFunc)
+	return builder.AddAmenities(amenities).Build()
 }

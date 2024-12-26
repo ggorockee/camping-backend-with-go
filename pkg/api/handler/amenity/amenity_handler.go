@@ -2,7 +2,6 @@ package amenityhandler
 
 import (
 	amenitydto "camping-backend-with-go/internal/application/dto/amenity"
-	"camping-backend-with-go/pkg/api/response"
 
 	"camping-backend-with-go/internal/domain/entity"
 	"camping-backend-with-go/internal/domain/presenter"
@@ -43,8 +42,7 @@ func CreateAmenity(service amenityservice.AmenityService) fiber.Handler {
 		var user entity.User
 		db.Where("email = ?", "test@test.com").First(&user)
 
-		dtlAdapter := response.NewAmenityDtlAdapter(amenity, &user)
-		jsonResponse := presenter.NewJsonResponse(false, "", dtlAdapter)
+		jsonResponse := presenter.NewJsonResponse(false, "", amenity)
 
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 
