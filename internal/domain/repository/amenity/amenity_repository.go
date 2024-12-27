@@ -1,7 +1,8 @@
 package amenityrepository
 
 import (
-	amenitydto "camping-backend-with-go/internal/application/dto/amenity"
+	"camping-backend-with-go/internal/application/dto"
+
 	"camping-backend-with-go/internal/domain/entity"
 	"fmt"
 
@@ -11,11 +12,11 @@ import (
 )
 
 type AmenityRepository interface {
-	CreateAmenity(input *amenitydto.CreateAmenityReq, context ...*fiber.Ctx) (*entity.Amenity, error)
+	CreateAmenity(input *dto.CreateAmenityReq, context ...*fiber.Ctx) (*entity.Amenity, error)
 	GetAmenityById(id string, context ...*fiber.Ctx) (*entity.Amenity, error)
 	GetAmenityByName(name string, context ...*fiber.Ctx) (*entity.Amenity, error)
 	GetAmenityList(context ...*fiber.Ctx) (*[]entity.Amenity, error)
-	UpdateAmenity(input *amenitydto.UpdateAmenityReq, id string, context ...*fiber.Ctx) (*entity.Amenity, error)
+	UpdateAmenity(input *dto.UpdateAmenityReq, id string, context ...*fiber.Ctx) (*entity.Amenity, error)
 	DeleteAmenity(id string, context ...*fiber.Ctx) error
 }
 
@@ -23,7 +24,7 @@ type amenityRepository struct {
 	dbConn *gorm.DB
 }
 
-func (r *amenityRepository) CreateAmenity(input *amenitydto.CreateAmenityReq, context ...*fiber.Ctx) (*entity.Amenity, error) {
+func (r *amenityRepository) CreateAmenity(input *dto.CreateAmenityReq, context ...*fiber.Ctx) (*entity.Amenity, error) {
 	var amenity entity.Amenity
 
 	if err := copier.Copy(&amenity, input); err != nil {
@@ -96,7 +97,7 @@ func (r *amenityRepository) GetAmenityList(context ...*fiber.Ctx) (*[]entity.Ame
 	return &amenities, nil
 }
 
-func (r *amenityRepository) UpdateAmenity(input *amenitydto.UpdateAmenityReq, id string, context ...*fiber.Ctx) (*entity.Amenity, error) {
+func (r *amenityRepository) UpdateAmenity(input *dto.UpdateAmenityReq, id string, context ...*fiber.Ctx) (*entity.Amenity, error) {
 	amenity, err := r.GetAmenityById(id)
 	if err != nil {
 		return nil, err

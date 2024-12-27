@@ -1,7 +1,7 @@
 package userservice
 
 import (
-	userdto "camping-backend-with-go/internal/application/dto/user"
+	"camping-backend-with-go/internal/application/dto"
 	"camping-backend-with-go/internal/domain/entity"
 	userrepository "camping-backend-with-go/internal/domain/repository/user"
 
@@ -12,8 +12,8 @@ import (
 type UserService interface {
 	HashPassword(password string, context ...*fiber.Ctx) (string, error)
 	GetUserByEmail(email string, context ...*fiber.Ctx) (*entity.User, error)
-	CheckPasswordHash(password, hash string, context ...*fiber.Ctx) bool          // auth
-	ChangePassword(input *userdto.ChangePasswordReq, context ...*fiber.Ctx) error //
+	CheckPasswordHash(password, hash string, context ...*fiber.Ctx) bool      // auth
+	ChangePassword(input *dto.ChangePasswordReq, context ...*fiber.Ctx) error //
 	ValidToken(t *jwt.Token, id string, context ...*fiber.Ctx) bool
 	GetUserById(id string, context ...*fiber.Ctx) (*entity.User, error)
 	GetValueFromToken(key string, context ...*fiber.Ctx) string
@@ -35,7 +35,7 @@ func (s *userService) CheckPasswordHash(password, hash string, context ...*fiber
 	return s.userRepo.CheckPasswordHash(password, hash, context...)
 }
 
-func (s *userService) ChangePassword(input *userdto.ChangePasswordReq, context ...*fiber.Ctx) error {
+func (s *userService) ChangePassword(input *dto.ChangePasswordReq, context ...*fiber.Ctx) error {
 	return s.userRepo.ChangePassword(input, context...)
 }
 

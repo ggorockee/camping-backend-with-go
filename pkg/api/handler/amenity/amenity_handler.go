@@ -1,7 +1,7 @@
 package amenityhandler
 
 import (
-	amenitydto "camping-backend-with-go/internal/application/dto/amenity"
+	"camping-backend-with-go/internal/application/dto"
 
 	"camping-backend-with-go/internal/domain/entity"
 	"camping-backend-with-go/internal/domain/presenter"
@@ -17,19 +17,25 @@ import (
 // @Tags Amenity
 // @Accept json
 // @Produce json
-// @Param requestBody body amenitydto.CreateAmenityReq true "requestBody"
+// @Param requestBody body dto.CreateAmenityReq true "requestBody"
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /spot/amenity [post]
 // @Security Bearer
 func CreateAmenity(service amenityservice.AmenityService) fiber.Handler {
+
 	return func(c *fiber.Ctx) error {
-		var requestBody amenitydto.CreateAmenityReq
+		var requestBody dto.CreateAmenityReq
 
 		if err := c.BodyParser(&requestBody); err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
+
+		// // 이름 길이 검증
+		// if len(*requestBody.Name) > 10 {
+		// 	return c.Status(fiber.StatusBadRequest).JSON(presenter.NewJsonResponse(true, "name is too long", nil))
+		// }
 
 		amenity, err := service.CreateAmenity(&requestBody, c)
 		if err != nil {
@@ -112,7 +118,7 @@ func GetAmenity(service amenityservice.AmenityService) fiber.Handler {
 // @Accept json
 // @Produce json
 // @Param id path string true "amenity id"
-// @Param requestBody body amenitydto.UpdateAmenityReq true "requestBody"
+// @Param requestBody body dto.UpdateAmenityReq true "requestBody"
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /spot/amenity/{id} [put]
@@ -120,7 +126,7 @@ func GetAmenity(service amenityservice.AmenityService) fiber.Handler {
 func UpdateAmenity(service amenityservice.AmenityService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 
-		var requestBody amenitydto.UpdateAmenityReq
+		var requestBody dto.UpdateAmenityReq
 		if err := c.BodyParser(&requestBody); err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), "")
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)

@@ -1,7 +1,7 @@
 package wishlist
 
 import (
-	wishlistdto "camping-backend-with-go/internal/application/dto/wishlist"
+	"camping-backend-with-go/internal/application/dto"
 	"camping-backend-with-go/internal/domain/entity"
 	spotrepository "camping-backend-with-go/internal/domain/repository/spot"
 	"camping-backend-with-go/pkg/util"
@@ -15,9 +15,9 @@ import (
 
 type Repository interface {
 	GetWishLists(context ...*fiber.Ctx) (*[]entity.WishList, error)
-	CreateWishList(input *wishlistdto.CreateWishListReq, context ...*fiber.Ctx) (*entity.WishList, error)
+	CreateWishList(input *dto.CreateWishListReq, context ...*fiber.Ctx) (*entity.WishList, error)
 	GetWishList(id string, context ...*fiber.Ctx) (*entity.WishList, error)
-	UpdateWishList(input *wishlistdto.UpdateWishListReq, id string, context ...*fiber.Ctx) (*entity.WishList, error)
+	UpdateWishList(input *dto.UpdateWishListReq, id string, context ...*fiber.Ctx) (*entity.WishList, error)
 	DeleteWishList(id string, context ...*fiber.Ctx) error
 	WishListToggle(wishListid string, spotid string, context ...*fiber.Ctx) error
 }
@@ -48,7 +48,7 @@ func (r *repository) GetWishLists(context ...*fiber.Ctx) (*[]entity.WishList, er
 	return &wishLists, err
 }
 
-func (r *repository) CreateWishList(input *wishlistdto.CreateWishListReq, context ...*fiber.Ctx) (*entity.WishList, error) {
+func (r *repository) CreateWishList(input *dto.CreateWishListReq, context ...*fiber.Ctx) (*entity.WishList, error) {
 	c, err := util.ContextParser(context...)
 	util.HandleFunc(err)
 
@@ -95,7 +95,7 @@ func (r *repository) GetWishList(id string, context ...*fiber.Ctx) (*entity.Wish
 	return &wishList, nil
 }
 
-func (r *repository) UpdateWishList(input *wishlistdto.UpdateWishListReq, id string, context ...*fiber.Ctx) (*entity.WishList, error) {
+func (r *repository) UpdateWishList(input *dto.UpdateWishListReq, id string, context ...*fiber.Ctx) (*entity.WishList, error) {
 	c, err := util.ContextParser(context...)
 	util.HandleFunc(err)
 

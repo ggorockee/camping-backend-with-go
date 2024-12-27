@@ -1,7 +1,7 @@
 package categoryhandler
 
 import (
-	categorydto "camping-backend-with-go/internal/application/dto/category"
+	"camping-backend-with-go/internal/application/dto"
 
 	"camping-backend-with-go/internal/domain/presenter"
 	categoryservice "camping-backend-with-go/internal/domain/service/category"
@@ -38,14 +38,14 @@ func GetCategoryList(service categoryservice.CategoryService) fiber.Handler {
 // @Tags Category
 // @Accept json
 // @Produce json
-// @Param requestBody body categorydto.CreateCategoryReq true "requestBody"
+// @Param requestBody body dto.CreateCategoryReq true "requestBody"
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /category [post]
 // @Security Bearer
 func CreateCategory(service categoryservice.CategoryService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var requestBody categorydto.CreateCategoryReq
+		var requestBody dto.CreateCategoryReq
 
 		if err := c.BodyParser(&requestBody); err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
@@ -102,14 +102,14 @@ func GetCategory(service categoryservice.CategoryService) fiber.Handler {
 // @Accept json
 // @Produce json
 // @Param id path string true "category id"
-// @Param requestBody body categorydto.UpdateCategoryReq true "requestBody"
+// @Param requestBody body dto.UpdateCategoryReq true "requestBody"
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /category/{id} [put]
 // @Security Bearer
 func UpdateCategory(service categoryservice.CategoryService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var requestBody categorydto.UpdateCategoryReq
+		var requestBody dto.UpdateCategoryReq
 
 		if err := c.BodyParser(&requestBody); err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)

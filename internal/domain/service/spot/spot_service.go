@@ -1,8 +1,7 @@
 package spotservice
 
 import (
-	reviewdto "camping-backend-with-go/internal/application/dto/review"
-	spotdto "camping-backend-with-go/internal/application/dto/spot"
+	"camping-backend-with-go/internal/application/dto"
 	"camping-backend-with-go/internal/domain/entity"
 	spotrepository "camping-backend-with-go/internal/domain/repository/spot"
 
@@ -10,24 +9,24 @@ import (
 )
 
 type SpotService interface {
-	CreateSpot(input *spotdto.CreateSpotReq, context ...*fiber.Ctx) (*entity.Spot, error)
-	UpdateSpot(input *spotdto.UpdateSpotReq, id string, context ...*fiber.Ctx) (*entity.Spot, error)
+	CreateSpot(input *dto.CreateSpotReq, context ...*fiber.Ctx) (*entity.Spot, error)
+	UpdateSpot(input *dto.UpdateSpotReq, id string, context ...*fiber.Ctx) (*entity.Spot, error)
 	GetSpotById(id string, context ...*fiber.Ctx) (*entity.Spot, error)
 	DeleteSpot(id string, context ...*fiber.Ctx) error
 	GetAllSpots(context ...*fiber.Ctx) (*[]entity.Spot, error)
 	GetReviewsFromSpot(spot *entity.Spot, context ...*fiber.Ctx) (*[]entity.Review, error)
-	CreateSpotReview(input *reviewdto.CreateSpotReviewReq, spot *entity.Spot, context ...*fiber.Ctx) (*entity.Review, error)
+	CreateSpotReview(input *dto.CreateSpotReviewReq, spot *entity.Spot, context ...*fiber.Ctx) (*entity.Review, error)
 }
 
 type spotService struct {
 	spotRepo spotrepository.SpotRepository
 }
 
-func (s *spotService) CreateSpot(input *spotdto.CreateSpotReq, context ...*fiber.Ctx) (*entity.Spot, error) {
+func (s *spotService) CreateSpot(input *dto.CreateSpotReq, context ...*fiber.Ctx) (*entity.Spot, error) {
 	return s.spotRepo.CreateSpot(input, context...)
 }
 
-func (s *spotService) UpdateSpot(input *spotdto.UpdateSpotReq, id string, context ...*fiber.Ctx) (*entity.Spot, error) {
+func (s *spotService) UpdateSpot(input *dto.UpdateSpotReq, id string, context ...*fiber.Ctx) (*entity.Spot, error) {
 	return s.spotRepo.UpdateSpot(input, id, context...)
 }
 
@@ -47,7 +46,7 @@ func (s *spotService) GetReviewsFromSpot(spot *entity.Spot, context ...*fiber.Ct
 	return s.spotRepo.GetReviewsFromSpot(spot, context...)
 }
 
-func (s *spotService) CreateSpotReview(input *reviewdto.CreateSpotReviewReq, spot *entity.Spot, context ...*fiber.Ctx) (*entity.Review, error) {
+func (s *spotService) CreateSpotReview(input *dto.CreateSpotReviewReq, spot *entity.Spot, context ...*fiber.Ctx) (*entity.Review, error) {
 	return s.spotRepo.CreateSpotReview(input, spot, context...)
 }
 

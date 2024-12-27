@@ -1,4 +1,4 @@
-package spotdto
+package dto
 
 type CreateSpotReq struct {
 	Name        *string   `json:"name"`

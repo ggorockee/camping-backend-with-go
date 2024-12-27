@@ -1,4 +1,4 @@
-package authdto
+package dto
 
 type SignUpReq struct {
 	Email           string  `json:"email"`

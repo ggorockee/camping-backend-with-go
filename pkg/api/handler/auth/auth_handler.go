@@ -1,7 +1,7 @@
 package authhandler
 
 import (
-	authdto "camping-backend-with-go/internal/application/dto/auth"
+	"camping-backend-with-go/internal/application/dto"
 	"camping-backend-with-go/internal/domain/presenter"
 	authservice "camping-backend-with-go/internal/domain/service/auth"
 
@@ -14,13 +14,13 @@ import (
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param requestBody body authdto.SignUpReq true "requestBody"
+// @Param requestBody body dto.SignUpReq true "requestBody"
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /auth/signup [post]
 func CreateUser(service authservice.AuthService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var requestBody authdto.SignUpReq
+		var requestBody dto.SignUpReq
 		err := c.BodyParser(&requestBody)
 
 		// json parsing
@@ -52,14 +52,14 @@ func CreateUser(service authservice.AuthService) fiber.Handler {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param requestBody body authdto.LoginReq true "requestBody"
+// @Param requestBody body dto.LoginReq true "requestBody"
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse
 // @Router /auth/login [post]
 func Login(service authservice.AuthService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// request parser
-		var requestBody authdto.LoginReq
+		var requestBody dto.LoginReq
 
 		if err := c.BodyParser(&requestBody); err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)

@@ -42,7 +42,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/authdto.LoginReq"
+                            "$ref": "#/definitions/dto.LoginReq"
                         }
                     }
                 ],
@@ -82,7 +82,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/authdto.SignUpReq"
+                            "$ref": "#/definitions/dto.SignUpReq"
                         }
                     }
                 ],
@@ -159,7 +159,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/categorydto.CreateCategoryReq"
+                            "$ref": "#/definitions/dto.CreateCategoryReq"
                         }
                     }
                 ],
@@ -252,7 +252,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/categorydto.UpdateCategoryReq"
+                            "$ref": "#/definitions/dto.UpdateCategoryReq"
                         }
                     }
                 ],
@@ -399,7 +399,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/spotdto.CreateSpotReq"
+                            "$ref": "#/definitions/dto.CreateSpotReq"
                         }
                     }
                 ],
@@ -476,7 +476,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/amenitydto.CreateAmenityReq"
+                            "$ref": "#/definitions/dto.CreateAmenityReq"
                         }
                     }
                 ],
@@ -569,7 +569,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/amenitydto.UpdateAmenityReq"
+                            "$ref": "#/definitions/dto.UpdateAmenityReq"
                         }
                     }
                 ],
@@ -703,7 +703,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/spotdto.UpdateSpotReq"
+                            "$ref": "#/definitions/dto.UpdateSpotReq"
                         }
                     }
                 ],
@@ -789,7 +789,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/reviewdto.CreateSpotReviewReq"
+                            "$ref": "#/definitions/dto.CreateSpotReviewReq"
                         }
                     },
                     {
@@ -891,7 +891,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/userdto.ChangePasswordReq"
+                            "$ref": "#/definitions/dto.ChangePasswordReq"
                         }
                     }
                 ],
@@ -913,7 +913,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "amenitydto.CreateAmenityReq": {
+        "dto.CreateAmenityReq": {
             "type": "object",
             "properties": {
                 "description": {
@@ -924,7 +924,7 @@ const docTemplate = `{
                 }
             }
         },
-        "amenitydto.UpdateAmenityReq": {
+        "dto.UpdateAmenityReq": {
             "type": "object",
             "properties": {
                 "description": {
@@ -935,7 +935,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authdto.LoginReq": {
+        "dto.LoginReq": {
             "type": "object",
             "properties": {
                 "email": {
@@ -946,7 +946,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authdto.SignUpReq": {
+        "dto.SignUpReq": {
             "type": "object",
             "properties": {
                 "email": {
@@ -963,7 +963,7 @@ const docTemplate = `{
                 }
             }
         },
-        "categorydto.CreateCategoryReq": {
+        "dto.CreateCategoryReq": {
             "type": "object",
             "properties": {
                 "name": {
@@ -971,7 +971,7 @@ const docTemplate = `{
                 }
             }
         },
-        "categorydto.UpdateCategoryReq": {
+        "dto.UpdateCategoryReq": {
             "type": "object",
             "properties": {
                 "name": {
@@ -991,7 +991,7 @@ const docTemplate = `{
                 }
             }
         },
-        "reviewdto.CreateSpotReviewReq": {
+        "dto.CreateSpotReviewReq": {
             "type": "object",
             "properties": {
                 "payload": {
@@ -1002,7 +1002,7 @@ const docTemplate = `{
                 }
             }
         },
-        "spotdto.CreateSpotReq": {
+        "dto.CreateSpotReq": {
             "type": "object",
             "properties": {
                 "address": {
@@ -1037,7 +1037,7 @@ const docTemplate = `{
                 }
             }
         },
-        "spotdto.UpdateSpotReq": {
+        "dto.UpdateSpotReq": {
             "type": "object",
             "properties": {
                 "address": {
@@ -1072,7 +1072,7 @@ const docTemplate = `{
                 }
             }
         },
-        "userdto.ChangePasswordReq": {
+        "dto.ChangePasswordReq": {
             "type": "object",
             "properties": {
                 "new_password": {

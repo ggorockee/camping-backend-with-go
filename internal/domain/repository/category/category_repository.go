@@ -1,7 +1,7 @@
 package categoryrepository
 
 import (
-	categorydto "camping-backend-with-go/internal/application/dto/category"
+	"camping-backend-with-go/internal/application/dto"
 	"camping-backend-with-go/internal/domain/entity"
 	"fmt"
 
@@ -12,8 +12,8 @@ import (
 
 type CategoryRepository interface {
 	GetCategoryList(context ...*fiber.Ctx) (*[]entity.Category, error)
-	CreateCategory(input *categorydto.CreateCategoryReq, context ...*fiber.Ctx) (*entity.Category, error)
-	UpdateCategory(input *categorydto.UpdateCategoryReq, id string, context ...*fiber.Ctx) (*entity.Category, error)
+	CreateCategory(input *dto.CreateCategoryReq, context ...*fiber.Ctx) (*entity.Category, error)
+	UpdateCategory(input *dto.UpdateCategoryReq, id string, context ...*fiber.Ctx) (*entity.Category, error)
 	DeleteCategory(id string, context ...*fiber.Ctx) error
 	GetCategoryById(id string, context ...*fiber.Ctx) (*entity.Category, error)
 	GetCategoryByName(name string, context ...*fiber.Ctx) (*entity.Category, error)
@@ -32,7 +32,7 @@ func (r *categoryRepository) GetCategoryList(context ...*fiber.Ctx) (*[]entity.C
 	return &categories, nil
 }
 
-func (r *categoryRepository) CreateCategory(input *categorydto.CreateCategoryReq, context ...*fiber.Ctx) (*entity.Category, error) {
+func (r *categoryRepository) CreateCategory(input *dto.CreateCategoryReq, context ...*fiber.Ctx) (*entity.Category, error) {
 	var category entity.Category
 
 	if err := copier.Copy(&category, input); err != nil {
@@ -87,7 +87,7 @@ func (r *categoryRepository) GetCategoryByName(name string, context ...*fiber.Ct
 	return &category, nil
 }
 
-func (r *categoryRepository) UpdateCategory(input *categorydto.UpdateCategoryReq, id string, context ...*fiber.Ctx) (*entity.Category, error) {
+func (r *categoryRepository) UpdateCategory(input *dto.UpdateCategoryReq, id string, context ...*fiber.Ctx) (*entity.Category, error) {
 	category, err := r.GetCategoryById(id)
 	if err != nil {
 		return nil, err

@@ -1,8 +1,7 @@
 package spothandler
 
 import (
-	reviewdto "camping-backend-with-go/internal/application/dto/review"
-	spotdto "camping-backend-with-go/internal/application/dto/spot"
+	"camping-backend-with-go/internal/application/dto"
 
 	"camping-backend-with-go/internal/domain/presenter"
 	spotservice "camping-backend-with-go/internal/domain/service/spot"
@@ -19,7 +18,7 @@ import (
 // @Tags Spot
 // @Accept json
 // @Produce json
-// @Param requestBody body reviewdto.CreateSpotReviewReq true "requestBody"
+// @Param requestBody body dto.CreateSpotReviewReq true "requestBody"
 // @Param id path string true "spot id"
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
@@ -27,7 +26,7 @@ import (
 // @Security Bearer
 func AddSpotReview(service spotservice.SpotService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var requestBody reviewdto.CreateSpotReviewReq
+		var requestBody dto.CreateSpotReviewReq
 		if err := c.BodyParser(&requestBody); err != nil {
 			jsonResponse := presenter.NewJsonResponse(true, err.Error(), nil)
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
@@ -65,14 +64,14 @@ func AddSpotReview(service spotservice.SpotService) fiber.Handler {
 // @Tags Spot
 // @Accept json
 // @Produce json
-// @Param requestBody body spotdto.CreateSpotReq true "requestBody"
+// @Param requestBody body dto.CreateSpotReq true "requestBody"
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /spot [post]
 // @Security Bearer
 func AddSpot(service spotservice.SpotService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var requestBody spotdto.CreateSpotReq
+		var requestBody dto.CreateSpotReq
 		db := c.Locals("db").(*gorm.DB)
 		log.Printf("db: %v\n", db)
 
@@ -102,7 +101,7 @@ func AddSpot(service spotservice.SpotService) fiber.Handler {
 // @Accept json
 // @Produce json
 // @Param id path string true "spot id"
-// @Param requestBody body spotdto.UpdateSpotReq true "requestBody"
+// @Param requestBody body dto.UpdateSpotReq true "requestBody"
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /spot/{id} [put]
@@ -111,7 +110,7 @@ func UpdateSpot(service spotservice.SpotService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		db := c.Locals("db").(*gorm.DB)
 		log.Printf("db %v\n", db)
-		var requestBody spotdto.UpdateSpotReq
+		var requestBody dto.UpdateSpotReq
 
 		err := c.BodyParser(&requestBody)
 		spotId := c.Params("id", "")

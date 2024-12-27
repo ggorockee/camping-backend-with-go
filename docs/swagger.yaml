@@ -1,27 +1,27 @@
 basePath: /api/v1
 definitions:
-  amenitydto.CreateAmenityReq:
+  dto.CreateAmenityReq:
     properties:
       description:
         type: string
       name:
         type: string
     type: object
-  amenitydto.UpdateAmenityReq:
+  dto.UpdateAmenityReq:
     properties:
       description:
         type: string
       name:
         type: string
     type: object
-  authdto.LoginReq:
+  dto.LoginReq:
     properties:
       email:
         type: string
       password:
         type: string
     type: object
-  authdto.SignUpReq:
+  dto.SignUpReq:
     properties:
       email:
         type: string
@@ -32,12 +32,12 @@ definitions:
       username:
         type: string
     type: object
-  categorydto.CreateCategoryReq:
+  dto.CreateCategoryReq:
     properties:
       name:
         type: string
     type: object
-  categorydto.UpdateCategoryReq:
+  dto.UpdateCategoryReq:
     properties:
       name:
         type: string
@@ -50,14 +50,14 @@ definitions:
       message:
         type: string
     type: object
-  reviewdto.CreateSpotReviewReq:
+  dto.CreateSpotReviewReq:
     properties:
       payload:
         type: string
       rating:
         type: integer
     type: object
-  spotdto.CreateSpotReq:
+  dto.CreateSpotReq:
     properties:
       address:
         type: string
@@ -80,7 +80,7 @@ definitions:
       price:
         type: integer
     type: object
-  spotdto.UpdateSpotReq:
+  dto.UpdateSpotReq:
     properties:
       address:
         type: string
@@ -103,7 +103,7 @@ definitions:
       price:
         type: integer
     type: object
-  userdto.ChangePasswordReq:
+  dto.ChangePasswordReq:
     properties:
       new_password:
         type: string
@@ -134,7 +134,7 @@ paths:
         name: requestBody
         required: true
         schema:
-          $ref: '#/definitions/authdto.LoginReq'
+          $ref: '#/definitions/dto.LoginReq'
       produces:
       - application/json
       responses:
@@ -160,7 +160,7 @@ paths:
         name: requestBody
         required: true
         schema:
-          $ref: '#/definitions/authdto.SignUpReq'
+          $ref: '#/definitions/dto.SignUpReq'
       produces:
       - application/json
       responses:
@@ -206,7 +206,7 @@ paths:
         name: requestBody
         required: true
         schema:
-          $ref: '#/definitions/categorydto.CreateCategoryReq'
+          $ref: '#/definitions/dto.CreateCategoryReq'
       produces:
       - application/json
       responses:
@@ -291,7 +291,7 @@ paths:
         name: requestBody
         required: true
         schema:
-          $ref: '#/definitions/categorydto.UpdateCategoryReq'
+          $ref: '#/definitions/dto.UpdateCategoryReq'
       produces:
       - application/json
       responses:
@@ -358,7 +358,7 @@ paths:
         name: requestBody
         required: true
         schema:
-          $ref: '#/definitions/spotdto.CreateSpotReq'
+          $ref: '#/definitions/dto.CreateSpotReq'
       produces:
       - application/json
       responses:
@@ -443,7 +443,7 @@ paths:
         name: requestBody
         required: true
         schema:
-          $ref: '#/definitions/spotdto.UpdateSpotReq'
+          $ref: '#/definitions/dto.UpdateSpotReq'
       produces:
       - application/json
       responses:
@@ -471,7 +471,7 @@ paths:
         name: requestBody
         required: true
         schema:
-          $ref: '#/definitions/reviewdto.CreateSpotReviewReq'
+          $ref: '#/definitions/dto.CreateSpotReviewReq'
       - description: spot id
         in: path
         name: id
@@ -556,7 +556,7 @@ paths:
         name: requestBody
         required: true
         schema:
-          $ref: '#/definitions/amenitydto.CreateAmenityReq'
+          $ref: '#/definitions/dto.CreateAmenityReq'
       produces:
       - application/json
       responses:
@@ -641,7 +641,7 @@ paths:
         name: requestBody
         required: true
         schema:
-          $ref: '#/definitions/amenitydto.UpdateAmenityReq'
+          $ref: '#/definitions/dto.UpdateAmenityReq'
       produces:
       - application/json
       responses:
@@ -669,7 +669,7 @@ paths:
         name: requestBody
         required: true
         schema:
-          $ref: '#/definitions/userdto.ChangePasswordReq'
+          $ref: '#/definitions/dto.ChangePasswordReq'
       produces:
       - application/json
       responses:

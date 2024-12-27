@@ -1,9 +1,10 @@
 package userhandler
 
 import (
-	userdto "camping-backend-with-go/internal/application/dto/user"
+	"camping-backend-with-go/internal/application/dto"
 	"camping-backend-with-go/internal/domain/presenter"
 	userservice "camping-backend-with-go/internal/domain/service/user"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -13,14 +14,14 @@ import (
 // @Tags Users
 // @Accept json
 // @Produce json
-// @Param requestBody body userdto.ChangePasswordReq true "requestBody"
+// @Param requestBody body dto.ChangePasswordReq true "requestBody"
 // @Success 200 {object} presenter.JsonResponse{}
 // @Failure 503 {object} presenter.JsonResponse{}
 // @Router /user/change-password [put]
 // @Security Bearer
 func ChangePassword(service userservice.UserService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var requestBody userdto.ChangePasswordReq
+		var requestBody dto.ChangePasswordReq
 
 		// parsing error
 		if err := c.BodyParser(&requestBody); err != nil {

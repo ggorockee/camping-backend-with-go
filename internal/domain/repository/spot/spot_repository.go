@@ -1,8 +1,8 @@
 package spotrepository
 
 import (
-	reviewdto "camping-backend-with-go/internal/application/dto/review"
-	spotdto "camping-backend-with-go/internal/application/dto/spot"
+	"camping-backend-with-go/internal/application/dto"
+
 	"camping-backend-with-go/internal/domain/entity"
 	amenityrepository "camping-backend-with-go/internal/domain/repository/amenity"
 	categoryrepository "camping-backend-with-go/internal/domain/repository/category"
@@ -18,13 +18,13 @@ import (
 )
 
 type SpotRepository interface {
-	CreateSpot(input *spotdto.CreateSpotReq, context ...*fiber.Ctx) (*entity.Spot, error)
-	UpdateSpot(input *spotdto.UpdateSpotReq, id string, context ...*fiber.Ctx) (*entity.Spot, error)
+	CreateSpot(input *dto.CreateSpotReq, context ...*fiber.Ctx) (*entity.Spot, error)
+	UpdateSpot(input *dto.UpdateSpotReq, id string, context ...*fiber.Ctx) (*entity.Spot, error)
 	GetSpotById(id string, context ...*fiber.Ctx) (*entity.Spot, error)
 	DeleteSpot(id string, context ...*fiber.Ctx) error
 	GetAllSpots(context ...*fiber.Ctx) (*[]entity.Spot, error)
 	GetReviewsFromSpot(spot *entity.Spot, context ...*fiber.Ctx) (*[]entity.Review, error)
-	CreateSpotReview(input *reviewdto.CreateSpotReviewReq, spot *entity.Spot, context ...*fiber.Ctx) (*entity.Review, error)
+	CreateSpotReview(input *dto.CreateSpotReviewReq, spot *entity.Spot, context ...*fiber.Ctx) (*entity.Review, error)
 }
 
 type spotRepository struct {
@@ -34,7 +34,7 @@ type spotRepository struct {
 	amenityRepo  amenityrepository.AmenityRepository
 }
 
-func (r *spotRepository) CreateSpot(input *spotdto.CreateSpotReq, context ...*fiber.Ctx) (*entity.Spot, error) {
+func (r *spotRepository) CreateSpot(input *dto.CreateSpotReq, context ...*fiber.Ctx) (*entity.Spot, error) {
 	// 컨텍스트 파싱
 	c, err := util.ContextParser(context...)
 	if err != nil {
@@ -101,7 +101,7 @@ func (r *spotRepository) CreateSpot(input *spotdto.CreateSpotReq, context ...*fi
 	return &spot, nil
 }
 
-func (r *spotRepository) UpdateSpot(input *spotdto.UpdateSpotReq, id string, context ...*fiber.Ctx) (*entity.Spot, error) {
+func (r *spotRepository) UpdateSpot(input *dto.UpdateSpotReq, id string, context ...*fiber.Ctx) (*entity.Spot, error) {
 	c, err := util.ContextParser(context...)
 	util.HandleFunc(err)
 	userId := r.userRepo.GetValueFromToken("user_id", c)
@@ -187,7 +187,7 @@ func (r *spotRepository) GetReviewsFromSpot(spot *entity.Spot, context ...*fiber
 	return &reviews, nil
 }
 
-func (r *spotRepository) CreateSpotReview(input *reviewdto.CreateSpotReviewReq, spot *entity.Spot, context ...*fiber.Ctx) (*entity.Review, error) {
+func (r *spotRepository) CreateSpotReview(input *dto.CreateSpotReviewReq, spot *entity.Spot, context ...*fiber.Ctx) (*entity.Review, error) {
 	c, err := util.ContextParser(context...)
 	util.HandleFunc(err)
 

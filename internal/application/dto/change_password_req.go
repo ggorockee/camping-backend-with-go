@@ -1,4 +1,4 @@
-package authdto
+package dto
 
 type ChangePasswordReq struct {
 	OldPassword        string `json:"old_password"`

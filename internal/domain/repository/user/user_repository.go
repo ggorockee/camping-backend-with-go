@@ -1,7 +1,7 @@
 package userrepository
 
 import (
-	userdto "camping-backend-with-go/internal/application/dto/user"
+	"camping-backend-with-go/internal/application/dto"
 	"camping-backend-with-go/internal/domain/entity"
 	"camping-backend-with-go/pkg/util"
 	"errors"
@@ -15,8 +15,8 @@ import (
 type UserRepository interface {
 	HashPassword(password string, context ...*fiber.Ctx) (string, error)
 	GetUserByEmail(email string, context ...*fiber.Ctx) (*entity.User, error)
-	CheckPasswordHash(password, hash string, context ...*fiber.Ctx) bool          // auth
-	ChangePassword(input *userdto.ChangePasswordReq, context ...*fiber.Ctx) error //
+	CheckPasswordHash(password, hash string, context ...*fiber.Ctx) bool      // auth
+	ChangePassword(input *dto.ChangePasswordReq, context ...*fiber.Ctx) error //
 	ValidToken(t *jwt.Token, id string, context ...*fiber.Ctx) bool
 	GetUserById(id string, context ...*fiber.Ctx) (*entity.User, error)
 	GetValueFromToken(key string, context ...*fiber.Ctx) string
@@ -49,7 +49,7 @@ func (r *userRepository) CheckPasswordHash(password, hash string, context ...*fi
 	return err == nil
 }
 
-func (r *userRepository) ChangePassword(input *userdto.ChangePasswordReq, context ...*fiber.Ctx) error {
+func (r *userRepository) ChangePassword(input *dto.ChangePasswordReq, context ...*fiber.Ctx) error {
 	c, err := util.ContextParser(context...)
 	if err != nil {
 		return err
@@ -63,11 +63,11 @@ func (r *userRepository) ChangePassword(input *userdto.ChangePasswordReq, contex
 	}
 
 	// CheckPassword
-	if !r.CheckPasswordHash(*input.OldPassword, user.Password) {
+	if !r.CheckPasswordHash(input.OldPassword, user.Password) {
 		return errors.New("invalid Credentials")
 	}
 
-	hashedNewPassword, err := r.HashPassword(*input.NewPassword)
+	hashedNewPassword, err := r.HashPassword(input.NewPassword)
 	if err != nil {
 		return err
 	}

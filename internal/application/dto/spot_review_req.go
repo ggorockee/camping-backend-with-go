@@ -1,4 +1,4 @@
-package reviewdto
+package dto
 
 type CreateSpotReviewReq struct {
 	Payload string `json:"payload"`

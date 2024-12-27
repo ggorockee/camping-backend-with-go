@@ -1,7 +1,7 @@
 package authrepository
 
 import (
-	authdto "camping-backend-with-go/internal/application/dto/auth"
+	"camping-backend-with-go/internal/application/dto"
 	"camping-backend-with-go/internal/domain/entity"
 	"camping-backend-with-go/pkg/config"
 	"camping-backend-with-go/pkg/util"
@@ -17,9 +17,9 @@ import (
 )
 
 type AuthRepository interface {
-	Login(input *authdto.LoginReq) (string, error)
-	CreateUser(input *authdto.SignUpReq) error
-	ChangePassword(input *authdto.ChangePasswordReq, context ...*fiber.Ctx) error
+	Login(input *dto.LoginReq) (string, error)
+	CreateUser(input *dto.SignUpReq) error
+	ChangePassword(input *dto.ChangePasswordReq, context ...*fiber.Ctx) error
 
 	hashPassword(password string) (string, error)
 	GetUserByEmail(email string) (*entity.User, error)
@@ -33,7 +33,7 @@ type authRepository struct {
 	dbConn *gorm.DB
 }
 
-func (a *authRepository) Login(input *authdto.LoginReq) (string, error) {
+func (a *authRepository) Login(input *dto.LoginReq) (string, error) {
 	email := input.Email
 	password := input.Password
 
@@ -59,7 +59,7 @@ func (a *authRepository) Login(input *authdto.LoginReq) (string, error) {
 	return t, nil
 }
 
-func (a *authRepository) CreateUser(input *authdto.SignUpReq) error {
+func (a *authRepository) CreateUser(input *dto.SignUpReq) error {
 	var user entity.User
 	// hashing password
 	password := input.Password
@@ -88,7 +88,7 @@ func (a *authRepository) CreateUser(input *authdto.SignUpReq) error {
 	return nil
 }
 
-func (a *authRepository) ChangePassword(input *authdto.ChangePasswordReq, context ...*fiber.Ctx) error {
+func (a *authRepository) ChangePassword(input *dto.ChangePasswordReq, context ...*fiber.Ctx) error {
 
 	newPassword := input.NewPassword
 	oldPassword := input.OldPassword

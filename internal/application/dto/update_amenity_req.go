@@ -1,4 +1,4 @@
-package amenitydto
+package dto
 
 type UpdateAmenityReq struct {
 	Name        string  `json:"name"`
