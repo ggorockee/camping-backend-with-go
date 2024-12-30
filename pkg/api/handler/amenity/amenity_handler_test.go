@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net/http/httptest"
 	"testing"
 	"time"
@@ -57,100 +56,6 @@ func (m *MockAmenityService) DeleteAmenity(id string, context ...*fiber.Ctx) err
 	args := m.Called(id, c)
 	return args.Error(0)
 }
-
-// CreateAmenityTest
-// func TestCreateAmenity(t *testing.T) {
-// 	// 테스트 앱 설정 및 정리 함수 호출
-// 	app, _, cleanup := test.SetupTestApp()
-// 	defer cleanup()
-
-// 	// API v1 그룹 생성
-// 	v1 := app.Group("/api/v1")
-
-// 	t.Run("성공적인 Amenity 생성", func(t *testing.T) {
-// 		// 각 테스트 케이스마다 새로운 모의 객체 생성
-// 		mockService := new(MockAmenityService)
-
-// 		// Amenity 생성 라우트 설정
-// 		v1.Post("/spot/amenity", CreateAmenity(mockService))
-
-// 		reqBody := dto.CreateAmenityReq{
-// 			Name:        util.StrPointer("Test Amen"),
-// 			Description: util.StrPointer("Description"),
-// 		}
-
-// 		// 요청 본문을 json으로 변환
-// 		jsonBody, _ := json.Marshal(reqBody)
-
-// 		// mocking 서비스 동작 정의
-// 		mockService.On("CreateAmenity",
-// 			mock.AnythingOfType("*dto.CreateAmenityReq"),
-// 			mock.AnythingOfType("*fiber.Ctx"),
-// 		).Return(&entity.Amenity{
-// 			Common: entity.Common{
-// 				Id:        "amenity_uuid",
-// 				CreatedAt: time.Now(),
-// 				UpdatedAt: time.Now(),
-// 			},
-// 			Name:        "Test Amen",
-// 			Description: util.StrPointer("Description"),
-// 		}, nil).Once()
-
-// 		// HTTP 요청 생성 및 실행
-// 		req := httptest.NewRequest("POST", "/api/v1/spot/amenity", bytes.NewBuffer(jsonBody))
-// 		req.Header.Set("Content-Type", "application/json")
-// 		resp, _ := app.Test(req)
-
-// 		// 응답 검증
-// 		assert.Equal(t, fiber.StatusOK, resp.StatusCode)
-
-// 		var result presenter.JsonResponse
-// 		err := json.NewDecoder(resp.Body).Decode(&result)
-// 		assert.NoError(t, err)
-// 		assert.False(t, result.Error)
-
-// 		amenityData, ok := result.Data.(map[string]interface{})
-// 		assert.True(t, ok, "Data should be a map")
-// 		assert.Equal(t, "Test Amen", amenityData["name"])
-// 		assert.Equal(t, "Description", amenityData["description"])
-// 		mockService.AssertExpectations(t)
-// 	})
-
-// 	t.Run("10자 이상의 이름으로 Amentity 생성 시 실패", func(t *testing.T) {
-// 		// 각 테스트 케이스마다 새로운 모의 객체 생성
-// 		mockService := new(MockAmenityService)
-
-// 		// Amenity 생성 라우트 설정
-// 		v1.Post("/spot/amenity", CreateAmenity(mockService))
-// 		// 10자를 초과하는 이름으로 요청 본문 생성
-// 		reqBody := dto.CreateAmenityReq{
-// 			Name:        util.StrPointer("This is a very long amenity name"),
-// 			Description: util.StrPointer("Description"),
-// 		}
-
-// 		// 요청 본문을 JSON으로 변환
-// 		jsonBody, _ := json.Marshal(reqBody)
-
-// 		// mockService.On("CreateAmenity",
-// 		// 	mock.AnythingOfType("*dto.CreateAmenityReq"),
-// 		// 	mock.AnythingOfType("*fiber.Ctx")).Return(nil, errors.New("name is too long")).Maybe()
-
-// 		// HTTP 요청 생성 및 실행
-// 		req := httptest.NewRequest("POST", "/api/v1/spot/amenity", bytes.NewBuffer(jsonBody))
-// 		req.Header.Set("Content-Type", "application/json")
-// 		resp, _ := app.Test(req)
-
-// 		// 응답 검증
-// 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
-
-// 		var result presenter.JsonResponse
-// 		err := json.NewDecoder(resp.Body).Decode(&result)
-// 		assert.NoError(t, err)
-// 		assert.True(t, result.Error)
-// 		assert.Contains(t, result.Message, "name is too long")
-// 		mockService.AssertExpectations(t)
-// 	})
-// }
 
 func TestCreateAmenity(t *testing.T) {
 	t.Run("성공적인 Amenity 생성", func(t *testing.T) {
@@ -216,7 +121,7 @@ func TestCreateAmenity(t *testing.T) {
 		mockService.On("CreateAmenity",
 			mock.AnythingOfType("*dto.CreateAmenityReq"),
 			mock.AnythingOfType("*fiber.Ctx"),
-		).Return(nil, errors.New("name is too long")).Once()
+		).Return(nil, errors.New("name is too long")).Maybe()
 		// mockService.On("CreateAmenity",
 		// 	mock.AnythingOfType("*dto.CreateAmenityReq"),
 		// 	mock.AnythingOfType("*fiber.Ctx")).
@@ -224,9 +129,8 @@ func TestCreateAmenity(t *testing.T) {
 		req := httptest.NewRequest("POST", "/api/v1/spot/amenity", bytes.NewBuffer(jsonBody))
 		req.Header.Set("Content-Type", "application/json")
 		resp, _ := app.Test(req)
-		log.Println(resp)
 
-		// assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
+		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 
 		// var result presenter.JsonResponse
 		// err := json.NewDecoder(resp.Body).Decode(&result)
@@ -376,40 +280,59 @@ func TestUpdateAmenity(t *testing.T) {
 }
 
 func TestDeleteAmenity(t *testing.T) {
-	// 테스트 앱 설정
-	app, _, cleanup := test.SetupTestApp()
-	defer cleanup()
+	tests := []struct {
+		name               string
+		amenityID          string
+		setupMock          func(*MockAmenityService)
+		expectedStatusCode int
+		expectedError      bool
+		expectedMsg        string
+	}{
+		{
+			name:      "삭제 테스트",
+			amenityID: "1",
+			setupMock: func(m *MockAmenityService) {
+				m.On("DeleteAmenity", "1", mock.AnythingOfType("*fiber.Ctx")).Return(nil)
+			},
+			expectedStatusCode: fiber.StatusOK,
+			expectedError:      false,
+			expectedMsg:        "Deleted successfully",
+		},
+	}
 
-	// 모의 서비스 생성
-	mockService := new(MockAmenityService)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 
-	// 라우트 설정
-	v1 := app.Group("/api/v1")
-	v1.Delete("/spot/amenity/:id", DeleteAmenity(mockService))
+			// 테스트 앱 설정
+			app, _, cleanup := test.SetupTestApp()
+			defer cleanup()
+			// Mock service 설정
+			mockService := new(MockAmenityService)
+			tt.setupMock(mockService)
 
-	// 테스트 데이터 준비
-	amenityID := "1"
+			// fiber 앱 및 핸들러 설정
+			v1 := app.Group("/api/v1")
+			v1.Delete("/spot/amenity/:id", DeleteAmenity(mockService))
 
-	// 모의 서비스 동작 설정
-	mockService.On("DeleteAmenity", amenityID, mock.AnythingOfType("*fiber.Ctx")).Return(nil)
+			// HTTP 요청 생성 및 실행
+			req := httptest.NewRequest("DELETE", "/api/v1/spot/amenity/"+tt.amenityID, nil)
 
-	// HTTP 요청 생성 및 실행
-	req := httptest.NewRequest("DELETE", "/api/v1/spot/amenity/"+amenityID, nil)
-	resp, err := app.Test(req)
-	assert.NoError(t, err)
+			resp, _ := app.Test(req)
 
-	// 응답 상태 코드 확인
-	assert.Equal(t, fiber.StatusOK, resp.StatusCode)
+			assert.Equal(t, tt.expectedStatusCode, resp.StatusCode)
 
-	// 응답 본문 파싱
-	var result presenter.JsonResponse
-	err = json.NewDecoder(resp.Body).Decode(&result)
-	assert.NoError(t, err)
+			// 응답 본문 파싱
+			var result presenter.JsonResponse
+			err := json.NewDecoder(resp.Body).Decode(&result)
+			assert.NoError(t, err)
 
-	// 응답 검증
-	assert.False(t, result.Error, "Result error should be false for successful deletion")
-	assert.Equal(t, "Deleted successfully", result.Message)
+			// 응답 검증
+			assert.Equal(t, tt.expectedError, result.Error)
+			assert.Equal(t, tt.expectedMsg, result.Message)
 
-	// 모의 객체 호출 확인
-	mockService.AssertExpectations(t)
+			// 모의 객체 호출 확인
+			mockService.AssertExpectations(t)
+		})
+	}
+
 }

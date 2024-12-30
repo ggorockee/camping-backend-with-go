@@ -32,10 +32,10 @@ func CreateAmenity(service amenityservice.AmenityService) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		// // 이름 길이 검증
-		// if len(*requestBody.Name) > 10 {
-		// 	return c.Status(fiber.StatusBadRequest).JSON(presenter.NewJsonResponse(true, "name is too long", nil))
-		// }
+		// 이름 길이 검증
+		if len(*requestBody.Name) > 10 {
+			return c.Status(fiber.StatusBadRequest).JSON(presenter.NewJsonResponse(true, "name is too long", nil))
+		}
 
 		amenity, err := service.CreateAmenity(&requestBody, c)
 		if err != nil {
@@ -175,7 +175,7 @@ func DeleteAmenity(service amenityservice.AmenityService) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(jsonResponse)
 		}
 
-		jsonResponse := presenter.NewJsonResponse(true, "Deleted successfully", nil)
+		jsonResponse := presenter.NewJsonResponse(false, "Deleted successfully", nil)
 		return c.Status(fiber.StatusOK).JSON(jsonResponse)
 	}
 }
