@@ -74,7 +74,7 @@ func (d *updateMockSetup) setup(m *MockCategoryService) {
 	).Run(func(args mock.Arguments) {
 		req := args.Get(0).(*dto.UpdateCategoryReq)
 		category.Name = *req.Name
-	}).Return(category, nil).Once()
+	}).Return(category, nil)
 }
 
 func (d *defaultMockSetup) setup(m *MockCategoryService) {
@@ -309,6 +309,8 @@ func TestUpdateCategory(t *testing.T) {
 		defer cleanup()
 
 		mockService := new(MockCategoryService)
+		tt.setupMock.setup(mockService)
+
 		v1 := app.Group("/api/v1")
 		v1.Put("/category/:id", UpdateCategory(mockService))
 
