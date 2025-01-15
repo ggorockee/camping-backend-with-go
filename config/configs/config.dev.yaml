@@ -1,0 +1,11 @@
+server:
+  port: 2500
+  profile: dev
+
+infra:
+  db:
+    user: "root"
+    password: "test123!@#"
+    host: "localhost"
+    dbName: "test"
+    port: "3306"

@@ -4,3 +4,4 @@ tmp
 .env
 local_database/docker-compose/mysql/db_data
 .air.toml
+local_database/mysql/mysql_data

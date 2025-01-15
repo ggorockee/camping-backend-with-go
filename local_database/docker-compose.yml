@@ -1,0 +1,20 @@
+version: "3.1"
+
+services:
+  db:
+    build:
+      context: mysql
+
+    restart: always
+    env_file: 
+    - ".env"
+    
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    
+    ports:
+      - "${DB_PORT}:3306"
+    
+    volumes:
+      - "./mysql/mysql_data/:/var/lib/mysql"
